@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synergy Invoice Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- html2pdf.js for instant frontend PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Editor Panel -->
+        <div class="editor-panel">
+            <header class="editor-header">
+                <h1>Synergy Invoice <span class="pro-badge" id="pro-badge">FREE</span></h1>
+                <p>Global Invoice Generator for Business Owners</p>
+                <button id="upgrade-btn" class="btn secondary" style="margin-top: 10px; font-size: 0.8rem; padding: 0.5rem;">Upgrade to Pro</button>
+            </header>
+
+            <div class="form-section">
+                <h3>Logo Upload <span style="font-size:0.75rem; color: var(--accent);">(Free)</span></h3>
+                <div class="input-group">
+                    <label>Upload Business Logo</label>
+                    <input type="file" id="logo-upload" accept="image/png, image/jpeg" class="file-input">
+                </div>
+            </div>
+
+            <div class="form-section" style="position: relative;">
+                <h3>Pro Styling <span class="pro-badge" id="branding-lock">LOCKED</span></h3>
+                <div class="row" style="margin-top: 10px;">
+                    <div class="input-group half">
+                        <label>Paper Mode</label>
+                        <select id="invoice-theme-select">
+                            <option value="light">Light Paper</option>
+                            <option value="dark">Dark Paper</option>
+                        </select>
+                    </div>
+                    <div class="input-group half">
+                        <label>Accent Color</label>
+                        <input type="color" id="theme-color-input" value="#6366f1" style="padding: 2px; cursor: pointer; height: 38px;">
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 10px;">
+                    <div class="input-group half">
+                        <label>Font Style</label>
+                        <select id="font-select">
+                            <option value="Inter">Modern (Inter)</option>
+                            <option value="Playfair Display">Elegant (Playfair)</option>
+                            <option value="Courier New">Classic (Courier)</option>
+                            <option value="Arial">Neutral (Arial)</option>
+                            <option value="Georgia">Formal (Georgia)</option>
+                            <option value="Times New Roman">Traditional (Times)</option>
+                        </select>
+                    </div>
+                    <div class="input-group half">
+                        <label>Upload Font (.ttf)</label>
+                        <input type="file" id="font-upload" accept=".ttf,.otf,.woff" class="file-input" style="padding: 0.35rem">
+                    </div>
+                </div>
+                <div id="pro-overlay" style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(20, 23, 38, 0.85); display: flex; align-items: center; justify-content: center; border-radius: 12px; z-index: 10;">
+                    <button class="btn primary" id="unlock-branding-btn" style="width: auto; padding: 0.5rem 1.5rem; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); background: linear-gradient(135deg, #f59e0b, #d97706);">Unlock Premium Styling</button>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Your Details</h3>
+                <div class="input-group">
+                    <input type="text" id="business-name-input" placeholder="Your Business Name" value="My Awesome Agency">
+                </div>
+                <div class="input-group">
+                    <input type="text" id="business-email-input" placeholder="Your Email" value="hello@myagency.com">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Client Details</h3>
+                <div class="input-group">
+                    <input type="text" id="client-name-input" placeholder="Client Name" value="Acme Corp">
+                </div>
+                <div class="input-group">
+                    <input type="text" id="client-address-input" placeholder="Client Address" value="123 Startup Blvd">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Invoice Details</h3>
+                <div class="row">
+                    <div class="input-group half">
+                        <label>Invoice No.</label>
+                        <input type="text" id="invoice-no-input" value="INV-001">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-group half">
+                        <label>Issue Date</label>
+                        <input type="date" id="invoice-date-input" value="2026-03-26">
+                    </div>
+                    <div class="input-group half">
+                        <label>Due Date</label>
+                        <input type="date" id="due-date-input" value="2026-04-26">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Line Items</h3>
+                <div id="items-container">
+                    <!-- Items dynamically generated here -->
+                </div>
+                <button id="add-item-btn" class="btn secondary"> + Add Item </button>
+            </div>
+
+            <div class="form-section">
+                <h3>Global Settings & Fees</h3>
+                <div class="row">
+                    <div class="input-group half">
+                        <label>Currency</label>
+                        <select id="currency-select">
+                            <option value="$">USD ($)</option>
+                            <option value="€">EUR (€)</option>
+                            <option value="£">GBP (£)</option>
+                            <option value="₦" selected>NGN (₦)</option>
+                            <option value="₹">INR (₹)</option>
+                            <option value="¥">JPY (¥)</option>
+                            <option value="A$">AUD (A$)</option>
+                            <option value="C$">CAD (C$)</option>
+                            <option value="R">ZAR (R)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-group half">
+                        <label>Tax (%)</label>
+                        <input type="number" id="tax-input" value="0" min="0">
+                    </div>
+                    <div class="input-group half">
+                        <label>Discount (%)</label>
+                        <input type="number" id="discount-input" value="0" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Notes / Terms</h3>
+                <textarea id="notes-input" rows="3">Thank you for your business. Payment is expected within 30 days.</textarea>
+            </div>
+
+            <div class="actions">
+                <button id="download-btn" class="btn primary">Generate PDF</button>
+            </div>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="preview-panel">
+            <div class="preview-wrapper">
+                <div class="invoice-container" id="invoice-preview">
+                    
+                    <div class="invoice-header">
+                        <div class="brand">
+                            <img id="logo-display" src="" alt="Company Logo" style="display: none; max-height: 65px; max-width: 180px; object-fit: contain; margin-bottom: 12px;">
+                            <h2 id="business-name-display">My Awesome Agency</h2>
+                            <p id="business-email-display">hello@myagency.com</p>
+                        </div>
+                        <div class="invoice-meta">
+                            <h1 class="title">INVOICE</h1>
+                            <p><strong>Invoice No:</strong> <span id="invoice-no-display">INV-001</span></p>
+                            <p><strong>Issue Date:</strong> <span id="invoice-date-display">2026-03-26</span></p>
+                            <p><strong>Due Date:</strong> <span id="due-date-display">2026-04-26</span></p>
+                        </div>
+                    </div>
+
+                    <div class="invoice-body">
+                        <div class="bill-to">
+                            <h3>Billed To:</h3>
+                            <p id="client-name-display" class="highlight">Acme Corp</p>
+                            <p id="client-address-display">123 Startup Blvd</p>
+                        </div>
+
+                        <table class="invoice-table">
+                            <thead>
+                                <tr>
+                                    <th class="text-left">Description</th>
+                                    <th class="text-center">Qty</th>
+                                    <th class="text-center">Rate</th>
+                                    <th class="text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoice-items-display">
+                                <!-- Dynamically injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="invoice-footer">
+                        <div class="totals-section">
+                            <div class="total-row">
+                                <span>Subtotal:</span>
+                                <span id="subtotal-display">$0.00</span>
+                            </div>
+                            <div class="total-row" id="discount-row" style="display: none; color: #ef4444;">
+                                <span>Discount (<span id="discount-rate-display">0</span>%):</span>
+                                <span id="discount-amount-display">-$0.00</span>
+                            </div>
+                            <div class="total-row">
+                                <span>Tax (<span id="tax-rate-display">0</span>%):</span>
+                                <span id="tax-amount-display">$0.00</span>
+                            </div>
+                            <div class="total-row grand-total">
+                                <span>Total Due:</span>
+                                <span id="total-display">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="invoice-footer-note">
+                        <p id="notes-display">Thank you for your business. Payment is expected within 30 days.</p>
+                    </div>
+                    
+                    <div class="watermark" id="invoice-watermark">
+                        Generated for free by Synergy Invoice
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Upgrade Modal -->
+    <div id="upgrade-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modal-title">Upgrade to Synergy Pro</h2>
+            <p id="modal-desc">Remove watermarks, unlock premium templates, and save clients instantly.</p>
+            <div class="price-tag" id="pro-price-display">$1 / month</div>
+            <button id="activate-pro-btn" class="btn primary">Activate Pro Now</button>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
