@@ -22,10 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const fontUpload = document.getElementById('font-upload');
     const invoiceThemeSelect = document.getElementById('invoice-theme-select');
     const invoicePreview = document.getElementById('invoice-preview');
+    const bPhoneIn = document.getElementById('business-phone-input');
 
     // Displays
     const bNameDisp = document.getElementById('business-name-display');
     const bEmailDisp = document.getElementById('business-email-display');
+    const bPhoneDisp = document.getElementById('business-phone-display');
     const cNameDisp = document.getElementById('client-name-display');
     const cAddressDisp = document.getElementById('client-address-display');
     const invNoDisp = document.getElementById('invoice-no-display');
@@ -58,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     mapInputToDisplay(bNameIn, bNameDisp);
     mapInputToDisplay(bEmailIn, bEmailDisp);
+    mapInputToDisplay(bPhoneIn, bPhoneDisp);
     mapInputToDisplay(cNameIn, cNameDisp);
     mapInputToDisplay(cAddressIn, cAddressDisp);
     mapInputToDisplay(invNoIn, invNoDisp);
@@ -168,10 +171,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td class="text-left" style="color: #000000; font-weight: 700;">${item.desc || '-'}</td>
-                <td class="text-center" style="color: #000000;">${item.qty}</td>
-                <td class="text-center" style="color: #000000;">${formatCurr(item.rate)}</td>
-                <td class="text-right" style="color: #000000; font-weight: 600;">${formatCurr(amount)}</td>
+                <td class="text-left" style="color: #334155; font-weight: 700;">${item.desc || '-'}</td>
+                <td class="text-center" style="color: #475569;">${item.qty}</td>
+                <td class="text-center" style="color: #475569;">${formatCurr(item.rate)}</td>
+                <td class="text-right" style="color: #334155; font-weight: 600;">${formatCurr(amount)}</td>
             `;
             invoiceItemsDisplay.appendChild(tr);
         });

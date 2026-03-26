@@ -331,6 +331,14 @@ input:focus, select:focus {
     color: #94a3b8;
 }
 
+/* Payment Info Baseline Colors */
+#invoice-preview .payment-info-title {
+    color: #334155 !important;
+}
+#invoice-preview .payment-info-text {
+    color: #475569 !important;
+}
+
 /* Pro Badge */
 .pro-badge {
     font-size: 0.6rem;
@@ -430,4 +438,44 @@ input:focus, select:focus {
 
 #invoice-preview.dark-mode .payment-info-text {
     color: #f8fafc !important;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    body {
+        overflow: auto;
+        height: auto;
+    }
+    .app-container {
+        flex-direction: column;
+        height: auto;
+        overflow: visible;
+    }
+    .editor-panel {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding: 1.5rem 1rem;
+        overflow: visible;
+    }
+    .preview-panel {
+        padding: 1rem;
+        overflow: visible;
+    }
+    .preview-wrapper {
+        padding: 20px;
+        min-height: auto;
+        transform-origin: top center;
+        width: 100%;
+    }
+    .row {
+        flex-direction: column;
+    }
+    .modal-content {
+        width: 90%;
+        padding: 1.5rem;
+    }
+    .actions {
+        padding-bottom: 1rem;
+    }
 }
