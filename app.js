@@ -337,4 +337,76 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // =============== AI DICTATION FEATURE ===============
+    const dictateBtn = document.getElementById('ai-dictate-btn');
+    let activeInput = null;
+
+    // Track the last focused input/textarea so we know where to inject the speech
+    document.addEventListener('focusin', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+            activeInput = e.target;
+        }
+    });
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        let isListening = false;
+
+        dictateBtn.addEventListener('click', () => {
+            if (!activeInput) {
+                alert("Please tap directly inside a text box first (like Description or Notes), then tap the microphone to speak!");
+                return;
+            }
+
+            if (isListening) {
+                recognition.stop();
+                return;
+            }
+
+            try {
+                recognition.start();
+                dictateBtn.classList.add('listening');
+                isListening = true;
+            } catch(err) {
+                console.error("Speech error", err);
+            }
+        });
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            if (activeInput) {
+                // Append text with space if it's not empty, otherwise just replace
+                if (activeInput.value && activeInput.value.trim() !== '') {
+                    activeInput.value += ' ' + transcript + (activeInput.tagName==='TEXTAREA'?'\n':'');
+                } else {
+                    activeInput.value = transcript;
+                }
+                // Dynamically trigger the live preview update
+                activeInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        };
+
+        recognition.onend = () => {
+            dictateBtn.classList.remove('listening');
+            isListening = false;
+        };
+
+        recognition.onerror = (event) => {
+            dictateBtn.classList.remove('listening');
+            isListening = false;
+            if(event.error === 'not-allowed') {
+               alert("Microphone access was denied. Please allow microphone permissions in your browser.");
+            }
+        };
+
+    } else {
+        // Browser doesn't support the Voice API
+        dictateBtn.style.display = 'none';
+    }
+
 });
