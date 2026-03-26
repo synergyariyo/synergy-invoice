@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const invNoIn = document.getElementById('invoice-no-input');
     const invDateIn = document.getElementById('invoice-date-input');
     const dueDateIn = document.getElementById('due-date-input');
+    const bankNameIn = document.getElementById('bank-name-input');
+    const bankAcctNameIn = document.getElementById('bank-acct-name-input');
+    const bankAcctNoIn = document.getElementById('bank-acct-no-input');
+    const bankRoutingIn = document.getElementById('bank-routing-input');
     const taxIn = document.getElementById('tax-input');
     const discountIn = document.getElementById('discount-input');
     const currencySelect = document.getElementById('currency-select');
@@ -27,6 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const invNoDisp = document.getElementById('invoice-no-display');
     const invDateDisp = document.getElementById('invoice-date-display');
     const dueDateDisp = document.getElementById('due-date-display');
+    const bankNameDisp = document.getElementById('bank-name-display');
+    const bankAcctNameDisp = document.getElementById('bank-acct-name-display');
+    const bankAcctNoDisp = document.getElementById('bank-acct-no-display');
+    const bankRoutingDisp = document.getElementById('bank-routing-display');
+    const routingContainer = document.getElementById('routing-container');
+    const paymentInfoContainer = document.getElementById('payment-info-display-container');
     const notesDisp = document.getElementById('notes-display');
     const logoDisp = document.getElementById('logo-display');
     const taxRateDisp = document.getElementById('tax-rate-display');
@@ -54,6 +64,25 @@ document.addEventListener('DOMContentLoaded', () => {
     mapInputToDisplay(invDateIn, invDateDisp);
     mapInputToDisplay(dueDateIn, dueDateDisp);
     mapInputToDisplay(notesIn, notesDisp);
+
+    const checkPaymentInfo = () => {
+        if (bankNameIn.value || bankAcctNameIn.value || bankAcctNoIn.value) {
+            paymentInfoContainer.style.display = 'block';
+        } else {
+            paymentInfoContainer.style.display = 'none';
+        }
+        
+        if (bankRoutingIn.value) {
+            routingContainer.style.display = 'block';
+        } else {
+            routingContainer.style.display = 'none';
+        }
+    };
+
+    [bankNameIn, bankAcctNameIn, bankAcctNoIn, bankRoutingIn].forEach(input => {
+        mapInputToDisplay(input, document.getElementById(input.id.replace('-input', '-display')));
+        input.addEventListener('input', checkPaymentInfo);
+    });
 
     logoUpload.addEventListener('change', (e) => {
         const file = e.target.files[0];

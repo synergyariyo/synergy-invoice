@@ -423,6 +423,11 @@ input:focus, select:focus {
 #invoice-preview.dark-mode .invoice-meta p,
 #invoice-preview.dark-mode .bill-to h3,
 #invoice-preview.dark-mode .total-row,
-#invoice-preview.dark-mode .invoice-footer-note {
+#invoice-preview.dark-mode .invoice-footer-note,
+#invoice-preview.dark-mode .payment-info-title {
     color: #94a3b8 !important;
+}
+
+#invoice-preview.dark-mode .payment-info-text {
+    color: #f8fafc !important;
 }

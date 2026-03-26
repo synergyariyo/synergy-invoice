@@ -143,6 +143,28 @@
             </div>
 
             <div class="form-section">
+                <h3>Payment Details</h3>
+                <div class="input-group">
+                    <label>Bank Name</label>
+                    <input type="text" id="bank-name-input" placeholder="e.g. Chase Bank, Access Bank" value="">
+                </div>
+                <div class="row">
+                    <div class="input-group half">
+                        <label>Account Name</label>
+                        <input type="text" id="bank-acct-name-input" placeholder="e.g. My Agency LLC" value="">
+                    </div>
+                    <div class="input-group half">
+                        <label>Account No. / IBAN</label>
+                        <input type="text" id="bank-acct-no-input" placeholder="e.g. 1234567890" value="">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Routing / SWIFT Code</label>
+                    <input type="text" id="bank-routing-input" placeholder="e.g. CHASUS33 (Optional)" value="">
+                </div>
+            </div>
+
+            <div class="form-section">
                 <h3>Notes / Terms</h3>
                 <textarea id="notes-input" rows="3">Thank you for your business. Payment is expected within 30 days.</textarea>
             </div>
@@ -193,7 +215,14 @@
                         </table>
                     </div>
 
-                    <div class="invoice-footer">
+                    <div class="invoice-footer" style="justify-content: space-between; align-items: flex-end;">
+                        <div class="payment-info" id="payment-info-display-container" style="display: none; font-size: 13px; line-height: 1.5; max-width: 55%; margin-right: 20px;">
+                            <h3 style="font-size: 14px; font-weight: 600; text-transform: uppercase; margin-bottom: 8px;" class="payment-info-title">Payment Details</h3>
+                            <p class="payment-info-text" style="margin: 2px 0;"><strong>Bank:</strong> <span id="bank-name-display"></span></p>
+                            <p class="payment-info-text" style="margin: 2px 0;"><strong>Account Name:</strong> <span id="bank-acct-name-display"></span></p>
+                            <p class="payment-info-text" style="margin: 2px 0;"><strong>Account No / IBAN:</strong> <span id="bank-acct-no-display"></span></p>
+                            <p class="payment-info-text" id="routing-container" style="display:none; margin: 2px 0;"><strong>SWIFT / Routing:</strong> <span id="bank-routing-display"></span></p>
+                        </div>
                         <div class="totals-section">
                             <div class="total-row">
                                 <span>Subtotal:</span>
