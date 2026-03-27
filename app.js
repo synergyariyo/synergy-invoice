@@ -266,55 +266,64 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.textContent = "Processing...";
         btn.disabled = true;
 
-        // Force exactly 800px constraint so standard sizing rules apply identically across devices
-        const originalWidth = element.style.width;
-        const originalMaxWidth = element.style.maxWidth;
-        element.style.width = '800px';
-        element.style.maxWidth = 'none';
-
-        const isMobile = window.innerWidth <= 768;
-
-        // Native Safari/iOS Fixes: Do NOT manipulate DOM structures (which causes white pages). 
-        // Just horizontally scroll the wrapper cleanly, and pull the parent vertically into frame.
-        if (isMobile) {
-            document.querySelector('.preview-panel').scrollLeft = 0;
-            // Scroll explicitly via window so iOS recalculates intersection observers natively
-            element.scrollIntoView({ behavior: 'instant', block: 'start' });
-        } else {
-            element.scrollIntoView({ behavior: 'instant', block: 'start' });
-        }
-
-        // Wait to guarantee OS-level compositing engine repaint
-        await new Promise(r => setTimeout(r, isMobile ? 300 : 50));
-
         let pdfBgColor = '#ffffff';
         if (element.classList.contains('dark-mode')) pdfBgColor = '#121212';
         if (element.classList.contains('blue-mode')) pdfBgColor = '#0a1326';
         if (element.classList.contains('gold-mode')) pdfBgColor = '#D4AF37';
 
-        const exactWidth = Math.max(element.clientWidth || 800, 800);
-        const exactHeight = Math.max(element.clientHeight || 1131, 1131);
-
-        // Core Engine Parsing properties
-        const canvasOpt = {
-            scale: 2, 
-            useCORS: true,
-            backgroundColor: pdfBgColor
-        };
-        
-        // This is THE magic fix. Mobile viewports cut-off (blank white pdf) overflowed 800px DOMs.
-        // Injecting windowWidth bypasses the device physical viewport restriction natively. 
-        // We omit this on laptop because laptop windowWidth > 800 natively causes layout shift offsets.
-        if (isMobile) {
-            canvasOpt.windowWidth = 800;
-        }
-
         const opt = {
             margin:       0,
             filename:     `${invNoIn.value || 'invoice'}.pdf`,
             image:        { type: 'jpeg', quality: 1.0 },
-            html2canvas:  canvasOpt,
-            jsPDF:        { unit: 'px', format: [exactWidth, exactHeight], orientation: 'portrait' }
+            html2canvas:  { 
+                scale: 1.5,
+                useCORS: true,
+                backgroundColor: pdfBgColor,
+                windowWidth: 800,
+                x: 0,
+                y: 0,
+                scrollX: 0,
+                scrollY: 0,
+                // THE ULTIMATE iOS/PWA BYPASS: 
+                // We run DOM manipulation *exclusively inside the hidden clone*.
+                // This destroys all complex CSS Flexbox/Grid offsets, eliminating Safari WebKit blank-page crashes entirely!
+                onclone: (clonedDoc) => {
+                    const clonedInv = clonedDoc.getElementById('invoice-preview');
+                    if (!clonedInv) return;
+                    
+                    // Nuke the complex layout wrappers
+                    clonedDoc.body.innerHTML = ''; 
+                    clonedDoc.body.style.width = '800px';
+                    clonedDoc.body.style.margin = '0';
+                    clonedDoc.body.style.padding = '0';
+                    clonedDoc.body.style.background = pdfBgColor;
+                    
+                    // Create minimal safe CSS path structural wrapper
+                    const wrapper = clonedDoc.createElement('div');
+                    wrapper.className = 'preview-wrapper';
+                    wrapper.style.padding = '0';
+                    wrapper.style.margin = '0';
+                    wrapper.style.width = '800px';
+                    wrapper.style.background = pdfBgColor;
+                    
+                    // Force the exact 800px A4 geometry statically directly on the target
+                    clonedInv.style.margin = '0';
+                    clonedInv.style.padding = '40px';
+                    clonedInv.style.width = '800px';
+                    clonedInv.style.minWidth = '800px';
+                    clonedInv.style.maxWidth = '800px';
+                    clonedInv.style.minHeight = '1131px'; // Exact A4
+                    clonedInv.style.position = 'absolute';
+                    clonedInv.style.top = '0px';
+                    clonedInv.style.left = '0px';
+                    clonedInv.style.transform = 'none';
+
+                    wrapper.appendChild(clonedInv);
+                    clonedDoc.body.appendChild(wrapper);
+                }
+            },
+            // Lock JS PDF to exact pixel geometry of the clone array 
+            jsPDF: { unit: 'px', format: [800, 1131], orientation: 'portrait' }
         };
         
         try {
@@ -322,8 +331,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch(err) {
             console.error("Engine failure:", err);
         } finally {
-            element.style.width = originalWidth;
-            element.style.maxWidth = originalMaxWidth;
             btn.textContent = "Generate PDF";
             btn.disabled = false;
         }
