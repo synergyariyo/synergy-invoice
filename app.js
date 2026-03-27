@@ -203,19 +203,42 @@ document.addEventListener('DOMContentLoaded', () => {
     // PDF Generation
     document.getElementById('download-btn').addEventListener('click', () => {
         const element = document.getElementById('invoice-preview');
+        
+        // 1) Cache original state
+        const currentScroll = window.scrollY;
+        const originalPadding = element.style.padding;
+        const originalWidth = element.style.width;
+        const originalMaxWidth = element.style.maxWidth;
+
+        // 2) Force strict desktop dimensions for proper A4 PDF rendering
+        element.style.padding = '40px';
+        element.style.width = '800px';
+        element.style.maxWidth = 'none';
+        
+        // 3) FIX FOR MOBILE "BLANK PDF" BUG: 
+        // We must scroll to the very top right before generating, since html2canvas 
+        // captures invisible space on mobile layout column stacks.
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
         const opt = {
             margin:       0,
             filename:     `${invNoIn.value || 'invoice'}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 },
+            html2canvas:  { 
+                scale: 2, 
+                useCORS: true,
+                scrollY: 0,
+                windowWidth: 800
+            },
             jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
         
-        // Temporarily adjust styling for exact PDF dimensions if needed
-        element.style.padding = '40px';
-        
         html2pdf().set(opt).from(element).save().then(() => {
-            element.style.padding = '20px'; // revert
+            // 4) Revert state seamlessly
+            element.style.padding = originalPadding;
+            element.style.width = originalWidth;
+            element.style.maxWidth = originalMaxWidth;
+            window.scrollTo({ top: currentScroll, left: 0, behavior: 'instant' });
         });
     });
 
