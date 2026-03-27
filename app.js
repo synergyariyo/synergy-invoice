@@ -274,14 +274,31 @@ document.addEventListener('DOMContentLoaded', () => {
         element.style.minWidth = '800px';
         element.style.maxWidth = '800px';
 
-        // Force viewport alignment horizontally and vertically to bypass Mobile Webkit render clipping
-        if (window.innerWidth <= 768) {
+        // STRICT MOBILE FIX: Circumvent Safari/Chrome's out-of-bounds canvas coordinate clipping (White PDF bug)
+        // by locking the bounds physically to the global viewport natively at (0,0) before taking the photo.
+        const isMobile = window.innerWidth <= 768;
+        const origCSS = {
+            position: element.style.position,
+            top: element.style.top,
+            left: element.style.left,
+            zIndex: element.style.zIndex
+        };
+
+        if (isMobile) {
+            element.style.position = 'fixed';
+            element.style.top = '0px';
+            element.style.left = '0px';
+            element.style.zIndex = '999999';
+            // Snap mobile screen exactly to origin just to ensure the WebKit parser aligns perfectly
+            window.scrollTo(0, 0); 
+        } else {
+            // For laptop, rely on normal container scroll bounds
             document.querySelector('.preview-panel').scrollLeft = 0;
+            element.scrollIntoView({ behavior: 'instant', block: 'start' });
         }
-        element.scrollIntoView({ behavior: 'instant', block: 'start' });
         
-        // Wait specifically for Webkit Repaints
-        await new Promise(r => setTimeout(r, 100));
+        // Extended wait buffer specifically for older iOS mobile browsers repainting
+        await new Promise(r => setTimeout(r, isMobile ? 350 : 50));
 
         // Ensure PDF paper perfectly matches the aesthetic background dynamically
         let pdfBgColor = '#ffffff';
@@ -311,6 +328,13 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch(err) {
             console.error("Engine failure:", err);
         } finally {
+            // Reposition back instantly so user never notices the flash shift
+            if (isMobile) {
+                element.style.position = origCSS.position;
+                element.style.top = origCSS.top;
+                element.style.left = origCSS.left;
+                element.style.zIndex = origCSS.zIndex;
+            }
             element.style.width = originalWidth;
             element.style.minWidth = originalMinWidth;
             element.style.maxWidth = originalMaxWidth;
