@@ -266,60 +266,54 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.textContent = "Processing...";
         btn.disabled = true;
 
-        // 1) Force strict geometric widths locally so expanding texts cannot shatter the wrapper
+        // Force exactly 800px constraint so standard sizing rules apply identically across devices
         const originalWidth = element.style.width;
-        const originalMinWidth = element.style.minWidth;
         const originalMaxWidth = element.style.maxWidth;
         element.style.width = '800px';
-        element.style.minWidth = '800px';
-        element.style.maxWidth = '800px';
+        element.style.maxWidth = 'none';
 
-        // STRICT MOBILE FIX: Circumvent Safari/Chrome's out-of-bounds canvas coordinate clipping (White PDF bug)
-        // by locking the bounds physically to the global viewport natively at (0,0) before taking the photo.
         const isMobile = window.innerWidth <= 768;
-        const origCSS = {
-            position: element.style.position,
-            top: element.style.top,
-            left: element.style.left,
-            zIndex: element.style.zIndex
-        };
 
+        // Native Safari/iOS Fixes: Do NOT manipulate DOM structures (which causes white pages). 
+        // Just horizontally scroll the wrapper cleanly, and pull the parent vertically into frame.
         if (isMobile) {
-            element.style.position = 'fixed';
-            element.style.top = '0px';
-            element.style.left = '0px';
-            element.style.zIndex = '999999';
-            // Snap mobile screen exactly to origin just to ensure the WebKit parser aligns perfectly
-            window.scrollTo(0, 0); 
-        } else {
-            // For laptop, rely on normal container scroll bounds
             document.querySelector('.preview-panel').scrollLeft = 0;
+            // Scroll explicitly via window so iOS recalculates intersection observers natively
+            element.scrollIntoView({ behavior: 'instant', block: 'start' });
+        } else {
             element.scrollIntoView({ behavior: 'instant', block: 'start' });
         }
-        
-        // Extended wait buffer specifically for older iOS mobile browsers repainting
-        await new Promise(r => setTimeout(r, isMobile ? 350 : 50));
 
-        // Ensure PDF paper perfectly matches the aesthetic background dynamically
+        // Wait to guarantee OS-level compositing engine repaint
+        await new Promise(r => setTimeout(r, isMobile ? 300 : 50));
+
         let pdfBgColor = '#ffffff';
         if (element.classList.contains('dark-mode')) pdfBgColor = '#121212';
         if (element.classList.contains('blue-mode')) pdfBgColor = '#0a1326';
         if (element.classList.contains('gold-mode')) pdfBgColor = '#D4AF37';
 
-        // Calculate explicit exact rendering dimensions to flawlessly eradicate white stripes
         const exactWidth = Math.max(element.clientWidth || 800, 800);
         const exactHeight = Math.max(element.clientHeight || 1131, 1131);
+
+        // Core Engine Parsing properties
+        const canvasOpt = {
+            scale: 2, 
+            useCORS: true,
+            backgroundColor: pdfBgColor
+        };
+        
+        // This is THE magic fix. Mobile viewports cut-off (blank white pdf) overflowed 800px DOMs.
+        // Injecting windowWidth bypasses the device physical viewport restriction natively. 
+        // We omit this on laptop because laptop windowWidth > 800 natively causes layout shift offsets.
+        if (isMobile) {
+            canvasOpt.windowWidth = 800;
+        }
 
         const opt = {
             margin:       0,
             filename:     `${invNoIn.value || 'invoice'}.pdf`,
             image:        { type: 'jpeg', quality: 1.0 },
-            html2canvas:  { 
-                scale: 1.5, // Optimised from 2.0 to stop out-of-memory GPU crash on iPhone executing white pdfs!
-                useCORS: true,
-                backgroundColor: pdfBgColor
-            },
-            // Lock jsPDF paper strictly to the DOM geometry array to prevent letter aspect ratio clipping
+            html2canvas:  canvasOpt,
             jsPDF:        { unit: 'px', format: [exactWidth, exactHeight], orientation: 'portrait' }
         };
         
@@ -328,15 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch(err) {
             console.error("Engine failure:", err);
         } finally {
-            // Reposition back instantly so user never notices the flash shift
-            if (isMobile) {
-                element.style.position = origCSS.position;
-                element.style.top = origCSS.top;
-                element.style.left = origCSS.left;
-                element.style.zIndex = origCSS.zIndex;
-            }
             element.style.width = originalWidth;
-            element.style.minWidth = originalMinWidth;
             element.style.maxWidth = originalMaxWidth;
             btn.textContent = "Generate PDF";
             btn.disabled = false;
