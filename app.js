@@ -267,48 +267,62 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.disabled = true;
 
         const isMobile = window.innerWidth <= 768;
-        const previewPanel = document.querySelector('.preview-panel');
         
-        let origOverflowX = previewPanel.style.overflowX;
-        let origOverflowY = previewPanel.style.overflowY;
-        let origAppOverflowX = document.querySelector('.app-container').style.overflowX;
-        let origBodyOverflowX = document.body.style.overflowX;
+        let targetElement = element;
+        let clone = null;
 
         if (isMobile) {
-            previewPanel.scrollLeft = 0;
-            // Scroll to the exact position to avoid WebKit smooth scroll latency crashes
-            window.scrollTo({ top: element.getBoundingClientRect().top + window.scrollY, behavior: 'instant' });
+            // THE HOLY GRAIL IOS PWA FIX:
+            // Mobile WebKit physically drops rendering matrices for nodes hidden in scrollable flex parents.
+            // We forcefully clone the entire visual HTML string and pin it safely out of view directly into the body layer.
+            // This utterly bypasses ALL CSS Grid/Flexbox scaling and offset frame clipping bugs securely natively!
+            clone = element.cloneNode(true);
+            clone.style.position = 'absolute'; 
+            clone.style.top = '0px'; 
+            clone.style.left = '0px';
+            clone.style.zIndex = '-9999'; // Invisible to user behind all elements
+            clone.style.width = '800px';
+            clone.style.minWidth = '800px';
+            clone.style.maxWidth = '800px';
+            clone.style.transform = 'none';
+            clone.style.padding = '40px'; 
+            clone.style.margin = '0';
             
-            // THE FATAL iOS WHITE PAGE KILLER:
-            // Mobile WebKit physically drops rendering matrices for nodes hidden inside "overflow-x: auto" wrappers.
-            // Temporarily converting the entire DOM hierarchy to universally visible unlocks the GPU rasterizer!
-            previewPanel.style.overflowX = 'visible';
-            previewPanel.style.overflowY = 'visible';
-            document.querySelector('.app-container').style.overflowX = 'visible';
-            document.body.style.overflowX = 'visible';
+            // Re-map explicit UI graphics since cloneNode occasionally drops active DOM Blob refs
+            if (element.style.backgroundImage) {
+                clone.style.backgroundImage = element.style.backgroundImage;
+                clone.style.backgroundSize = element.style.backgroundSize;
+                clone.style.backgroundPosition = element.style.backgroundPosition;
+            }
+            
+            document.body.appendChild(clone);
+            targetElement = clone;
         }
 
-        // Wait to guarantee WebKit formally completes the CSS repaint before HTML2Canvas captures
+        // Wait to guarantee WebKit formally places the clone securely into GPU memory
         await new Promise(r => setTimeout(r, isMobile ? 350 : 50));
 
         let pdfBgColor = '#ffffff';
-        if (element.classList.contains('dark-mode')) pdfBgColor = '#121212';
-        if (element.classList.contains('blue-mode')) pdfBgColor = '#0a1326';
-        if (element.classList.contains('gold-mode')) pdfBgColor = '#D4AF37';
+        if (targetElement.classList.contains('dark-mode')) pdfBgColor = '#121212';
+        if (targetElement.classList.contains('blue-mode')) pdfBgColor = '#0a1326';
+        if (targetElement.classList.contains('gold-mode')) pdfBgColor = '#D4AF37';
 
-        const exactWidth = Math.max(element.clientWidth || 800, 800);
-        const exactHeight = Math.max(element.clientHeight || 1131, 1131);
+        // Forcing standard pristine 800 boundaries natively
+        const exactWidth = 800;
+        const exactHeight = targetElement.clientHeight || 1131;
 
         const canvasOpt = {
             scale: 2, 
             useCORS: true,
             allowTaint: true,
             backgroundColor: pdfBgColor,
-            scrollY: -window.scrollY // Resolves Safari offset shifts
+            scrollX: 0,
+            scrollY: 0
         };
 
         if (isMobile) {
             canvasOpt.windowWidth = 800; 
+            canvasOpt.scale = 1.5; // Crucial: Prevents massive 3-Megapixel data crashes specifically destroying iPhones
         }
 
         const opt = {
@@ -320,17 +334,14 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         
         try {
-            await html2pdf().set(opt).from(element).save();
+            await html2pdf().set(opt).from(targetElement).save();
         } catch(err) {
             console.error("Engine failure:", err);
             alert("Oops! Engine overloaded. Please refresh the page and try again.");
         } finally {
-            if (isMobile) {
-                // Restore mobile swipe-scrolling capabilities instantly
-                previewPanel.style.overflowX = origOverflowX;
-                previewPanel.style.overflowY = origOverflowY;
-                document.querySelector('.app-container').style.overflowX = origAppOverflowX;
-                document.body.style.overflowX = origBodyOverflowX;
+            if (clone && document.body.contains(clone)) {
+                // Instantly wipe the clone buffer to reset clean memory safely
+                document.body.removeChild(clone);
             }
             btn.textContent = "Generate PDF";
             btn.disabled = false;
