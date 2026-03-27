@@ -1,5 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        if(splash) {
+            splash.classList.add('splash-hidden');
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 800);
+        }
+    }, 2000);
+
+
     // Inputs
     const bNameIn = document.getElementById('business-name-input');
     const bEmailIn = document.getElementById('business-email-input');
@@ -14,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bankRoutingIn = document.getElementById('bank-routing-input');
     const taxIn = document.getElementById('tax-input');
     const discountIn = document.getElementById('discount-input');
+    const shippingIn = document.getElementById('shipping-input');
     const currencySelect = document.getElementById('currency-select');
     const notesIn = document.getElementById('notes-input');
     const logoUpload = document.getElementById('logo-upload');
@@ -25,6 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const bPhoneIn = document.getElementById('business-phone-input');
     const goldToggle = document.getElementById('gold-border-toggle');
     const sigUpload = document.getElementById('signature-upload');
+
+    // New Business Features Inputs
+    const docTypeSelect = document.getElementById('doc-type-select');
+    const paymentLinkIn = document.getElementById('payment-link-input');
+    const crmClientSel = document.getElementById('crm-client-select');
+    const saveClientBtn = document.getElementById('save-client-btn');
+    const templateLibSel = document.getElementById('template-library-select');
+    const saveTemplateBtn = document.getElementById('save-template-btn');
 
     // Displays
     const bNameDisp = document.getElementById('business-name-display');
@@ -47,6 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const discountRateDisp = document.getElementById('discount-rate-display');
     const discountAmountDisp = document.getElementById('discount-amount-display');
     const discountRow = document.getElementById('discount-row');
+    const shippingAmountDisp = document.getElementById('shipping-amount-display');
+    const shippingRow = document.getElementById('shipping-row');
+    
+    // New Business Features Displays
+    const invoiceTitleDisp = document.getElementById('invoice-title-display');
+    const totalLabelDisp = document.getElementById('total-label-display');
+    const paymentLinkDisp = document.getElementById('payment-link-display');
+    const paymentLinkCont = document.getElementById('payment-link-display-container');
 
     // State
     let items = [
@@ -69,6 +97,151 @@ document.addEventListener('DOMContentLoaded', () => {
     mapInputToDisplay(invDateIn, invDateDisp);
     mapInputToDisplay(dueDateIn, dueDateDisp);
     mapInputToDisplay(notesIn, notesDisp);
+
+    // Document Type Logic
+    docTypeSelect.addEventListener('change', (e) => {
+        const val = e.target.value;
+        if (val === 'QUOTE') {
+            invoiceTitleDisp.textContent = 'QUOTE / ESTIMATE';
+            totalLabelDisp.textContent = 'Estimated Total:';
+        } else if (val === 'RECEIPT') {
+            invoiceTitleDisp.textContent = 'RECEIPT';
+            totalLabelDisp.textContent = 'Amount Paid:';
+        } else {
+            invoiceTitleDisp.textContent = 'INVOICE';
+            totalLabelDisp.textContent = 'Total Due:';
+        }
+    });
+
+    // Payment Link Logic
+    paymentLinkIn.addEventListener('input', (e) => {
+        if(e.target.value.trim() !== '') {
+            paymentLinkDisp.href = e.target.value;
+            paymentLinkCont.style.display = 'block';
+        } else {
+            paymentLinkCont.style.display = 'none';
+        }
+    });
+
+    // CRM Client System
+    const loadCrmClients = () => {
+        const clients = JSON.parse(localStorage.getItem('synergyCrmClients') || '[]');
+        crmClientSel.innerHTML = '<option value="">Load Saved Client...</option>';
+        clients.forEach((c, index) => {
+            const opt = document.createElement('option');
+            opt.value = index;
+            opt.textContent = c.name;
+            crmClientSel.appendChild(opt);
+        });
+    };
+    loadCrmClients();
+
+    saveClientBtn.addEventListener('click', () => {
+        const name = cNameIn.value.trim();
+        const address = cAddressIn.value.trim();
+        if(name === '') return alert("Please enter a client name first.");
+        const clients = JSON.parse(localStorage.getItem('synergyCrmClients') || '[]');
+        const existingCode = clients.findIndex(c => c.name === name);
+        if(existingCode !== -1) {
+            clients[existingCode].address = address; // Update existing
+        } else {
+            clients.push({ name, address });
+        }
+        localStorage.setItem('synergyCrmClients', JSON.stringify(clients));
+        alert("Client saved to browser memory securely!");
+        loadCrmClients();
+        crmClientSel.value = existingCode !== -1 ? existingCode : clients.length - 1;
+    });
+
+    crmClientSel.addEventListener('change', (e) => {
+        if(e.target.value === '') return;
+        const clients = JSON.parse(localStorage.getItem('synergyCrmClients') || '[]');
+        const client = clients[e.target.value];
+        if(client) {
+            cNameIn.value = client.name;
+            cAddressIn.value = client.address;
+            cNameDisp.textContent = client.name;
+            cAddressDisp.textContent = client.address;
+        }
+    });
+
+    // Templates Library
+    const loadTemplates = () => {
+        const templates = JSON.parse(localStorage.getItem('synergyTemplates') || '[]');
+        templateLibSel.innerHTML = '<option value="">Load Saved Draft...</option>';
+        templates.forEach((t, index) => {
+            const opt = document.createElement('option');
+            opt.value = index;
+            opt.textContent = t.templateName;
+            templateLibSel.appendChild(opt);
+        });
+    };
+    loadTemplates();
+
+    saveTemplateBtn.addEventListener('click', () => {
+        const templateName = prompt("Enter a name for this template (e.g. 'Monthly Retainer'):");
+        if(!templateName) return;
+        
+        const templateData = {
+            templateName,
+            businessName: bNameIn.value,
+            businessEmail: bEmailIn.value,
+            businessPhone: bPhoneIn.value,
+            notes: notesIn.value,
+            terms: document.getElementById('terms-input').value,
+            tax: taxIn.value,
+            discount: discountIn.value,
+            shipping: shippingIn.value,
+            currency: currencySelect.value,
+            bankName: bankNameIn.value,
+            bankAcctName: bankAcctNameIn.value,
+            bankAcctNo: bankAcctNoIn.value,
+            bankRouting: bankRoutingIn.value,
+            paymentLink: paymentLinkIn.value,
+            items: [...items]
+        };
+
+        const templates = JSON.parse(localStorage.getItem('synergyTemplates') || '[]');
+        templates.push(templateData);
+        localStorage.setItem('synergyTemplates', JSON.stringify(templates));
+        alert("Template saved locally!");
+        loadTemplates();
+        templateLibSel.value = templates.length - 1;
+    });
+
+    templateLibSel.addEventListener('change', (e) => {
+        if(e.target.value === '') return;
+        const templates = JSON.parse(localStorage.getItem('synergyTemplates') || '[]');
+        const t = templates[e.target.value];
+        if(t) {
+            bNameIn.value = t.businessName || '';
+            bEmailIn.value = t.businessEmail || '';
+            bPhoneIn.value = t.businessPhone || '';
+            notesIn.value = t.notes || '';
+            document.getElementById('terms-input').value = t.terms || '';
+            taxIn.value = t.tax || 0;
+            discountIn.value = t.discount || 0;
+            shippingIn.value = t.shipping || 0;
+            currencySelect.value = t.currency || '$';
+            bankNameIn.value = t.bankName || '';
+            bankAcctNameIn.value = t.bankAcctName || '';
+            bankAcctNoIn.value = t.bankAcctNo || '';
+            bankRoutingIn.value = t.bankRouting || '';
+            paymentLinkIn.value = t.paymentLink || '';
+            
+            // Trigger explicit updates for displays
+            [bNameIn, bEmailIn, bPhoneIn, notesIn, bankNameIn, bankAcctNameIn, bankAcctNoIn, bankRoutingIn].forEach(input => {
+                input.dispatchEvent(new Event('input'));
+            });
+            document.getElementById('terms-display').textContent = document.getElementById('terms-input').value;
+            paymentLinkIn.dispatchEvent(new Event('input'));
+            taxIn.dispatchEvent(new Event('input'));
+            
+            items = t.items ? [...t.items] : [];
+            renderEditorItems();
+            renderItems();
+        }
+    });
 
     const checkPaymentInfo = () => {
         if (bankNameIn.value || bankAcctNameIn.value || bankAcctNoIn.value) {
@@ -131,6 +304,10 @@ document.addEventListener('DOMContentLoaded', () => {
         renderItems();
     });
 
+    shippingIn.addEventListener('input', () => {
+        renderItems();
+    });
+
     currencySelect.addEventListener('change', () => {
         renderItems();
         if (window.updateProPrice) window.updateProPrice();
@@ -189,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
     templateSelect.addEventListener('change', (e) => {
         const selected = e.target.options[e.target.selectedIndex];
         
-        if (selected.classList.contains('pro-option') && document.getElementById('pro-badge').textContent === 'FREE') {
+        if (selected.classList.contains('pro-option') && !isPro) {
             e.target.value = 'standard';
             document.getElementById('upgrade-btn').click();
             return;
@@ -241,17 +418,25 @@ document.addEventListener('DOMContentLoaded', () => {
         // Calculations
         const taxRate = parseFloat(taxIn.value) || 0;
         const discountRate = parseFloat(discountIn.value) || 0;
+        const shippingFee = parseFloat(shippingIn.value) || 0;
         
         const discountAmount = subtotal * (discountRate / 100);
         const subtotalAfterDiscount = subtotal - discountAmount;
         const taxAmount = subtotalAfterDiscount * (taxRate / 100);
-        const grandTotal = subtotalAfterDiscount + taxAmount;
+        const grandTotal = subtotalAfterDiscount + taxAmount + shippingFee;
 
         if (discountAmount > 0) {
             discountRow.style.display = 'flex';
             discountAmountDisp.textContent = '-' + formatCurr(discountAmount);
         } else {
             discountRow.style.display = 'none';
+        }
+
+        if (shippingFee > 0) {
+            shippingRow.style.display = 'flex';
+            shippingAmountDisp.textContent = formatCurr(shippingFee);
+        } else {
+            shippingRow.style.display = 'none';
         }
 
         subtotalDisplay.textContent = formatCurr(subtotal);
@@ -325,9 +510,11 @@ document.addEventListener('DOMContentLoaded', () => {
             canvasOpt.scale = 1.5; // Crucial: Prevents massive 3-Megapixel data crashes specifically destroying iPhones
         }
 
+        const clientSafeName = cNameIn.value.trim() ? '_' + cNameIn.value.trim().replace(/[^a-zA-Z0-9]/g, '_') : '';
+        
         const opt = {
             margin:       0,
-            filename:     `${invNoIn.value || 'invoice'}.pdf`,
+            filename:     `${invNoIn.value || 'Invoice'}${clientSafeName}.pdf`,
             image:        { type: 'jpeg', quality: 1.0 },
             html2canvas:  canvasOpt,
             jsPDF:        { unit: 'px', format: [exactWidth, exactHeight], orientation: 'portrait' }
@@ -370,9 +557,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const proBadge = document.getElementById('pro-badge');
     const modalTitle = document.getElementById('modal-title');
     const modalDesc = document.getElementById('modal-desc');
-    const proOverlay = document.getElementById('pro-overlay');
-    const unlockBrandingBtn = document.getElementById('unlock-branding-btn');
     const brandingLock = document.getElementById('branding-lock');
+
+    // Intercept Premium Element Interactions natively without masking UI view
+    document.querySelectorAll('.pro-input').forEach(el => {
+        el.addEventListener('mousedown', (e) => {
+            if (!isPro) {
+                e.preventDefault();
+                upgradeBtn.click();
+            }
+        });
+        el.addEventListener('click', (e) => {
+            if (!isPro) {
+                e.preventDefault();
+            }
+        });
+    });
 
     let localProPrice = '$2';
 
@@ -422,7 +622,7 @@ document.addEventListener('DOMContentLoaded', () => {
             brandingLock.className = "pro-badge active";
             watermark.style.display = 'none';
             upgradeBtn.style.display = 'none';
-            proOverlay.style.display = 'none';
+            // proOverlay removed intentionally, Pro unlocked
             modal.style.display = 'none';
             alert("Welcome to Synergy Pro! Branding features are unlocked and watermarks removed.");
             renderItems();
@@ -432,9 +632,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    unlockBrandingBtn.addEventListener('click', () => {
-        upgradeBtn.click();
-    });
+    // Old branding button logic removed
 
     document.getElementById('notes-input').addEventListener('input', (e) => {
         document.getElementById('notes-display').textContent = e.target.value;
@@ -557,6 +755,50 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         // Browser doesn't support the Voice API
         dictateBtn.style.display = 'none';
+    }
+
+    // =============== SPONSORED ADVERTS MODULE ===============
+    const adsToggle = document.getElementById('ads-toggle');
+    const adContainer = document.getElementById('sponsored-ad-container');
+    const closeAdBtn = document.getElementById('close-ad-btn');
+    const adContentWrapper = document.getElementById('ad-content-wrapper');
+
+    const sampleAds = [
+        '<div style="text-align:center; padding:20px; color:#f8fafc; font-family:\'Playfair Display\', serif;"><h4>Proverbs 16:3</h4><p style="font-size:0.85rem; margin-top:10px; color:#cbd5e1;">"Commit your work to the Lord, and your plans will be established."</p><p style="margin-top:15px; font-weight:bold; color:#10b981; font-family:\'Inter\', sans-serif;">Ethical Business Consultation</p></div>',
+        '<div style="text-align:center; padding:20px; color:#f8fafc;"><h4>Empower Your Mission</h4><p style="font-size:0.85rem; margin-top:10px; color:#cbd5e1;">Grow your kingdom impact with cleanly integrated digital tools.</p><button style="margin-top:15px; padding:6px 15px; border-radius:4px; background:#6366f1; border:none; color:white; cursor:pointer;" onclick="alert(\'This would open the partner website!\')">Learn More</button></div>',
+        '<div style="text-align:center; padding:20px; color:#f8fafc; font-family:\'Playfair Display\', serif;"><h4>Colossians 3:23</h4><p style="font-size:0.85rem; margin-top:10px; color:#cbd5e1;">"Whatever you do, work at it with all your heart, as working for the Lord..."</p><p style="margin-top:15px; font-weight:bold; color:#f59e0b; font-family:\'Inter\', sans-serif;">Kingdom Builders Network</p></div>'
+    ];
+
+    let adInterval;
+
+    function showAd() {
+        if (!adsToggle || !adsToggle.checked) return;
+        const adHtml = sampleAds[Math.floor(Math.random() * sampleAds.length)];
+        adContentWrapper.innerHTML = adHtml;
+        adContainer.classList.remove('ad-slide-out');
+    }
+
+    if (adsToggle) {
+        adsToggle.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                setTimeout(showAd, 500); // Short delay before sliding in
+                adInterval = setInterval(() => {
+                    adContainer.classList.add('ad-slide-out');
+                    setTimeout(showAd, 600); 
+                }, 20000); // Rotates randomly every 20 seconds
+            } else {
+                clearInterval(adInterval);
+                adContainer.classList.add('ad-slide-out');
+                setTimeout(() => { adContentWrapper.innerHTML = ''; }, 500);
+            }
+        });
+    }
+
+    if (closeAdBtn) {
+        closeAdBtn.addEventListener('click', () => {
+            adContainer.classList.add('ad-slide-out');
+            // Setting interval keeps running to eventually show a new ad later!
+        });
     }
 
 });
