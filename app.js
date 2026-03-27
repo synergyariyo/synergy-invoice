@@ -242,10 +242,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Wait extremely quickly for standard layout frame repaint
         await new Promise(r => setTimeout(r, 50));
 
-        // Ensure A4 paper background perfectly matches the theme beyond the item height
+        // Ensure PDF paper perfectly matches the aesthetic background dynamically
         let pdfBgColor = '#ffffff';
         if (element.classList.contains('dark-mode')) pdfBgColor = '#121212';
         if (element.classList.contains('blue-mode')) pdfBgColor = '#0a1326';
+        if (element.classList.contains('gold-mode')) pdfBgColor = '#D4AF37';
+
+        // Calculate explicit exact rendering dimensions to flawlessly eradicate white stripes
+        const exactWidth = Math.max(element.clientWidth || 800, 800);
+        const exactHeight = Math.max(element.clientHeight || 1131, 1131);
 
         const opt = {
             margin:       0,
@@ -256,7 +261,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 useCORS: true,
                 backgroundColor: pdfBgColor
             },
-            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            // Lock jsPDF paper strictly to the DOM geometry array to prevent letter aspect ratio clipping
+            jsPDF:        { unit: 'px', format: [exactWidth, exactHeight], orientation: 'portrait' }
         };
         
         try {
@@ -362,17 +368,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     invoiceThemeSelect.addEventListener('change', (e) => {
+        invoicePreview.classList.remove('dark-mode', 'blue-mode', 'gold-mode');
         if (e.target.value === 'dark') {
             invoicePreview.classList.add('dark-mode');
-            invoicePreview.classList.remove('blue-mode');
             document.querySelector('.preview-wrapper').style.background = '#121212';
         } else if (e.target.value === 'blue') {
             invoicePreview.classList.add('blue-mode');
-            invoicePreview.classList.remove('dark-mode');
             document.querySelector('.preview-wrapper').style.background = '#0a1326';
+        } else if (e.target.value === 'gold') {
+            invoicePreview.classList.add('gold-mode');
+            document.querySelector('.preview-wrapper').style.background = '#2e220b';
         } else {
-            invoicePreview.classList.remove('dark-mode');
-            invoicePreview.classList.remove('blue-mode');
             document.querySelector('.preview-wrapper').style.background = '#ffffff';
         }
     });

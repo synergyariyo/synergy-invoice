@@ -482,6 +482,28 @@ input:focus, select:focus {
     color: #f8fafc !important;
 }
 
+/* Golden Mode Layer */
+#invoice-preview.gold-mode { background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 50%, #f59e0b 100%) !important; color: #1e293b !important; }
+#invoice-preview.gold-mode * { color: inherit; }
+
+#invoice-preview.gold-mode .brand h2, 
+#invoice-preview.gold-mode .total-row.grand-total span { color: #451a03 !important; }
+
+#invoice-preview.gold-mode .invoice-table th { background-color: rgba(255,255,255,0.4) !important; border-bottom: 2px solid rgba(69, 26, 3, 0.2); color: #451a03; }
+#invoice-preview.gold-mode .invoice-table td { border-bottom: 1px solid rgba(69, 26, 3, 0.1); color: #1e293b !important; word-break: break-word; }
+
+#invoice-preview.gold-mode .invoice-header,
+#invoice-preview.gold-mode .total-row.grand-total,
+#invoice-preview.gold-mode .watermark { border-color: rgba(69, 26, 3, 0.2); }
+
+#invoice-preview.gold-mode .invoice-meta p,
+#invoice-preview.gold-mode .bill-to h3,
+#invoice-preview.gold-mode .total-row,
+#invoice-preview.gold-mode .invoice-footer-note,
+#invoice-preview.gold-mode .payment-info-title { color: #451a03 !important; }
+
+#invoice-preview.gold-mode .payment-info-text { color: #1e293b !important; }
+
 /* AI Dictation Button */
 .ai-dictate-btn {
     position: fixed;
