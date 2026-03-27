@@ -267,9 +267,29 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.disabled = true;
 
         const isMobile = window.innerWidth <= 768;
+        const previewPanel = document.querySelector('.preview-panel');
         
-        // Wait extremely fast for UI repaint before processing
-        await new Promise(r => setTimeout(r, 50));
+        let origOverflowX = previewPanel.style.overflowX;
+        let origOverflowY = previewPanel.style.overflowY;
+        let origAppOverflowX = document.querySelector('.app-container').style.overflowX;
+        let origBodyOverflowX = document.body.style.overflowX;
+
+        if (isMobile) {
+            previewPanel.scrollLeft = 0;
+            // Scroll to the exact position to avoid WebKit smooth scroll latency crashes
+            window.scrollTo({ top: element.getBoundingClientRect().top + window.scrollY, behavior: 'instant' });
+            
+            // THE FATAL iOS WHITE PAGE KILLER:
+            // Mobile WebKit physically drops rendering matrices for nodes hidden inside "overflow-x: auto" wrappers.
+            // Temporarily converting the entire DOM hierarchy to universally visible unlocks the GPU rasterizer!
+            previewPanel.style.overflowX = 'visible';
+            previewPanel.style.overflowY = 'visible';
+            document.querySelector('.app-container').style.overflowX = 'visible';
+            document.body.style.overflowX = 'visible';
+        }
+
+        // Wait to guarantee WebKit formally completes the CSS repaint before HTML2Canvas captures
+        await new Promise(r => setTimeout(r, isMobile ? 350 : 50));
 
         let pdfBgColor = '#ffffff';
         if (element.classList.contains('dark-mode')) pdfBgColor = '#121212';
@@ -282,47 +302,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const canvasOpt = {
             scale: 2, 
             useCORS: true,
+            allowTaint: true,
             backgroundColor: pdfBgColor,
-            onclone: (clonedDoc) => {
-                // Safely reorganize the cloned CSS DOM without destroying node hierarchy connections
-                const clonedApp = clonedDoc.querySelector('.app-container');
-                const clonedEditor = clonedDoc.querySelector('.editor-panel');
-                const clonedPreview = clonedDoc.querySelector('.preview-panel');
-                const clonedWrapper = clonedDoc.querySelector('.preview-wrapper');
-                const clonedInv = clonedDoc.getElementById('invoice-preview');
-
-                if (clonedApp) clonedApp.style.display = 'block'; // Disable flexbox squashing completely
-                if (clonedEditor) clonedEditor.style.display = 'none'; // Erase the left panel constraint entirely!
-                
-                if (clonedPreview) {
-                    clonedPreview.style.display = 'block';
-                    clonedPreview.style.width = '100%';
-                    clonedPreview.style.padding = '0';
-                    clonedPreview.style.overflow = 'visible'; // Ensure no scroll clipping!
-                }
-                
-                if (clonedWrapper) {
-                    clonedWrapper.style.padding = '0';
-                    clonedWrapper.style.margin = '0 auto';
-                    clonedWrapper.style.width = '800px';
-                    clonedWrapper.style.display = 'block';
-                    clonedWrapper.style.transform = 'none';
-                }
-
-                if (clonedInv) {
-                    clonedInv.style.margin = '0';
-                    clonedInv.style.padding = '40px';
-                    clonedInv.style.width = '800px';
-                    clonedInv.style.minWidth = '800px';
-                    clonedInv.style.maxWidth = '800px';
-                    clonedInv.style.minHeight = '1131px'; // Force A4 PDF height
-                    clonedInv.style.transform = 'none'; // Clear any mobile css scales
-                }
-            }
+            scrollY: -window.scrollY // Resolves Safari offset shifts
         };
 
         if (isMobile) {
-            canvasOpt.windowWidth = 800; // Strictly binds mobile bounds preventing WebKit omissions
+            canvasOpt.windowWidth = 800; 
         }
 
         const opt = {
@@ -339,6 +325,13 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Engine failure:", err);
             alert("Oops! Engine overloaded. Please refresh the page and try again.");
         } finally {
+            if (isMobile) {
+                // Restore mobile swipe-scrolling capabilities instantly
+                previewPanel.style.overflowX = origOverflowX;
+                previewPanel.style.overflowY = origOverflowY;
+                document.querySelector('.app-container').style.overflowX = origAppOverflowX;
+                document.body.style.overflowX = origBodyOverflowX;
+            }
             btn.textContent = "Generate PDF";
             btn.disabled = false;
         }
