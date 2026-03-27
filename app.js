@@ -266,70 +266,78 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.textContent = "Processing...";
         btn.disabled = true;
 
+        const isMobile = window.innerWidth <= 768;
+        
+        // Wait extremely fast for UI repaint before processing
+        await new Promise(r => setTimeout(r, 50));
+
         let pdfBgColor = '#ffffff';
         if (element.classList.contains('dark-mode')) pdfBgColor = '#121212';
         if (element.classList.contains('blue-mode')) pdfBgColor = '#0a1326';
         if (element.classList.contains('gold-mode')) pdfBgColor = '#D4AF37';
 
-        const opt = {
-            margin:       0,
-            filename:     `${invNoIn.value || 'invoice'}.pdf`,
-            image:        { type: 'jpeg', quality: 1.0 },
-            html2canvas:  { 
-                scale: 1.5,
-                useCORS: true,
-                backgroundColor: pdfBgColor,
-                windowWidth: 800,
-                x: 0,
-                y: 0,
-                scrollX: 0,
-                scrollY: 0,
-                // THE ULTIMATE iOS/PWA BYPASS: 
-                // We run DOM manipulation *exclusively inside the hidden clone*.
-                // This destroys all complex CSS Flexbox/Grid offsets, eliminating Safari WebKit blank-page crashes entirely!
-                onclone: (clonedDoc) => {
-                    const clonedInv = clonedDoc.getElementById('invoice-preview');
-                    if (!clonedInv) return;
-                    
-                    // Nuke the complex layout wrappers
-                    clonedDoc.body.innerHTML = ''; 
-                    clonedDoc.body.style.width = '800px';
-                    clonedDoc.body.style.margin = '0';
-                    clonedDoc.body.style.padding = '0';
-                    clonedDoc.body.style.background = pdfBgColor;
-                    
-                    // Create minimal safe CSS path structural wrapper
-                    const wrapper = clonedDoc.createElement('div');
-                    wrapper.className = 'preview-wrapper';
-                    wrapper.style.padding = '0';
-                    wrapper.style.margin = '0';
-                    wrapper.style.width = '800px';
-                    wrapper.style.background = pdfBgColor;
-                    
-                    // Force the exact 800px A4 geometry statically directly on the target
+        const exactWidth = Math.max(element.clientWidth || 800, 800);
+        const exactHeight = Math.max(element.clientHeight || 1131, 1131);
+
+        const canvasOpt = {
+            scale: 2, 
+            useCORS: true,
+            backgroundColor: pdfBgColor,
+            onclone: (clonedDoc) => {
+                // Safely reorganize the cloned CSS DOM without destroying node hierarchy connections
+                const clonedApp = clonedDoc.querySelector('.app-container');
+                const clonedEditor = clonedDoc.querySelector('.editor-panel');
+                const clonedPreview = clonedDoc.querySelector('.preview-panel');
+                const clonedWrapper = clonedDoc.querySelector('.preview-wrapper');
+                const clonedInv = clonedDoc.getElementById('invoice-preview');
+
+                if (clonedApp) clonedApp.style.display = 'block'; // Disable flexbox squashing completely
+                if (clonedEditor) clonedEditor.style.display = 'none'; // Erase the left panel constraint entirely!
+                
+                if (clonedPreview) {
+                    clonedPreview.style.display = 'block';
+                    clonedPreview.style.width = '100%';
+                    clonedPreview.style.padding = '0';
+                    clonedPreview.style.overflow = 'visible'; // Ensure no scroll clipping!
+                }
+                
+                if (clonedWrapper) {
+                    clonedWrapper.style.padding = '0';
+                    clonedWrapper.style.margin = '0 auto';
+                    clonedWrapper.style.width = '800px';
+                    clonedWrapper.style.display = 'block';
+                    clonedWrapper.style.transform = 'none';
+                }
+
+                if (clonedInv) {
                     clonedInv.style.margin = '0';
                     clonedInv.style.padding = '40px';
                     clonedInv.style.width = '800px';
                     clonedInv.style.minWidth = '800px';
                     clonedInv.style.maxWidth = '800px';
-                    clonedInv.style.minHeight = '1131px'; // Exact A4
-                    clonedInv.style.position = 'absolute';
-                    clonedInv.style.top = '0px';
-                    clonedInv.style.left = '0px';
-                    clonedInv.style.transform = 'none';
-
-                    wrapper.appendChild(clonedInv);
-                    clonedDoc.body.appendChild(wrapper);
+                    clonedInv.style.minHeight = '1131px'; // Force A4 PDF height
+                    clonedInv.style.transform = 'none'; // Clear any mobile css scales
                 }
-            },
-            // Lock JS PDF to exact pixel geometry of the clone array 
-            jsPDF: { unit: 'px', format: [800, 1131], orientation: 'portrait' }
+            }
+        };
+
+        if (isMobile) {
+            canvasOpt.windowWidth = 800; // Strictly binds mobile bounds preventing WebKit omissions
+        }
+
+        const opt = {
+            margin:       0,
+            filename:     `${invNoIn.value || 'invoice'}.pdf`,
+            image:        { type: 'jpeg', quality: 1.0 },
+            html2canvas:  canvasOpt,
+            jsPDF:        { unit: 'px', format: [exactWidth, exactHeight], orientation: 'portrait' }
         };
         
         try {
             await html2pdf().set(opt).from(element).save();
         } catch(err) {
             console.error("Engine failure:", err);
+            alert("Oops! Engine overloaded. Please refresh the page and try again.");
         } finally {
             btn.textContent = "Generate PDF";
             btn.disabled = false;
