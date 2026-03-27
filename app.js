@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const invoiceThemeSelect = document.getElementById('invoice-theme-select');
     const invoicePreview = document.getElementById('invoice-preview');
     const bPhoneIn = document.getElementById('business-phone-input');
+    const goldToggle = document.getElementById('gold-border-toggle');
+    const sigUpload = document.getElementById('signature-upload');
 
     // Displays
     const bNameDisp = document.getElementById('business-name-display');
@@ -85,6 +87,24 @@ document.addEventListener('DOMContentLoaded', () => {
     [bankNameIn, bankAcctNameIn, bankAcctNoIn, bankRoutingIn].forEach(input => {
         mapInputToDisplay(input, document.getElementById(input.id.replace('-input', '-display')));
         input.addEventListener('input', checkPaymentInfo);
+    });
+
+    goldToggle.addEventListener('change', (e) => {
+        if(e.target.checked) invoicePreview.classList.add('gold-edges');
+        else invoicePreview.classList.remove('gold-edges');
+    });
+
+    sigUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                document.getElementById('signature-display').src = ev.target.result;
+                document.getElementById('signature-display').style.display = 'block';
+                document.getElementById('signature-line').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
     });
 
     logoUpload.addEventListener('change', (e) => {
@@ -157,7 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const formatCurr = (val) => {
         const symbol = currencySelect.value;
-        return symbol + val.toFixed(2);
+        // Format the number with thousand separators (commas) and exactly 2 decimal places
+        return symbol + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
 
     function renderItems() {
@@ -201,24 +222,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // PDF Generation
-    document.getElementById('download-btn').addEventListener('click', () => {
+    document.getElementById('download-btn').addEventListener('click', async () => {
         const element = document.getElementById('invoice-preview');
-        
-        // 1) Cache original state
-        const currentScroll = window.scrollY;
-        const originalPadding = element.style.padding;
-        const originalWidth = element.style.width;
-        const originalMaxWidth = element.style.maxWidth;
+        const btn = document.getElementById('download-btn');
+        btn.textContent = "Processing...";
+        btn.disabled = true;
 
-        // 2) Force strict desktop dimensions for proper A4 PDF rendering
-        element.style.padding = '40px';
+        // 1) Force strict geometric widths locally so expanding texts cannot shatter the wrapper
+        const originalWidth = element.style.width;
+        const originalMinWidth = element.style.minWidth;
+        const originalMaxWidth = element.style.maxWidth;
         element.style.width = '800px';
-        element.style.maxWidth = 'none';
+        element.style.minWidth = '800px';
+        element.style.maxWidth = '800px';
+
+        // 2) Align the element gracefully into the laptop/mobile viewport buffer
+        element.scrollIntoView({ behavior: 'instant', block: 'start' });
         
-        // 3) FIX FOR MOBILE "BLANK PDF" BUG: 
-        // We must scroll to the very top right before generating, since html2canvas 
-        // captures invisible space on mobile layout column stacks.
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        // Wait extremely quickly for standard layout frame repaint
+        await new Promise(r => setTimeout(r, 50));
+
+        // Ensure A4 paper background perfectly matches the theme beyond the item height
+        let pdfBgColor = '#ffffff';
+        if (element.classList.contains('dark-mode')) pdfBgColor = '#121212';
+        if (element.classList.contains('blue-mode')) pdfBgColor = '#0a1326';
 
         const opt = {
             margin:       0,
@@ -227,19 +254,22 @@ document.addEventListener('DOMContentLoaded', () => {
             html2canvas:  { 
                 scale: 2, 
                 useCORS: true,
-                scrollY: 0,
-                windowWidth: 800
+                backgroundColor: pdfBgColor
             },
             jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
         
-        html2pdf().set(opt).from(element).save().then(() => {
-            // 4) Revert state seamlessly
-            element.style.padding = originalPadding;
+        try {
+            await html2pdf().set(opt).from(element).save();
+        } catch(err) {
+            console.error("Engine failure:", err);
+        } finally {
             element.style.width = originalWidth;
+            element.style.minWidth = originalMinWidth;
             element.style.maxWidth = originalMaxWidth;
-            window.scrollTo({ top: currentScroll, left: 0, behavior: 'instant' });
-        });
+            btn.textContent = "Generate PDF";
+            btn.disabled = false;
+        }
     });
 
     // Initial render
@@ -334,9 +364,15 @@ document.addEventListener('DOMContentLoaded', () => {
     invoiceThemeSelect.addEventListener('change', (e) => {
         if (e.target.value === 'dark') {
             invoicePreview.classList.add('dark-mode');
+            invoicePreview.classList.remove('blue-mode');
             document.querySelector('.preview-wrapper').style.background = '#121212';
+        } else if (e.target.value === 'blue') {
+            invoicePreview.classList.add('blue-mode');
+            invoicePreview.classList.remove('dark-mode');
+            document.querySelector('.preview-wrapper').style.background = '#0a1326';
         } else {
             invoicePreview.classList.remove('dark-mode');
+            invoicePreview.classList.remove('blue-mode');
             document.querySelector('.preview-wrapper').style.background = '#ffffff';
         }
     });
