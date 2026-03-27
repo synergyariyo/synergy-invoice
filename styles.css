@@ -136,6 +136,7 @@ input, select, textarea, button {
 
 .half {
     flex: 1;
+    min-width: 0;
 }
 
 input, select, textarea {
