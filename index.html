@@ -2,8 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Synergy Invoice Generator</title>
+    
+    <!-- OS System App Branding Icons -->
+    <link rel="icon" type="image/png" href="synergy-logo.png">
+    <link rel="apple-touch-icon" href="synergy-logo.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#141726">
+
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- html2pdf.js for instant frontend PDF generation -->
@@ -75,6 +83,27 @@
                 </div>
                 <div id="pro-overlay" style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(20, 23, 38, 0.85); display: flex; align-items: center; justify-content: center; border-radius: 12px; z-index: 10;">
                     <button class="btn primary" id="unlock-branding-btn" style="width: auto; padding: 0.5rem 1.5rem; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); background: linear-gradient(135deg, #f59e0b, #d97706);">Unlock Premium Styling</button>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Invoice Template Definition</h3>
+                <div class="input-group">
+                    <label>Select Layout Template</label>
+                    <select id="template-select">
+                        <option value="standard">Standard (Default) - FREE</option>
+                        <option value="minimal">Minimalist - FREE</option>
+                        <option value="corporate" class="pro-option">Corporate - PRO</option>
+                        <option value="creative" class="pro-option">Creative - PRO</option>
+                        <option value="executive" class="pro-option">Executive - PRO</option>
+                        <option value="bold" class="pro-option">Bold Accent - PRO</option>
+                        <option value="custom" class="pro-option">Upload Custom Template - PRO</option>
+                    </select>
+                </div>
+                <div class="input-group" id="custom-template-upload-group" style="display: none; margin-top: 10px;">
+                    <label>Upload Custom Background Template (.png, .jpg)</label>
+                    <input type="file" id="template-upload" accept="image/*" class="file-input" style="padding: 0.35rem">
+                    <p style="font-size: 11px; margin-top: 4px; color: var(--text-secondary);">Your uploaded image will completely wrap the invoice background.</p>
                 </div>
             </div>
 
@@ -182,10 +211,14 @@
             </div>
 
             <div class="form-section">
-                <h3>Notes & Signature</h3>
+                <h3>Notes, Terms & Signature</h3>
                 <div class="input-group">
-                    <label>Invoice Notes / Terms</label>
-                    <textarea id="notes-input" rows="3">Thank you for your business. Payment is expected within 30 days.</textarea>
+                    <label>Invoice Notes</label>
+                    <textarea id="notes-input" rows="2">Thank you for your business.</textarea>
+                </div>
+                <div class="input-group" style="margin-top: 10px;">
+                    <label>Terms & Conditions</label>
+                    <textarea id="terms-input" rows="2">Payment is expected within 30 days. Late payments are subject to a 1.5% monthly fee.</textarea>
                 </div>
                 <div class="input-group" style="margin-top: 10px;">
                     <label>Upload Signature (.png, .jpg)</label>
@@ -284,7 +317,8 @@
                     </div>
                     
                     <div class="invoice-footer-note">
-                        <p id="notes-display">Thank you for your business. Payment is expected within 30 days.</p>
+                        <p id="notes-display" style="font-size: 14px;">Thank you for your business.</p>
+                        <p id="terms-display" style="font-size: 11px; margin-top: 6px; color: #94a3b8; font-style: italic;">Payment is expected within 30 days. Late payments are subject to a 1.5% monthly fee.</p>
                         <div style="margin-top: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                             <img id="signature-display" src="" alt="Signature" style="display: none; max-height: 70px; max-width: 250px; object-fit: contain;">
                             <div id="signature-line" style="display: none; width: 250px; border-top: 1px solid var(--paper-border); margin-top: 5px; padding-top: 8px; color: #94a3b8; font-size: 12px; font-weight: 600; text-transform: uppercase;">Authorized Signature</div>
@@ -305,7 +339,7 @@
             <span class="close-modal">&times;</span>
             <h2 id="modal-title">Upgrade to Synergy Pro</h2>
             <p id="modal-desc">Remove watermarks, unlock premium templates, and save clients instantly.</p>
-            <div class="price-tag" id="pro-price-display">$1 / month</div>
+            <div class="price-tag" id="pro-price-display">$2 / month</div>
             <button id="activate-pro-btn" class="btn primary">Activate Pro Now</button>
         </div>
     </div>

@@ -181,6 +181,44 @@ document.addEventListener('DOMContentLoaded', () => {
         return symbol + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
 
+    // Template Engine Logic
+    const templateSelect = document.getElementById('template-select');
+    const customTemplateGroup = document.getElementById('custom-template-upload-group');
+    const templateUpload = document.getElementById('template-upload');
+
+    templateSelect.addEventListener('change', (e) => {
+        const selected = e.target.options[e.target.selectedIndex];
+        
+        if (selected.classList.contains('pro-option') && document.getElementById('pro-badge').textContent === 'FREE') {
+            e.target.value = 'standard';
+            document.getElementById('upgrade-btn').click();
+            return;
+        }
+
+        if (e.target.value === 'custom') {
+            customTemplateGroup.style.display = 'block';
+        } else {
+            customTemplateGroup.style.display = 'none';
+            invoicePreview.style.backgroundImage = 'none';
+        }
+
+        invoicePreview.className = invoicePreview.className.replace(/\b[a-z]+-template\b/g, '');
+        invoicePreview.classList.add(`${e.target.value}-template`);
+    });
+
+    templateUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                invoicePreview.style.backgroundImage = `url(${ev.target.result})`;
+                invoicePreview.style.backgroundSize = 'cover';
+                invoicePreview.style.backgroundPosition = 'center';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
     function renderItems() {
         // Render preview table
         invoiceItemsDisplay.innerHTML = '';
@@ -236,11 +274,14 @@ document.addEventListener('DOMContentLoaded', () => {
         element.style.minWidth = '800px';
         element.style.maxWidth = '800px';
 
-        // 2) Align the element gracefully into the laptop/mobile viewport buffer
+        // Force viewport alignment horizontally and vertically to bypass Mobile Webkit render clipping
+        if (window.innerWidth <= 768) {
+            document.querySelector('.preview-panel').scrollLeft = 0;
+        }
         element.scrollIntoView({ behavior: 'instant', block: 'start' });
         
-        // Wait extremely quickly for standard layout frame repaint
-        await new Promise(r => setTimeout(r, 50));
+        // Wait specifically for Webkit Repaints
+        await new Promise(r => setTimeout(r, 100));
 
         // Ensure PDF paper perfectly matches the aesthetic background dynamically
         let pdfBgColor = '#ffffff';
@@ -255,9 +296,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const opt = {
             margin:       0,
             filename:     `${invNoIn.value || 'invoice'}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
+            image:        { type: 'jpeg', quality: 1.0 },
             html2canvas:  { 
-                scale: 2, 
+                scale: 1.5, // Optimised from 2.0 to stop out-of-memory GPU crash on iPhone executing white pdfs!
                 useCORS: true,
                 backgroundColor: pdfBgColor
             },
@@ -304,23 +345,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const unlockBrandingBtn = document.getElementById('unlock-branding-btn');
     const brandingLock = document.getElementById('branding-lock');
 
-    const getProPrice = () => {
-        const sym = currencySelect.value;
-        if (sym === '₦') return '₦2000';
-        if (sym === '₹') return '₹200';
-        if (sym === '¥') return '¥200';
-        if (sym === 'R') return 'R20';
-        return sym + '2';
-    };
+    let localProPrice = '$2';
+
+    // Geolocation Pricing Module
+    fetch('https://ipapi.co/json/')
+        .then(res => res.json())
+        .then(data => {
+            if (data.country_code === 'NG') localProPrice = '₦2,500';
+            else if (data.country_code === 'GB') localProPrice = '£2';
+            else if (data.currency === 'EUR') localProPrice = '€2';
+            else localProPrice = '$2';
+            
+            if (proPriceDisplay.textContent !== "FREE FOR A LIFETIME") {
+                proPriceDisplay.textContent = localProPrice + " / month";
+            }
+        }).catch(() => console.error("Geolocation bypassed"));
 
     window.updateProPrice = () => {
         if (modal.style.display === 'flex' && proPriceDisplay.textContent !== "FREE FOR A LIFETIME") {
-            proPriceDisplay.textContent = getProPrice() + " / month";
+            proPriceDisplay.textContent = localProPrice + " / month";
         }
     };
 
     upgradeBtn.addEventListener('click', () => {
-        proPriceDisplay.textContent = getProPrice() + " / month";
+        proPriceDisplay.textContent = localProPrice + " / month";
         if (!ENFORCE_PAYWALL && !isPro) {
             modalTitle.textContent = "Early Access Bonus!";
             modalDesc.textContent = "You are one of the first 50 users. You get Pro for FREE!";
@@ -357,6 +405,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     unlockBrandingBtn.addEventListener('click', () => {
         upgradeBtn.click();
+    });
+
+    document.getElementById('notes-input').addEventListener('input', (e) => {
+        document.getElementById('notes-display').textContent = e.target.value;
+    });
+    
+    document.getElementById('terms-input').addEventListener('input', (e) => {
+        document.getElementById('terms-display').textContent = e.target.value;
     });
 
     themeColorInput.addEventListener('input', (e) => {

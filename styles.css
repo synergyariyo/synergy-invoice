@@ -504,6 +504,27 @@ input:focus, select:focus {
 
 #invoice-preview.gold-mode .payment-info-text { color: #1e293b !important; }
 
+/* TEMPLATE ENGINES */
+#invoice-preview.minimal-template .invoice-header { border-bottom: 1px solid var(--paper-border); padding-bottom: 1rem; }
+#invoice-preview.minimal-template .invoice-table th { background: transparent; border-bottom: 2px solid rgba(0,0,0,0.5); }
+#invoice-preview.minimal-template.dark-mode .invoice-table th { border-bottom: 2px solid rgba(255,255,255,0.5); }
+
+#invoice-preview.corporate-template .invoice-header { background-color: var(--paper-border); padding: 2rem; margin: -40px -40px 2rem -40px; border-bottom: none; }
+#invoice-preview.corporate-template.dark-mode .invoice-header, #invoice-preview.corporate-template.blue-mode .invoice-header { background-color: rgba(255,255,255,0.05); }
+
+#invoice-preview.creative-template .invoice-header { flex-direction: row-reverse; border-bottom: 4px solid var(--primary-color); }
+#invoice-preview.creative-template .invoice-meta { text-align: left; }
+#invoice-preview.creative-template .brand { text-align: right; }
+#invoice-preview.creative-template .brand img { margin-left: auto; margin-right: 0; }
+
+#invoice-preview.executive-template .invoice-header { flex-direction: column; align-items: center; text-align: center; border-bottom: 1px solid var(--paper-border); }
+#invoice-preview.executive-template .brand img { margin: 0 auto 10px auto; }
+#invoice-preview.executive-template .invoice-meta { text-align: center; margin-top: 15px; display: flex; justify-content: center; gap: 20px; }
+#invoice-preview.executive-template .invoice-meta p { margin: 0; }
+
+#invoice-preview.bold-template .title { font-size: 50px; color: var(--primary-color); }
+#invoice-preview.bold-template .invoice-table th { background: var(--primary-color) !important; color: #fff !important; border: none; }
+
 /* AI Dictation Button */
 .ai-dictate-btn {
     position: fixed;
@@ -539,13 +560,14 @@ input:focus, select:focus {
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
     body {
-        overflow: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
         height: auto;
     }
     .app-container {
         flex-direction: column;
         height: auto;
-        overflow: visible;
+        overflow-x: hidden;
     }
     .editor-panel {
         width: 100%;
@@ -556,13 +578,24 @@ input:focus, select:focus {
     }
     .preview-panel {
         padding: 1rem;
-        overflow: visible;
+        width: 100%;
+        display: block;
+        overflow-x: auto;
+        overflow-y: visible;
+        -webkit-overflow-scrolling: touch;
     }
     .preview-wrapper {
-        padding: 20px;
+        padding: 10px;
         min-height: auto;
-        transform-origin: top center;
-        width: 100%;
+        width: 820px; /* 800px invoice + 20px pad */
+        margin: 0 auto;
+        display: block;
+        transform-origin: top left;
+    }
+    #invoice-preview {
+        width: 800px !important;
+        min-width: 800px !important;
+        max-width: 800px !important;
     }
     .row {
         flex-direction: column;
