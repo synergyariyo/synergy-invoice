@@ -47,7 +47,7 @@
             </div>
 
             <div class="form-section" style="position: relative;" id="pro-styling-section">
-                <h3>Pro Styling 🔶 <span class="pro-badge" id="branding-lock">LOCKED</span></h3>
+                <h3>Pro Styling <span class="gold-diamond">💎</span> <span class="pro-badge" id="branding-lock">LOCKED</span></h3>
                 <div class="row" style="margin-top: 10px;">
                     <div class="input-group half">
                         <label>Paper Mode</label>
@@ -83,7 +83,7 @@
                 <div class="row" style="margin-top: 15px; margin-bottom: 5px;">
                     <div class="input-group" style="flex-direction: row; align-items: center; gap: 8px;">
                         <input type="checkbox" id="gold-border-toggle" class="pro-input" style="width: 18px; height: 18px; cursor: pointer;">
-                        <label for="gold-border-toggle" style="cursor: pointer; color: #f59e0b; font-weight: 700; margin: 0;">Enable Premium Gold Edges</label>
+                        <label for="gold-border-toggle" style="cursor: pointer; color: #f59e0b; font-weight: 700; margin: 0;">Enable Premium Gold Edges <span class="gold-diamond">💎</span></label>
                     </div>
                 </div>
             </div>
@@ -95,11 +95,11 @@
                     <select id="template-select">
                         <option value="standard">Standard (Default) - FREE</option>
                         <option value="minimal">Minimalist - FREE</option>
-                        <option value="corporate" class="pro-option">Corporate 🔶</option>
-                        <option value="creative" class="pro-option">Creative 🔶</option>
-                        <option value="executive" class="pro-option">Executive 🔶</option>
-                        <option value="bold" class="pro-option">Bold Accent 🔶</option>
-                        <option value="custom" class="pro-option">Upload Custom Template 🔶</option>
+                        <option value="corporate" class="pro-option">Corporate 💎 [PRO]</option>
+                        <option value="creative" class="pro-option">Creative 💎 [PRO]</option>
+                        <option value="executive" class="pro-option">Executive 💎 [PRO]</option>
+                        <option value="bold" class="pro-option">Bold Accent 💎 [PRO]</option>
+                        <option value="custom" class="pro-option">Upload Custom Template 💎 [PRO]</option>
                     </select>
                 </div>
                 <div class="input-group" id="custom-template-upload-group" style="display: none; margin-top: 10px;">
@@ -133,9 +133,12 @@
                     <input type="text" id="client-name-input" placeholder="Client Name" value="Acme Corp">
                 </div>
                 <div class="input-group">
+                    <input type="email" id="client-email-input" placeholder="Client Email (For Auto-Send)" value="">
+                </div>
+                <div class="input-group">
                     <input type="text" id="client-address-input" placeholder="Client Address" value="123 Startup Blvd">
                 </div>
-                <button id="save-client-btn" class="btn secondary pro-input" style="padding: 0.4rem; font-size: 0.75rem; margin-top: 5px; background: rgba(0,0,0,0.2);">⭐ Save Client to Browser 🔶</button>
+                <button id="save-client-btn" class="btn secondary pro-input" style="padding: 0.4rem; font-size: 0.75rem; margin-top: 5px; background: rgba(0,0,0,0.2);">⭐ Save Client to Browser <span class="gold-diamond">💎</span></button>
             </div>
 
             <div class="form-section">
@@ -257,11 +260,13 @@
                         <option value="" style="color: #000;">Load Saved Draft...</option>
                     </select>
                 </div>
-                <button id="save-template-btn" class="btn secondary pro-input" style="padding: 0.5rem; font-size: 0.8rem; background: rgba(0,0,0,0.2);">💾 Save Current Invoice as Template 🔶</button>
+                <button id="save-template-btn" class="btn secondary pro-input" style="padding: 0.5rem; font-size: 0.8rem; background: rgba(0,0,0,0.2);">💾 Save Current Invoice as Template <span class="gold-diamond">💎</span></button>
             </div>
 
             <div class="actions">
-                <button id="download-btn" class="btn primary">Generate PDF</button>
+                <button id="download-btn" class="btn primary">Generate Standard PDF</button>
+                <button id="email-btn" class="btn secondary" style="margin-top: 10px;">✉️ Send via Email App</button>
+                <a href="thermal.html" class="btn secondary" target="_blank" style="margin-top: 10px; text-decoration: none; text-align: center; display: block; border-color: #f59e0b; color: #f59e0b;">🧾 Open Thermal Receipt Generator</a>
                 
                 <!-- Agency Footer -->
                 <div style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: var(--text-secondary); font-size: 0.75rem; line-height: 1.6;">
@@ -418,6 +423,30 @@
             <line x1="12" y1="19" x2="12" y2="22"></line>
         </svg>
     </div>
+
+    <!-- Premium Analytics & Tracker Implementation -->
+    <script>
+        // Internal Session Tracker (Privacy-First)
+        (function() {
+            let visits = parseInt(localStorage.getItem('synergy_total_visits') || '0');
+            visits++;
+            localStorage.setItem('synergy_total_visits', visits);
+            console.log(`%c Synergy Metrics %c Visitor Count: ${visits} `, "background: #9333ea; color: #fff; border-radius: 3px 0 0 3px; padding: 2px 5px;", "background: #1e1b4b; color: #fff; border-radius: 0 3px 3px 0; padding: 2px 5px;");
+        })();
+
+        /* 
+           EXTERNAL TRACKER MIGRATION GUIDE:
+           If user wants robust professional analytics, uncomment the following:
+           
+           // GoatCounter (Privacy compliant, free hosting)
+           // (function() {
+           //    const s = document.createElement('script');
+           //    s.dataset.goatcounter = 'https://synergy-invoice.goatcounter.com/count';
+           //    s.async = true; s.src = '//gc.zgo.at/count.js';
+           //    document.head.append(s);
+           // })();
+        */
+    </script>
 
     <script src="app.js"></script>
 </body>

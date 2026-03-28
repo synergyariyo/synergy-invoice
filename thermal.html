@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thermal Receipt Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050510;
+            --panel-bg: rgba(13, 16, 33, 0.65);
+            --border-color: rgba(255,255,255,0.06);
+            --primary-color: #f59e0b;
+            --primary-hover: #d97706;
+            --text-primary: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.1) 0%, transparent 50%);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        .editor-panel {
+            width: 400px;
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            backdrop-filter: blur(25px);
+        }
+
+        .editor-panel h1 {
+            color: var(--primary-color);
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .form-section {
+            background: rgba(255,255,255,0.02);
+            padding: 1.2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.04);
+            display: flex; flex-direction: column; gap: 0.8rem;
+        }
+
+        input {
+            width: 100%; padding: 0.7rem; border-radius: 8px;
+            background: rgba(0,0,0,0.3); border: 1px solid var(--border-color);
+            color: white; font-size: 0.9rem;
+        }
+        input:focus { outline: none; border-color: var(--primary-color); }
+
+        .btn {
+            padding: 0.8rem; border-radius: 8px; cursor: pointer; border: none; font-weight: bold; width: 100%; transition: 0.2s;
+        }
+        .btn.primary { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; margin-top: 1rem; }
+        .btn.primary:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4); }
+        .btn.secondary { background: rgba(255,255,255,0.05); color: white; border: 1px dashed rgba(255,255,255,0.2); }
+        .btn.secondary:hover { background: rgba(255,255,255,0.1); }
+
+        .item-row { display: flex; gap: 5px; }
+        .item-row input[type="text"] { flex: 2; }
+        .item-row input[type="number"] { flex: 1; }
+
+        .preview-panel {
+            flex: 1; display: flex; justify-content: center; align-items: flex-start;
+            padding: 2rem; overflow-y: auto;
+        }
+
+        /* THERMAL RECEIPT STYLE */
+        .thermal-wrapper {
+            background: white;
+            color: black;
+            font-family: 'Courier Prime', 'Courier New', monospace;
+            width: 300px; /* Default 80mm */
+            padding: 20px 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: width 0.3s ease;
+        }
+
+        .thermal-wrapper.size-57mm {
+            width: 215px; /* 57mm equivalent */
+            font-size: 0.8rem;
+            padding: 15px 10px;
+        }
+        .thermal-wrapper.size-57mm .t-header { font-size: 1rem; }
+        .thermal-wrapper.size-57mm .t-table { font-size: 0.75rem; }
+
+        .t-center { text-align: center; }
+        .t-bold { font-weight: bold; }
+        .t-line { border-top: 1px dashed #000; margin: 10px 0; }
+        
+        .t-header { font-size: 1.2rem; margin-bottom: 5px; text-transform: uppercase; }
+        .t-meta { font-size: 0.8rem; margin-bottom: 3px; }
+        
+        .t-table { width: 100%; font-size: 0.85rem; border-collapse: collapse; }
+        .t-table th { border-bottom: 1px dashed #000; padding-bottom: 5px; text-align: left; }
+        .t-table td { padding: 4px 0; vertical-align: top; }
+        .t-table .right { text-align: right; }
+        
+        .t-totals { margin-top: 10px; font-size: 0.9rem; }
+        .t-totals .row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .t-totals .total-row { font-size: 1.1rem; font-weight: bold; border-top: 1px dashed #000; padding-top: 5px; margin-top: 5px; }
+
+        @media print {
+            body { background: transparent; height: auto; display: block; overflow: visible; }
+            .editor-panel { display: none !important; }
+            .preview-panel { padding: 0; display: block; width: 100%; justify-content: flex-start; }
+            .thermal-wrapper { box-shadow: none; margin: 0; padding: 2mm; width: 80mm; }
+            .thermal-wrapper.size-57mm { width: 57mm; }
+            @page { margin: 0; }
+        }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-y: auto; height: auto; }
+            .editor-panel { width: 100%; border-right: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="editor-panel">
+        <h1>🧾 Thermal Receipt Gen</h1>
+        
+        <div class="form-section">
+            <div style="color: var(--text-secondary); font-size: 0.8rem;">Paper Size</div>
+            <select id="paper-size-select" style="width: 100%; padding: 0.5rem; border-radius: 8px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: white;">
+                <option value="80mm">Standard POS (80mm)</option>
+                <option value="57mm">Handheld / Bluetooth (57mm)</option>
+            </select>
+            <input type="text" id="b-name" placeholder="Business Name" value="My Awesome Store">
+            <input type="text" id="b-address" placeholder="Address / Contact" value="123 Shopping Mall">
+            <input type="text" id="r-no" placeholder="Receipt Number" value="#001235">
+        </div>
+
+        <div class="form-section">
+            <input type="text" id="c-name" placeholder="Customer Name (Optional)" value="John Doe">
+        </div>
+
+        <div class="form-section" id="items-container">
+            <div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 5px;">Purchased Items</div>
+            <!-- Dynamic Items -->
+        </div>
+        <button class="btn secondary" id="add-item-btn">+ Add Item</button>
+
+        <div class="form-section">
+            <div style="display:flex; gap: 10px; align-items: center; color: var(--text-secondary); font-size: 0.9rem;">
+                Currency: <input type="text" id="curr" value="$" style="width: 60px;">
+            </div>
+            <input type="text" id="footer-text" placeholder="Footer Messager (e.g. Thanks!)" value="Thank you for your purchase!">
+        </div>
+
+        <button class="btn primary" id="print-btn" style="box-shadow: 0 5px 20px rgba(245, 158, 11, 0.5);">🖨️ Print Receipt</button>
+        <a href="index.html" class="btn secondary" style="margin-top: 15px; text-decoration: none; text-align: center; border-color: rgba(255,255,255,0.1);">⬅️ Back to Invoice Gen</a>
+    </div>
+
+    <div class="preview-panel">
+        <div class="thermal-wrapper" id="receipt">
+            <div class="t-center">
+                <div class="t-bold t-header" id="out-b-name">ACME CORP</div>
+                <div class="t-meta" id="out-b-add">123 Street</div>
+            </div>
+            <div class="t-line"></div>
+            <div class="t-meta">Receipt: <span id="out-no">#001</span></div>
+            <div class="t-meta">Date: <span id="out-date"></span></div>
+            <div class="t-meta">Customer: <span id="out-c-name">John Doe</span></div>
+            <div class="t-line"></div>
+            
+            <table class="t-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th class="right">Qty</th>
+                        <th class="right">Price</th>
+                        <th class="right">Amt</th>
+                    </tr>
+                </thead>
+                <tbody id="out-items">
+                    <!-- Dynamic -->
+                </tbody>
+            </table>
+
+            <div class="t-totals">
+                <div class="row total-row">
+                    <span>TOTAL</span>
+                    <span id="out-total">$0.00</span>
+                </div>
+                <div class="t-center" style="margin-top: 15px; margin-bottom: 5px;" id="out-footer">
+                    Thank you!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const currDate = new Date().toLocaleString();
+        document.getElementById('out-date').textContent = currDate;
+
+        const items = [
+            { desc: 'Product A', qty: 2, price: 15.00 },
+            { desc: 'Service B', qty: 1, price: 20.00 }
+        ];
+
+        function renderEditor() {
+            const container = document.getElementById('items-container');
+            container.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 5px;">Purchased Items</div>';
+            
+            items.forEach((item, index) => {
+                const row = document.createElement('div');
+                row.className = 'item-row';
+                row.innerHTML = `
+                    <input type="text" class="i-desc" value="${item.desc}" onchange="updateItem(${index}, 'desc', this.value)">
+                    <input type="number" class="i-qty" value="${item.qty}" min="1" onchange="updateItem(${index}, 'qty', this.value)">
+                    <input type="number" class="i-price" value="${item.price}" min="0" step="0.01" onchange="updateItem(${index}, 'price', this.value)">
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function updateItem(index, key, value) {
+            items[index][key] = key === 'desc' ? value : parseFloat(value) || 0;
+            renderReceipt();
+        }
+
+        document.getElementById('add-item-btn').addEventListener('click', () => {
+            items.push({ desc: 'New Item', qty: 1, price: 0.00 });
+            renderEditor();
+            renderReceipt();
+        });
+
+        function renderReceipt() {
+            document.getElementById('out-b-name').textContent = document.getElementById('b-name').value;
+            document.getElementById('out-b-add').textContent = document.getElementById('b-address').value;
+            document.getElementById('out-no').textContent = document.getElementById('r-no').value;
+            document.getElementById('out-c-name').textContent = document.getElementById('c-name').value || 'Walk-in';
+            document.getElementById('out-footer').textContent = document.getElementById('footer-text').value;
+
+            const curr = document.getElementById('curr').value || '$';
+            const tbody = document.getElementById('out-items');
+            tbody.innerHTML = '';
+            
+            let total = 0;
+            items.forEach(item => {
+                const amt = item.qty * item.price;
+                total += amt;
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.desc.substring(0, 15)}</td>
+                        <td class="right">${item.qty}</td>
+                        <td class="right">${curr}${item.price.toFixed(2)}</td>
+                        <td class="right">${curr}${amt.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('out-total').textContent = `${curr}${total.toFixed(2)}`;
+        }
+
+        ['b-name', 'b-address', 'r-no', 'c-name', 'curr', 'footer-text'].forEach(id => {
+            document.getElementById(id).addEventListener('input', renderReceipt);
+        });
+
+        document.getElementById('print-btn').addEventListener('click', () => {
+            const oldTitle = document.title;
+            document.title = "Receipt_" + document.getElementById('r-no').value;
+            window.print();
+            document.title = oldTitle;
+        });
+
+        document.getElementById('paper-size-select').addEventListener('change', (e) => {
+            const wrapper = document.getElementById('receipt');
+            if (e.target.value === '57mm') {
+                wrapper.classList.add('size-57mm');
+            } else {
+                wrapper.classList.remove('size-57mm');
+            }
+        });
+
+        renderEditor();
+        renderReceipt();
+    </script>
+</body>
+</html>

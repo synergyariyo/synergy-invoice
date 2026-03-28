@@ -446,93 +446,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // PDF Generation
     document.getElementById('download-btn').addEventListener('click', async () => {
-        const element = document.getElementById('invoice-preview');
         const btn = document.getElementById('download-btn');
         btn.textContent = "Processing...";
         btn.disabled = true;
 
-        const isMobile = window.innerWidth <= 768;
-        
-        let targetElement = element;
-        let clone = null;
-
-        if (isMobile) {
-            // THE HOLY GRAIL IOS PWA FIX:
-            // Mobile WebKit physically drops rendering matrices for nodes hidden in scrollable flex parents.
-            // We forcefully clone the entire visual HTML string and pin it safely out of view directly into the body layer.
-            // This utterly bypasses ALL CSS Grid/Flexbox scaling and offset frame clipping bugs securely natively!
-            clone = element.cloneNode(true);
-            clone.style.position = 'absolute'; 
-            clone.style.top = '0px'; 
-            clone.style.left = '0px';
-            clone.style.zIndex = '-9999'; // Invisible to user behind all elements
-            clone.style.width = '800px';
-            clone.style.minWidth = '800px';
-            clone.style.maxWidth = '800px';
-            clone.style.transform = 'none';
-            clone.style.padding = '40px'; 
-            clone.style.margin = '0';
-            
-            // Re-map explicit UI graphics since cloneNode occasionally drops active DOM Blob refs
-            if (element.style.backgroundImage) {
-                clone.style.backgroundImage = element.style.backgroundImage;
-                clone.style.backgroundSize = element.style.backgroundSize;
-                clone.style.backgroundPosition = element.style.backgroundPosition;
-            }
-            
-            document.body.appendChild(clone);
-            targetElement = clone;
-        }
-
-        // Wait to guarantee WebKit formally places the clone securely into GPU memory
-        await new Promise(r => setTimeout(r, isMobile ? 350 : 50));
-
-        let pdfBgColor = '#ffffff';
-        if (targetElement.classList.contains('dark-mode')) pdfBgColor = '#121212';
-        if (targetElement.classList.contains('blue-mode')) pdfBgColor = '#0a1326';
-        if (targetElement.classList.contains('gold-mode')) pdfBgColor = '#D4AF37';
-
-        // Forcing standard pristine 800 boundaries natively
-        const exactWidth = 800;
-        const exactHeight = targetElement.clientHeight || 1131;
-
-        const canvasOpt = {
-            scale: 2, 
-            useCORS: true,
-            allowTaint: true,
-            backgroundColor: pdfBgColor,
-            scrollX: 0,
-            scrollY: 0
-        };
-
-        if (isMobile) {
-            canvasOpt.windowWidth = 800; 
-            canvasOpt.scale = 1.5; // Crucial: Prevents massive 3-Megapixel data crashes specifically destroying iPhones
-        }
-
         const clientSafeName = cNameIn.value.trim() ? '_' + cNameIn.value.trim().replace(/[^a-zA-Z0-9]/g, '_') : '';
+        const desiredFilename = `${invNoIn.value || 'Invoice'}${clientSafeName}`;
         
-        const opt = {
-            margin:       0,
-            filename:     `${invNoIn.value || 'Invoice'}${clientSafeName}.pdf`,
-            image:        { type: 'jpeg', quality: 1.0 },
-            html2canvas:  canvasOpt,
-            jsPDF:        { unit: 'px', format: [exactWidth, exactHeight], orientation: 'portrait' }
-        };
+        const oldTitle = document.title;
+        document.title = desiredFilename; // Helps natively suggest the filename!
+
+        alert("To ensure your clients can perfectly copy text and Bank Accounts directly from the PDF, this app now uses your device's native PDF engine!\n\nWhen the screen appears, simply select 'Save as PDF' (or Print).");
         
-        try {
-            await html2pdf().set(opt).from(targetElement).save();
-        } catch(err) {
-            console.error("Engine failure:", err);
-            alert("Oops! Engine overloaded. Please refresh the page and try again.");
-        } finally {
-            if (clone && document.body.contains(clone)) {
-                // Instantly wipe the clone buffer to reset clean memory safely
-                document.body.removeChild(clone);
-            }
+        // Let the CSS @media print handle the flawless vector rendering
+        setTimeout(() => {
+            window.print();
+            document.title = oldTitle;
             btn.textContent = "Generate PDF";
             btn.disabled = false;
+            
+            // Post-Download Action Trigger
+            setTimeout(() => {
+                if (confirm("PDF Downloaded! Would you like to send this to the Client via Email now?")) {
+                    document.getElementById('email-btn').click();
+                }
+            }, 1000);
+        }, 800);
+    });
+
+    document.getElementById('email-btn').addEventListener('click', () => {
+        const cEmail = document.getElementById('client-email-input').value.trim();
+        const docName = document.getElementById('doc-type-select').options[document.getElementById('doc-type-select').selectedIndex].text;
+        const bName = document.getElementById('business-name-input').value.trim() || 'My Business';
+        const num = invNoIn.value.trim() || '001';
+        const link = document.getElementById('payment-link-input').value.trim();
+        
+        if (!cEmail) {
+            alert('Please manually input a Client Email (in the Client Details section)!');
+            document.getElementById('client-email-input').focus();
+            return;
         }
+        
+        const totalAmountText = document.getElementById('total-amount').textContent;
+        const sub = `${docName} ${num} from ${bName}`;
+        
+        let bodyText = `Hi ${cNameIn.value.trim() || 'Customer'},\n\n`;
+        bodyText += `*** IMPORTANT: PLEASE ATTACH THE PDF YOU JUST DOWNLOADED TO THIS EMAIL BEFORE SENDING ***\n\n`;
+        bodyText += `Please find the details for ${docName} #${num} below.\n\n`;
+        bodyText += `Amount Due: ${totalAmountText}\n`;
+        if (link) {
+            bodyText += `\nYou can easily complete your payment online using this link:\n${link}\n`;
+        }
+        bodyText += `\nLooking forward to doing business!\n\nBest Regards,\n${bName}`;
+        
+        window.location.href = `mailto:${encodeURIComponent(cEmail)}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(bodyText)}`;
     });
 
     // Initial render
