@@ -462,11 +462,51 @@ document.addEventListener('DOMContentLoaded', () => {
         totalDisplay.textContent = formatCurr(grandTotal);
     }
 
+    // Force sync all displays with their input values (critical for PDF capture)
+    function forceSyncPreview() {
+        // Text Fields
+        bNameDisp.textContent = bNameIn.value;
+        bEmailDisp.textContent = bEmailIn.value;
+        bPhoneDisp.textContent = bPhoneIn.value;
+        cNameDisp.textContent = cNameIn.value;
+        cAddressDisp.textContent = cAddressIn.value;
+        invNoDisp.textContent = invNoIn.value;
+        invDateDisp.textContent = invDateIn.value;
+        dueDateDisp.textContent = dueDateIn.value;
+        notesDisp.textContent = notesIn.value;
+        taxRateDisp.textContent = taxIn.value;
+        discountRateDisp.textContent = discountIn.value;
+        
+        // Banking & Payment
+        bankNameDisp.textContent = bankNameIn.value;
+        bankAcctNameDisp.textContent = bankAcctNameIn.value;
+        bankAcctNoDisp.textContent = bankAcctNoIn.value;
+        bankRoutingDisp.textContent = bankRoutingIn.value;
+        
+        // Terms
+        document.getElementById('terms-display').textContent = document.getElementById('terms-input').value;
+        
+        // Items & Calculations
+        renderItems();
+        checkPaymentInfo();
+        
+        // Payment Link
+        if(paymentLinkIn.value.trim() !== '') {
+            paymentLinkDisp.href = paymentLinkIn.value;
+            paymentLinkCont.style.display = 'block';
+        } else {
+            paymentLinkCont.style.display = 'none';
+        }
+    }
+
     // PDF Generation
     document.getElementById('download-btn').addEventListener('click', async () => {
         const btn = document.getElementById('download-btn');
         btn.textContent = "Processing...";
         btn.disabled = true;
+
+        // Force a full UI sync to ensure PDF has latest data
+        forceSyncPreview();
 
         const clientSafeName = cNameIn.value.trim() ? '_' + cNameIn.value.trim().replace(/[^a-zA-Z0-9]/g, '_') : '';
         const desiredFilename = `${invNoIn.value || 'Invoice'}${clientSafeName}`;
@@ -918,8 +958,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                || document.getElementById('total-amount')?.textContent
                                || document.querySelector('.invoice-total')?.textContent || 'See invoice';
             const bankName      = document.getElementById('bank-name-input')?.value || '';
-            const acctName      = document.getElementById('account-name-input')?.value || '';
-            const acctNo        = document.getElementById('account-number-input')?.value || '';
+            const acctName      = document.getElementById('bank-acct-name-input')?.value || '';
+            const acctNo        = document.getElementById('bank-acct-no-input')?.value || '';
             const paymentLink   = document.getElementById('payment-link-input')?.value || '';
 
             // Auto-add client email as first recipient if not already listed
@@ -962,43 +1002,12 @@ ${businessName}
             }
 
             sendEmailBtn.disabled = true;
-            sendEmailBtn.textContent = '📄 Generating PDF...';
+            sendEmailBtn.textContent = '📨 Sending Email...';
 
             // Ensure preview is fully updated before capture
-            renderItems(); 
-            const invoiceEl = document.getElementById('invoice-preview');
+            forceSyncPreview(); 
+            const originalEl = document.getElementById('invoice-preview');
 
-            if (invoiceEl && typeof html2pdf !== 'undefined') {
-                try {
-                    // Optimization for Mobile: Lower scale (1.5) and simplified rendering for speed
-                    // Also force avoid-all page breaks to keep it on one page
-                    const opt = {
-                        margin: [0, 0],
-                        filename: `Invoice-${invoiceNo}-${clientName}.pdf`,
-                        image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { 
-                            scale: 2, 
-                            useCORS: true, 
-                            logging: false,
-                            letterRendering: true,
-                            scrollY: -window.scrollY // Fix for capture offset
-                        },
-                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-                    };
-
-                    // Wait a tiny bit for the layout to settle
-                    await new Promise(resolve => setTimeout(resolve, 200));
-
-                    await html2pdf().set(opt).from(invoiceEl).save(); 
-                } catch (pdfErr) {
-                    console.warn('PDF generation failed:', pdfErr);
-                }
-            }
-
-
-            // Send emails
-            sendEmailBtn.textContent = '📨 Sending Email...';
             let successCount = 0;
             let lastError = '';
             for (const email of recipients) {
@@ -1020,9 +1029,9 @@ ${businessName}
             sendEmailBtn.textContent = '📤 Send Invoice Email 💎';
 
             if (successCount === recipients.length) {
-                alert(`✅ Done!\n\n📄 Invoice PDF downloaded to your device\n📧 Email sent to ${successCount} recipient${successCount > 1 ? 's' : ''}\n\nTip: Open the downloaded PDF and attach it manually if your email client didn't auto-attach it.`);
+                alert(`✅ Email Summary Sent!\n\n📧 A professional summary has been successfully sent to ${successCount} recipient${successCount > 1 ? 's' : ''}.\n\nTip: You can now click "Generate Standard PDF" to save a copy for your own records or to manually attach to a follow-up.`);
             } else {
-                alert(`⚠️ PDF downloaded but email sent to ${successCount} of ${recipients.length} recipients.\n\nError: ${lastError}`);
+                alert(`⚠️ Email sent to ${successCount} of ${recipients.length} recipients.\n\nError: ${lastError}`);
             }
         });
     }
