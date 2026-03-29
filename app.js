@@ -514,46 +514,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return { email: cEmail, subject, body, cName, link };
     }
 
-    document.getElementById('email-btn').addEventListener('click', () => {
-        const data = getInvoiceEmailContent();
-        if (!data.email) {
-            alert('Please manually input a Client Email (in the Client Details section)!');
-            document.getElementById('client-email-input').focus();
-            return;
-        }
-        
-        window.location.href = `mailto:${encodeURIComponent(data.email)}?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(data.body)}`;
-        
-        setTimeout(() => {
-            if (confirm("Native Email triggered! Did it open? If not, would you like to COPY the text to your clipboard instead?")) {
-                document.getElementById('copy-email-btn').click();
-            }
-        }, 2000);
-    });
-
-    document.getElementById('whatsapp-btn')?.addEventListener('click', () => {
-        const data = getInvoiceEmailContent();
-        const msg = encodeURIComponent(`*${data.subject}*\n\nHi ${data.cName},\nPlease find details for ${data.subject} below. (Remember to attach the PDF!)\n\n*Amount Due: ${document.getElementById('total-amount').textContent}*\n${data.link ? '\n*Payment Link:* ' + data.link : ''}\n\n_Generated via Synergy Invoice_`);
-        window.open(`https://wa.me/?text=${msg}`, '_blank');
-    });
-
-    document.getElementById('copy-email-btn').addEventListener('click', () => {
-        const data = getInvoiceEmailContent();
-        const fullMsg = `Recipients: ${data.email || 'N/A'}\nSubject: ${data.subject}\n\n${data.body}`;
-        
-        navigator.clipboard.writeText(fullMsg).then(() => {
-            const btn = document.getElementById('copy-email-btn');
-            const originalText = btn.textContent;
-            btn.textContent = "✅ Template Copied!";
-            btn.style.color = "#10b981";
-            setTimeout(() => {
-                btn.textContent = originalText;
-                btn.style.color = "";
-            }, 3000);
-            alert("Email template copied successfully! You can now paste (Ctrl+V) this into Gmail, Yahoo, or any other webmail provider.");
-        });
-    });
-
     // Initial render
     renderEditorItems();
     renderItems();
@@ -994,22 +954,43 @@ ${businessName}
             `.trim();
 
             // ── AUTO-GENERATE & DOWNLOAD PDF before sending ──
+            if (!isPro) {
+                sendEmailBtn.disabled = false;
+                sendEmailBtn.textContent = '📤 Send Invoice Email 💎';
+                upgradeBtn.click(); // Trigger paywall
+                return;
+            }
+
             sendEmailBtn.disabled = true;
             sendEmailBtn.textContent = '📄 Generating PDF...';
 
+            // Ensure preview is fully updated before capture
+            renderItems(); 
             const invoiceEl = document.getElementById('invoice-preview');
+
             if (invoiceEl && typeof html2pdf !== 'undefined') {
                 try {
-                    await html2pdf()
-                        .set({
-                            margin: 0,
-                            filename: `Invoice-${invoiceNo}-${clientName}.pdf`,
-                            image: { type: 'jpeg', quality: 0.95 },
-                            html2canvas: { scale: 2, useCORS: true, logging: false },
-                            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                        })
-                        .from(invoiceEl)
-                        .save(); // triggers browser download
+                    // Optimization for Mobile: Lower scale (1.5) and simplified rendering for speed
+                    // Also force avoid-all page breaks to keep it on one page
+                    const opt = {
+                        margin: [0, 0],
+                        filename: `Invoice-${invoiceNo}-${clientName}.pdf`,
+                        image: { type: 'jpeg', quality: 0.98 },
+                        html2canvas: { 
+                            scale: 2, 
+                            useCORS: true, 
+                            logging: false,
+                            letterRendering: true,
+                            scrollY: -window.scrollY // Fix for capture offset
+                        },
+                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                    };
+
+                    // Wait a tiny bit for the layout to settle
+                    await new Promise(resolve => setTimeout(resolve, 200));
+
+                    await html2pdf().set(opt).from(invoiceEl).save(); 
                 } catch (pdfErr) {
                     console.warn('PDF generation failed:', pdfErr);
                 }
@@ -1036,7 +1017,7 @@ ${businessName}
             }
 
             sendEmailBtn.disabled = false;
-            sendEmailBtn.textContent = '📤 Send Invoice Email to Recipients';
+            sendEmailBtn.textContent = '📤 Send Invoice Email 💎';
 
             if (successCount === recipients.length) {
                 alert(`✅ Done!\n\n📄 Invoice PDF downloaded to your device\n📧 Email sent to ${successCount} recipient${successCount > 1 ? 's' : ''}\n\nTip: Open the downloaded PDF and attach it manually if your email client didn't auto-attach it.`);

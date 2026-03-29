@@ -271,7 +271,7 @@
 
                 <!-- SEND BY EMAIL PANEL -->
                 <div style="margin-top: 18px; background: rgba(99,102,241,0.06); border: 1px solid rgba(99,102,241,0.2); border-radius: 14px; padding: 1.2rem;">
-                    <div style="font-size: 0.8rem; font-weight: 700; color: var(--primary-color); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">📨 Send Invoice by Email</div>
+                    <div style="font-size: 0.8rem; font-weight: 700; color: var(--primary-color); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">📨 Send Invoice by Email <span class="gold-diamond">💎</span></div>
                     <div id="email-recipients-list">
                         <div class="email-recipient-row" style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
                             <input type="email" class="recipient-email-input" placeholder="client@email.com" style="flex: 1; font-size: 0.85rem; padding: 0.5rem 0.75rem;">
@@ -279,44 +279,22 @@
                         </div>
                     </div>
                     <button id="add-recipient-btn" style="background: none; border: 1px dashed rgba(99,102,241,0.4); color: var(--primary-color); border-radius: 8px; padding: 6px 14px; cursor: pointer; font-size: 0.8rem; font-weight: 600; width: 100%; margin-bottom: 10px;">+ Add Another Recipient</button>
-                    <button id="send-invoice-email-btn" class="btn primary" style="width: 100%; margin: 0; padding: 0.65rem; font-size: 0.9rem; background: linear-gradient(135deg, #6366f1, #4338ca);">📤 Send Invoice Email to Recipients</button>
-                    <p style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 8px; text-align: center; opacity: 0.7;">All recipients receive a professional text summary of the invoice.</p>
+                    <button id="send-invoice-email-btn" class="btn primary pro-input" style="width: 100%; margin: 0; padding: 0.65rem; font-size: 0.9rem; background: linear-gradient(135deg, #6366f1, #4338ca);">📤 Send Invoice Email <span class="gold-diamond">💎</span></button>
+                    <p style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 8px; text-align: center; opacity: 0.7;">This feature sends the invoice directly to your client's inbox.</p>
                 </div>
 
-                <div style="margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <button id="email-btn" class="btn secondary" style="margin: 0; padding: 0.6rem; font-size: 0.85rem;">✉️ Email App</button>
-                    <button id="whatsapp-btn" class="btn secondary" style="margin: 0; border-color: #25d366; color: #25d366; padding: 0.6rem; font-size: 0.85rem;">💬 WhatsApp</button>
+                <div style="margin-top: 15px;">
+                    <button id="copy-email-btn" class="btn secondary" style="width: 100%; border-style: dotted; font-size: 0.75rem; padding: 0.5rem;">📋 Copy Details (Webmail/Paste)</button>
                 </div>
-                
-                <button id="copy-email-btn" class="btn secondary" style="margin-top: 10px; border-style: dotted; font-size: 0.75rem; padding: 0.5rem;">📋 Copy Details (Webmail/Paste)</button>
 
                 <a href="thermal.html" class="btn secondary" target="_blank" style="margin-top: 10px; text-decoration: none; text-align: center; display: block; border-color: #f59e0b; color: #f59e0b;">🧾 Open Thermal Receipt Generator</a>
                 
                 <!-- Agency Footer -->
                 <div style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: var(--text-secondary); font-size: 0.75rem; line-height: 1.6;">
                     <p style="margin-bottom: 6px;">This website is one of the digital products of <strong style="color: #f8fafc;">Synergy Solutions Agency</strong>.</p>
-                    <p>For more products or enquiries:</p>
-                    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 8px; flex-wrap: wrap;">
-                        <a href="mailto:synergysolutionsagency@gmail.com" style="color: var(--primary-color); text-decoration: none; display: flex; align-items: center; gap: 4px; font-weight: 600;">
-                            Email Us
-                        </a>
-                        <span style="color: rgba(255,255,255,0.1);">|</span>
-                        <a href="https://wa.me/2349039464500" target="_blank" style="color: #10b981; text-decoration: none; display: flex; align-items: center; gap: 4px; font-weight: 600;">
-                            WhatsApp: +234 9039464500
-                        </a>
-                        <span style="color: rgba(255,255,255,0.1);">|</span>
-                        <a href="admin.html" style="color: rgba(255,255,255,0.2); text-decoration: none; font-size: 0.65rem;">Admin</a>
-                    </div>
-                </div>
-
-                <!-- Sponsored Content Opt-In -->
-                <div style="margin-top: 2rem; padding: 1.25rem; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.1); background: rgba(0,0,0,0.2);">
-                    <div style="display: flex; flex-direction: row; align-items: flex-start; gap: 10px;">
-                        <input type="checkbox" id="ads-toggle" style="width: 20px; height: 20px; cursor: pointer; margin-top: 2px;">
-                        <label for="ads-toggle" style="cursor: pointer; color: var(--text-secondary); margin: 0; font-size: 0.8rem; line-height: 1.5; text-align: left;">
-                            <strong style="color: #f8fafc; font-size: 0.85rem;">Enable Sponsored Business Highlights</strong><br>
-                            Opt-in to occasionally see carefully curated business flyers and inspirational content from verified partners.
-                        </label>
+                    <p>Designed with love for global small businesses.</p>
+                    <div style="margin-top: 12px;">
+                        <a href="admin.html" style="color: rgba(255,255,255,0.2); text-decoration: none; font-size: 0.65rem;">Admin Access</a>
                     </div>
                 </div>
             </div>
