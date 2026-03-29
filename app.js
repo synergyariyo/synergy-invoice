@@ -10,6 +10,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 2000);
 
+    // GLOBAL VISITOR TRACKER - Standard Free-Tier
+    // Using CounterAPI.dev (Community Free, Scalable, Reliable)
+    const trackVisitor = async () => {
+        const sessionKey = 'synergy_session_tracked';
+        const hasTracked = sessionStorage.getItem(sessionKey);
+        
+        if (!hasTracked) {
+            try {
+                // Tracking visit for Synergy Invoice App - Live Global Key
+                await fetch('https://api.counterapi.dev/v1/synergy_v1_live/global_visits/up');
+                sessionStorage.setItem(sessionKey, 'true');
+            } catch (err) {
+                console.warn("Tracking failed, system bypassed.");
+            }
+        }
+    };
+    trackVisitor();
+
 
     // Inputs
     const bNameIn = document.getElementById('business-name-input');
@@ -474,32 +492,66 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 800);
     });
 
-    document.getElementById('email-btn').addEventListener('click', () => {
+    function getInvoiceEmailContent() {
         const cEmail = document.getElementById('client-email-input').value.trim();
         const docName = document.getElementById('doc-type-select').options[document.getElementById('doc-type-select').selectedIndex].text;
         const bName = document.getElementById('business-name-input').value.trim() || 'My Business';
         const num = invNoIn.value.trim() || '001';
         const link = document.getElementById('payment-link-input').value.trim();
-        
-        if (!cEmail) {
+        const totalAmountText = document.getElementById('total-amount').textContent;
+        const cName = cNameIn.value.trim() || 'Customer';
+
+        const subject = `${docName} ${num} from ${bName}`;
+        let body = `Hi ${cName},\n\n`;
+        body += `*** IMPORTANT: PLEASE ATTACH THE PDF YOU JUST DOWNLOADED TO THIS EMAIL BEFORE SENDING ***\n\n`;
+        body += `Please find the details for ${docName} #${num} below.\n\n`;
+        body += `Amount Due: ${totalAmountText}\n`;
+        if (link) {
+            body += `\nYou can easily complete your payment online using this link:\n${link}\n`;
+        }
+        body += `\nLooking forward to doing business!\n\nBest Regards,\n${bName}`;
+
+        return { email: cEmail, subject, body, cName, link };
+    }
+
+    document.getElementById('email-btn').addEventListener('click', () => {
+        const data = getInvoiceEmailContent();
+        if (!data.email) {
             alert('Please manually input a Client Email (in the Client Details section)!');
             document.getElementById('client-email-input').focus();
             return;
         }
         
-        const totalAmountText = document.getElementById('total-amount').textContent;
-        const sub = `${docName} ${num} from ${bName}`;
+        window.location.href = `mailto:${encodeURIComponent(data.email)}?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(data.body)}`;
         
-        let bodyText = `Hi ${cNameIn.value.trim() || 'Customer'},\n\n`;
-        bodyText += `*** IMPORTANT: PLEASE ATTACH THE PDF YOU JUST DOWNLOADED TO THIS EMAIL BEFORE SENDING ***\n\n`;
-        bodyText += `Please find the details for ${docName} #${num} below.\n\n`;
-        bodyText += `Amount Due: ${totalAmountText}\n`;
-        if (link) {
-            bodyText += `\nYou can easily complete your payment online using this link:\n${link}\n`;
-        }
-        bodyText += `\nLooking forward to doing business!\n\nBest Regards,\n${bName}`;
+        setTimeout(() => {
+            if (confirm("Native Email triggered! Did it open? If not, would you like to COPY the text to your clipboard instead?")) {
+                document.getElementById('copy-email-btn').click();
+            }
+        }, 2000);
+    });
+
+    document.getElementById('whatsapp-btn')?.addEventListener('click', () => {
+        const data = getInvoiceEmailContent();
+        const msg = encodeURIComponent(`*${data.subject}*\n\nHi ${data.cName},\nPlease find details for ${data.subject} below. (Remember to attach the PDF!)\n\n*Amount Due: ${document.getElementById('total-amount').textContent}*\n${data.link ? '\n*Payment Link:* ' + data.link : ''}\n\n_Generated via Synergy Invoice_`);
+        window.open(`https://wa.me/?text=${msg}`, '_blank');
+    });
+
+    document.getElementById('copy-email-btn').addEventListener('click', () => {
+        const data = getInvoiceEmailContent();
+        const fullMsg = `Recipients: ${data.email || 'N/A'}\nSubject: ${data.subject}\n\n${data.body}`;
         
-        window.location.href = `mailto:${encodeURIComponent(cEmail)}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(bodyText)}`;
+        navigator.clipboard.writeText(fullMsg).then(() => {
+            const btn = document.getElementById('copy-email-btn');
+            const originalText = btn.textContent;
+            btn.textContent = "✅ Template Copied!";
+            btn.style.color = "#10b981";
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.color = "";
+            }, 3000);
+            alert("Email template copied successfully! You can now paste (Ctrl+V) this into Gmail, Yahoo, or any other webmail provider.");
+        });
     });
 
     // Initial render
@@ -543,19 +595,70 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let localProPrice = '$2';
 
-    // Geolocation Pricing Module
+    // Dynamic Regional Bank List Module
+    const fetchBanks = async (countryCode) => {
+        const bankListEl = document.getElementById('bank-list');
+        if (!bankListEl) return;
+
+        // User Requested Nigerian Banks - High Priority Fallback
+        const NIGERIAN_BANKS_TOP = ["Opay", "PalmPay", "Kuda Bank", "Moniepoint", "Access Bank", "Zenith Bank", "United Bank for Africa (UBA)", "First Bank of Nigeria", "GTBank", "Fidelity Bank", "Wema Bank", "Stanbic IBTC", "Sterling Bank", "Union Bank", "Polaris Bank"];
+        
+        let banks = [];
+        try {
+            if (countryCode === 'NG') {
+                // Try fetching live list, fallback to hardcoded top banks if it takes too long
+                const res = await fetch('https://api.paystack.co/bank');
+                const data = await res.json();
+                const liveBanks = data.data.map(b => b.name);
+                // Merge and remove duplicates
+                banks = [...new Set([...NIGERIAN_BANKS_TOP, ...liveBanks])];
+            } else {
+                // Global Major Banks Fallback
+                banks = ["Chase Bank", "Bank of America", "HSBC", "Barclays", "Standard Chartered", "Citibank", "Wells Fargo", "Goldman Sachs", "Lloyds Bank", "Deutsche Bank", "UBS", "Santander"];
+            }
+            
+            bankListEl.innerHTML = '';
+            banks.sort().forEach(bankName => {
+                const opt = document.createElement('option');
+                opt.value = bankName;
+                bankListEl.appendChild(opt);
+            });
+        } catch (err) {
+            console.warn("Live Bank list fetch failed, using manual top list.");
+            if (countryCode === 'NG') {
+                bankListEl.innerHTML = '';
+                NIGERIAN_BANKS_TOP.sort().forEach(b => {
+                    const opt = document.createElement('option');
+                    opt.value = b;
+                    bankListEl.appendChild(opt);
+                });
+            }
+        }
+    };
+
+    // Geolocation Pricing & Regional Data Module
     fetch('https://ipapi.co/json/')
         .then(res => res.json())
         .then(data => {
-            if (data.country_code === 'NG') localProPrice = '₦2,500';
-            else if (data.country_code === 'GB') localProPrice = '£2';
+            const country = data.country_code || 'NG'; // DEFAULT TO NIGERIA for this app
+            
+            // 1. Pricing Logic
+            if (country === 'NG') localProPrice = '₦2,500';
+            else if (country === 'GB') localProPrice = '£2';
             else if (data.currency === 'EUR') localProPrice = '€2';
             else localProPrice = '$2';
             
             if (proPriceDisplay.textContent !== "FREE FOR A LIFETIME") {
                 proPriceDisplay.textContent = localProPrice + " / month";
             }
-        }).catch(() => console.error("Geolocation bypassed"));
+
+            // 2. Bank List Logic
+            fetchBanks(country);
+
+        }).catch(() => {
+            console.error("Geolocation bypassed, defaulting to Nigeria.");
+            fetchBanks('NG'); // DEFAULT TO NIGERIA
+        });
 
     window.updateProPrice = () => {
         if (modal.style.display === 'flex' && proPriceDisplay.textContent !== "FREE FOR A LIFETIME") {
@@ -765,6 +868,141 @@ document.addEventListener('DOMContentLoaded', () => {
         closeAdBtn.addEventListener('click', () => {
             adContainer.classList.add('ad-slide-out');
             // Setting interval keeps running to eventually show a new ad later!
+        });
+    }
+
+    // URL PARAMETER HANDLER - Direct Upgrade Trigger
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('upgrade') === 'true') {
+        setTimeout(() => {
+            if (upgradeBtn) upgradeBtn.click();
+        }, 1200);
+    }
+
+    // ============================================================
+    // EMAIL JS - MULTI-RECIPIENT INVOICE SENDER
+    // ============================================================
+    // HOW TO ACTIVATE:
+    // 1. Go to https://www.emailjs.com and create a FREE account
+    // 2. Create an Email Service (Gmail, Outlook, etc.)
+    // 3. Create an Email Template with these variables:
+    //      {{to_email}}, {{from_name}}, {{subject}}, {{message}}
+    // 4. Replace the placeholders below with your actual IDs
+    // ============================================================
+    const EMAILJS_PUBLIC_KEY  = '_IT6zlNiJciLWzCKV';
+    const EMAILJS_SERVICE_ID  = 'service_l8f9fru';
+    const EMAILJS_TEMPLATE_ID = 'template_f7xl7sd';
+
+    // Initialize EmailJS
+    if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
+        emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+    }
+
+    // Add Recipient Button
+    const addRecipientBtn = document.getElementById('add-recipient-btn');
+    if (addRecipientBtn) {
+        addRecipientBtn.addEventListener('click', () => {
+            const list = document.getElementById('email-recipients-list');
+            const row = document.createElement('div');
+            row.className = 'email-recipient-row';
+            row.style.cssText = 'display: flex; gap: 8px; margin-bottom: 8px; align-items: center;';
+            row.innerHTML = `
+                <input type="email" class="recipient-email-input" placeholder="another@email.com" style="flex:1; font-size:0.85rem; padding:0.5rem 0.75rem;">
+                <button onclick="this.parentElement.remove()" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#ef4444;border-radius:8px;padding:6px 10px;cursor:pointer;font-weight:700;font-size:0.8rem;">✕</button>
+            `;
+            list.appendChild(row);
+        });
+    }
+
+    // Send Invoice Email Button
+    const sendEmailBtn = document.getElementById('send-invoice-email-btn');
+    if (sendEmailBtn) {
+        sendEmailBtn.addEventListener('click', async () => {
+
+            // Collect all recipient emails
+            const inputs = document.querySelectorAll('.recipient-email-input');
+            const recipients = [...inputs]
+                .map(i => i.value.trim())
+                .filter(e => e && e.includes('@'));
+
+            if (recipients.length === 0) {
+                alert('Please enter at least one valid email address.');
+                return;
+            }
+
+            // Check EmailJS is configured
+            if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
+                alert('⚙️ Email Setup Required\n\nTo enable email sending:\n1. Go to emailjs.com and create a free account\n2. Set up a Gmail/Outlook service\n3. Create an email template\n4. Paste your Public Key, Service ID & Template ID into app.js\n\nFor now, use the "Email App" or "Copy Details" buttons below.');
+                return;
+            }
+
+            // Extract invoice data from the live preview
+            const businessName  = document.getElementById('business-name-display')?.textContent || 'Your Business';
+            const clientName    = document.getElementById('client-name-display')?.textContent || 'Valued Client';
+            const invoiceNo     = document.getElementById('invoice-no-display')?.textContent || 'N/A';
+            const invoiceDate   = document.getElementById('invoice-date-display')?.textContent || 'N/A';
+            const dueDate       = document.getElementById('due-date-display')?.textContent || 'N/A';
+            const totalDue      = document.getElementById('total-display')?.textContent || 'N/A';
+            const bankName      = document.getElementById('bank-name-display')?.textContent || '';
+            const acctName      = document.getElementById('bank-acct-name-display')?.textContent || '';
+            const acctNo        = document.getElementById('bank-acct-no-display')?.textContent || '';
+            const paymentLink   = document.getElementById('payment-link-input')?.value || '';
+
+            const message = `
+Dear ${clientName},
+
+Please find below a summary of your invoice from ${businessName}.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+INVOICE SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+Invoice No:   ${invoiceNo}
+Issue Date:   ${invoiceDate}
+Due Date:     ${dueDate}
+Total Due:    ${totalDue}
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAYMENT DETAILS
+Bank:          ${bankName}
+Account Name:  ${acctName}
+Account No:    ${acctNo}
+${paymentLink ? `Pay Online:    ${paymentLink}` : ''}
+
+Please attach the PDF invoice for your records.
+
+Thank you for your business.
+
+Warm regards,
+${businessName}
+            `.trim();
+
+            // Send to all recipients
+            sendEmailBtn.disabled = true;
+            sendEmailBtn.textContent = '📨 Sending...';
+
+            let successCount = 0;
+            for (const email of recipients) {
+                try {
+                    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                        to_email:  email,
+                        from_name: businessName,
+                        subject:   `Invoice ${invoiceNo} from ${businessName} — Total: ${totalDue}`,
+                        message:   message
+                    });
+                    successCount++;
+                } catch (err) {
+                    console.error(`Failed to send to ${email}:`, err);
+                }
+            }
+
+            sendEmailBtn.disabled = false;
+            sendEmailBtn.textContent = '📤 Send Invoice Email to Recipients';
+
+            if (successCount === recipients.length) {
+                alert(`✅ Invoice sent successfully to ${successCount} recipient${successCount > 1 ? 's' : ''}!`);
+            } else {
+                alert(`⚠️ Sent to ${successCount} of ${recipients.length} recipients. Check the console for errors.`);
+            }
         });
     }
 

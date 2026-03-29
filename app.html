@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Synergy Invoice Generator</title>
+    
+    <!-- OS System App Branding Icons -->
+    <link rel="icon" type="image/png" href="synergy-logo.png">
+    <link rel="apple-touch-icon" href="synergy-logo.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#141726">
+
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- html2pdf.js for instant frontend PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- EmailJS for client-side email sending -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <img src="synergy-logo.png" alt="Synergy Logo Intro">
+    </div>
+
+    <div class="app-container">
+        <!-- Editor Panel -->
+        <div class="editor-panel" style="position: relative;">
+            
+            <!-- Application Logo (Top Right of Editor Panel) -->
+            <a href="index.html" style="position: absolute; top: 1.5rem; right: 1.5rem; background-color: #ffffff; padding: 6px 12px; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); z-index: 50; display: block;">
+                <img src="synergy-logo.png" alt="App Logo" style="height: 65px; display: block; object-fit: contain;">
+            </a>
+
+            <header class="editor-header" style="padding-right: 140px;">
+                <h1>Synergy Invoice <span class="pro-badge" id="pro-badge">FREE</span></h1>
+                <p>Global Invoice Generator for Business Owners</p>
+                <button id="upgrade-btn" class="btn secondary" style="margin-top: 10px; font-size: 0.8rem; padding: 0.5rem;">Upgrade to Pro</button>
+            </header>
+
+            <div class="form-section">
+                <h3>Logo Upload <span style="font-size:0.75rem; color: var(--accent);">(Free)</span></h3>
+                <div class="input-group">
+                    <label>Upload Business Logo</label>
+                    <input type="file" id="logo-upload" accept="image/png, image/jpeg" class="file-input">
+                </div>
+            </div>
+
+            <div class="form-section" style="position: relative;" id="pro-styling-section">
+                <h3>Pro Styling <span class="gold-diamond">💎</span> <span class="pro-badge" id="branding-lock">LOCKED</span></h3>
+                <div class="row" style="margin-top: 10px;">
+                    <div class="input-group half">
+                        <label>Paper Mode</label>
+                        <select id="invoice-theme-select" class="pro-input">
+                            <option value="light">Light Paper</option>
+                            <option value="dark">Premium Dark</option>
+                            <option value="blue">Deep Blue Mode</option>
+                            <option value="gold">Golden Mode</option>
+                        </select>
+                    </div>
+                    <div class="input-group half">
+                        <label>Accent Color</label>
+                        <input type="color" id="theme-color-input" value="#6366f1" style="padding: 2px; cursor: pointer; height: 38px;" class="pro-input">
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 10px;">
+                    <div class="input-group half">
+                        <label>Font Style</label>
+                        <select id="font-select" class="pro-input">
+                            <option value="Inter">Modern (Inter)</option>
+                            <option value="Playfair Display">Elegant (Playfair)</option>
+                            <option value="Courier New">Classic (Courier)</option>
+                            <option value="Arial">Neutral (Arial)</option>
+                            <option value="Georgia">Formal (Georgia)</option>
+                            <option value="Times New Roman">Traditional (Times)</option>
+                        </select>
+                    </div>
+                    <div class="input-group half">
+                        <label>Upload Font (.ttf)</label>
+                        <input type="file" id="font-upload" accept=".ttf,.otf,.woff" class="file-input pro-input" style="padding: 0.35rem">
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 15px; margin-bottom: 5px;">
+                    <div class="input-group" style="flex-direction: row; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="gold-border-toggle" class="pro-input" style="width: 18px; height: 18px; cursor: pointer;">
+                        <label for="gold-border-toggle" style="cursor: pointer; color: #f59e0b; font-weight: 700; margin: 0;">Enable Premium Gold Edges <span class="gold-diamond">💎</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Invoice Template Definition</h3>
+                <div class="input-group">
+                    <label>Select Layout Template</label>
+                    <select id="template-select">
+                        <option value="standard">Standard (Default) - FREE</option>
+                        <option value="minimal">Minimalist - FREE</option>
+                        <option value="corporate" class="pro-option">Corporate 💎 [PRO]</option>
+                        <option value="creative" class="pro-option">Creative 💎 [PRO]</option>
+                        <option value="executive" class="pro-option">Executive 💎 [PRO]</option>
+                        <option value="bold" class="pro-option">Bold Accent 💎 [PRO]</option>
+                        <option value="custom" class="pro-option">Upload Custom Template 💎 [PRO]</option>
+                    </select>
+                </div>
+                <div class="input-group" id="custom-template-upload-group" style="display: none; margin-top: 10px;">
+                    <label>Upload Custom Background Template (.png, .jpg)</label>
+                    <input type="file" id="template-upload" accept="image/*" class="file-input pro-input" style="padding: 0.35rem">
+                    <p style="font-size: 11px; margin-top: 4px; color: var(--text-secondary);">Your uploaded image will completely wrap the invoice background.</p>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Your Details</h3>
+                <div class="input-group">
+                    <input type="text" id="business-name-input" placeholder="Your Business Name" value="My Awesome Agency">
+                </div>
+                <div class="input-group">
+                    <input type="text" id="business-email-input" placeholder="Your Email" value="hello@myagency.com">
+                </div>
+                <div class="input-group">
+                    <input type="text" id="business-phone-input" placeholder="Phone Number (Optional)" value="">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <h3 style="margin: 0;">Client Details</h3>
+                    <select id="crm-client-select" style="width: auto; padding: 2px 6px; font-size: 0.75rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: var(--text-primary);">
+                        <option value="" style="color: #000;">Load Saved Client...</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="client-name-input" placeholder="Client Name" value="Acme Corp">
+                </div>
+                <div class="input-group">
+                    <input type="email" id="client-email-input" placeholder="Client Email (For Auto-Send)" value="">
+                </div>
+                <div class="input-group">
+                    <input type="text" id="client-address-input" placeholder="Client Address" value="123 Startup Blvd">
+                </div>
+                <button id="save-client-btn" class="btn secondary pro-input" style="padding: 0.4rem; font-size: 0.75rem; margin-top: 5px; background: rgba(0,0,0,0.2);">⭐ Save Client to Browser <span class="gold-diamond">💎</span></button>
+            </div>
+
+            <div class="form-section">
+                <h3>Document Details</h3>
+                <div class="row">
+                    <div class="input-group half">
+                        <label>Doc Type</label>
+                        <select id="doc-type-select">
+                            <option value="INVOICE">Standard Invoice</option>
+                            <option value="QUOTE">Quote / Estimate</option>
+                            <option value="RECEIPT">Receipt</option>
+                        </select>
+                    </div>
+                    <div class="input-group half">
+                        <label>Document No.</label>
+                        <input type="text" id="invoice-no-input" value="INV-001">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-group half">
+                        <label>Issue Date</label>
+                        <input type="date" id="invoice-date-input" value="2026-03-26">
+                    </div>
+                    <div class="input-group half">
+                        <label>Due Date</label>
+                        <input type="date" id="due-date-input" value="2026-04-26">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Line Items</h3>
+                <div id="items-container">
+                    <!-- Items dynamically generated here -->
+                </div>
+                <button id="add-item-btn" class="btn secondary"> + Add Item </button>
+            </div>
+
+            <div class="form-section">
+                <h3>Global Settings & Fees</h3>
+                <div class="row">
+                    <div class="input-group half">
+                        <label>Currency</label>
+                        <select id="currency-select">
+                            <option value="$">USD ($)</option>
+                            <option value="€">EUR (€)</option>
+                            <option value="£">GBP (£)</option>
+                            <option value="₦" selected>NGN (₦)</option>
+                            <option value="₹">INR (₹)</option>
+                            <option value="¥">JPY (¥)</option>
+                            <option value="A$">AUD (A$)</option>
+                            <option value="C$">CAD (C$)</option>
+                            <option value="R">ZAR (R)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="pricing-grid">
+                    <div class="input-group">
+                        <label>Tax (%)</label>
+                        <input type="number" id="tax-input" value="0" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Discount (%)</label>
+                        <input type="number" id="discount-input" value="0" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Shipping Fee</label>
+                        <input type="number" id="shipping-input" value="0" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Payment Details</h3>
+                <div class="input-group">
+                    <label>Bank Name</label>
+                    <input type="text" id="bank-name-input" list="bank-list" placeholder="e.g. Chase Bank, Access Bank" value="">
+                    <datalist id="bank-list"></datalist>
+                </div>
+                <div class="row">
+                    <div class="input-group half">
+                        <label>Account Name</label>
+                        <input type="text" id="bank-acct-name-input" placeholder="e.g. My Agency LLC" value="">
+                    </div>
+                    <div class="input-group half">
+                        <label>Account No. / IBAN</label>
+                        <input type="text" id="bank-acct-no-input" placeholder="e.g. 1234567890" value="">
+                    </div>
+                </div>
+                <div class="input-group" style="margin-top: 5px;">
+                    <label>Routing / SWIFT Code</label>
+                    <input type="text" id="bank-routing-input" placeholder="e.g. CHASUS33 (Optional)" value="">
+                </div>
+                <div class="input-group" style="margin-top: 5px;">
+                    <label>Online Payment Link (Optional)</label>
+                    <input type="url" id="payment-link-input" placeholder="https://paystack.com/pay/my-agency" value="">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Notes, Terms & Signature</h3>
+                <div class="input-group">
+                    <label>Invoice Notes</label>
+                    <textarea id="notes-input" rows="2">Thank you for your business.</textarea>
+                </div>
+                <div class="input-group" style="margin-top: 10px;">
+                    <label>Terms & Conditions</label>
+                    <textarea id="terms-input" rows="2">Payment is expected within 30 days. Late payments are subject to a 1.5% monthly fee.</textarea>
+                </div>
+                <div class="input-group" style="margin-top: 10px;">
+                    <label>Upload Signature (.png, .jpg)</label>
+                    <input type="file" id="signature-upload" accept="image/*" class="file-input" style="padding: 0.35rem">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <h3 style="margin: 0;">My Templates</h3>
+                    <select id="template-library-select" style="width: auto; padding: 2px 6px; font-size: 0.75rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: var(--text-primary);">
+                        <option value="" style="color: #000;">Load Saved Draft...</option>
+                    </select>
+                </div>
+                <button id="save-template-btn" class="btn secondary pro-input" style="padding: 0.5rem; font-size: 0.8rem; background: rgba(0,0,0,0.2);">💾 Save Current Invoice as Template <span class="gold-diamond">💎</span></button>
+            </div>
+
+            <div class="actions">
+                <button id="download-btn" class="btn primary">Generate Standard PDF</button>
+
+                <!-- SEND BY EMAIL PANEL -->
+                <div style="margin-top: 18px; background: rgba(99,102,241,0.06); border: 1px solid rgba(99,102,241,0.2); border-radius: 14px; padding: 1.2rem;">
+                    <div style="font-size: 0.8rem; font-weight: 700; color: var(--primary-color); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">📨 Send Invoice by Email</div>
+                    <div id="email-recipients-list">
+                        <div class="email-recipient-row" style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+                            <input type="email" class="recipient-email-input" placeholder="client@email.com" style="flex: 1; font-size: 0.85rem; padding: 0.5rem 0.75rem;">
+                            <button class="remove-email-btn" onclick="this.parentElement.remove()" style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-weight: 700; font-size: 0.8rem;">✕</button>
+                        </div>
+                    </div>
+                    <button id="add-recipient-btn" style="background: none; border: 1px dashed rgba(99,102,241,0.4); color: var(--primary-color); border-radius: 8px; padding: 6px 14px; cursor: pointer; font-size: 0.8rem; font-weight: 600; width: 100%; margin-bottom: 10px;">+ Add Another Recipient</button>
+                    <button id="send-invoice-email-btn" class="btn primary" style="width: 100%; margin: 0; padding: 0.65rem; font-size: 0.9rem; background: linear-gradient(135deg, #6366f1, #4338ca);">📤 Send Invoice Email to Recipients</button>
+                    <p style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 8px; text-align: center; opacity: 0.7;">All recipients receive a professional text summary of the invoice.</p>
+                </div>
+
+                <div style="margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <button id="email-btn" class="btn secondary" style="margin: 0; padding: 0.6rem; font-size: 0.85rem;">✉️ Email App</button>
+                    <button id="whatsapp-btn" class="btn secondary" style="margin: 0; border-color: #25d366; color: #25d366; padding: 0.6rem; font-size: 0.85rem;">💬 WhatsApp</button>
+                </div>
+                
+                <button id="copy-email-btn" class="btn secondary" style="margin-top: 10px; border-style: dotted; font-size: 0.75rem; padding: 0.5rem;">📋 Copy Details (Webmail/Paste)</button>
+
+                <a href="thermal.html" class="btn secondary" target="_blank" style="margin-top: 10px; text-decoration: none; text-align: center; display: block; border-color: #f59e0b; color: #f59e0b;">🧾 Open Thermal Receipt Generator</a>
+                
+                <!-- Agency Footer -->
+                <div style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: var(--text-secondary); font-size: 0.75rem; line-height: 1.6;">
+                    <p style="margin-bottom: 6px;">This website is one of the digital products of <strong style="color: #f8fafc;">Synergy Solutions Agency</strong>.</p>
+                    <p>For more products or enquiries:</p>
+                    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 8px; flex-wrap: wrap;">
+                        <a href="mailto:synergysolutionsagency@gmail.com" style="color: var(--primary-color); text-decoration: none; display: flex; align-items: center; gap: 4px; font-weight: 600;">
+                            Email Us
+                        </a>
+                        <span style="color: rgba(255,255,255,0.1);">|</span>
+                        <a href="https://wa.me/2349039464500" target="_blank" style="color: #10b981; text-decoration: none; display: flex; align-items: center; gap: 4px; font-weight: 600;">
+                            WhatsApp: +234 9039464500
+                        </a>
+                        <span style="color: rgba(255,255,255,0.1);">|</span>
+                        <a href="admin.html" style="color: rgba(255,255,255,0.2); text-decoration: none; font-size: 0.65rem;">Admin</a>
+                    </div>
+                </div>
+
+                <!-- Sponsored Content Opt-In -->
+                <div style="margin-top: 2rem; padding: 1.25rem; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.1); background: rgba(0,0,0,0.2);">
+                    <div style="display: flex; flex-direction: row; align-items: flex-start; gap: 10px;">
+                        <input type="checkbox" id="ads-toggle" style="width: 20px; height: 20px; cursor: pointer; margin-top: 2px;">
+                        <label for="ads-toggle" style="cursor: pointer; color: var(--text-secondary); margin: 0; font-size: 0.8rem; line-height: 1.5; text-align: left;">
+                            <strong style="color: #f8fafc; font-size: 0.85rem;">Enable Sponsored Business Highlights</strong><br>
+                            Opt-in to occasionally see carefully curated business flyers and inspirational content from verified partners.
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="preview-panel">
+            <div class="mobile-swipe-hint" style="display: none; text-align: center; color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.85rem; width: 100%; position: sticky; left: 0;">
+                <span style="background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 20px;">👈 Swipe left/right to view full invoice 👉</span>
+            </div>
+            <div class="preview-wrapper">
+                <div class="invoice-container" id="invoice-preview">
+                    
+                    <div class="invoice-header">
+                        <div class="brand">
+                            <img id="logo-display" src="" alt="Company Logo" style="display: none; max-height: 65px; max-width: 180px; object-fit: contain; margin-bottom: 12px;">
+                            <h2 id="business-name-display">My Awesome Agency</h2>
+                            <p id="business-email-display">hello@myagency.com</p>
+                            <p id="business-phone-display" style="margin-top: 2px;"></p>
+                        </div>
+                        <div class="invoice-meta">
+                            <h1 class="title" id="invoice-title-display">INVOICE</h1>
+                            <p><strong>Invoice No:</strong> <span id="invoice-no-display">INV-001</span></p>
+                            <p><strong>Issue Date:</strong> <span id="invoice-date-display">2026-03-26</span></p>
+                            <p><strong>Due Date:</strong> <span id="due-date-display">2026-04-26</span></p>
+                        </div>
+                    </div>
+
+                    <div class="invoice-body">
+                        <div class="bill-to">
+                            <h3>Billed To:</h3>
+                            <p id="client-name-display" class="highlight">Acme Corp</p>
+                            <p id="client-address-display">123 Startup Blvd</p>
+                        </div>
+
+                        <table class="invoice-table">
+                            <thead>
+                                <tr>
+                                    <th class="text-left">Description</th>
+                                    <th class="text-center">Qty</th>
+                                    <th class="text-center">Rate</th>
+                                    <th class="text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoice-items-display">
+                                <!-- Dynamically injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="invoice-footer" style="justify-content: space-between; align-items: flex-end;">
+                        <div class="payment-info" id="payment-info-display-container" style="display: none; font-size: 13px; line-height: 1.5; max-width: 55%; margin-right: 20px;">
+                            <h3 style="font-size: 14px; font-weight: 600; text-transform: uppercase; margin-bottom: 8px;" class="payment-info-title">Payment Details</h3>
+                            <p class="payment-info-text" style="margin: 2px 0;"><strong>Bank:</strong> <span id="bank-name-display"></span></p>
+                            <p class="payment-info-text" style="margin: 2px 0;"><strong>Account Name:</strong> <span id="bank-acct-name-display"></span></p>
+                            <p class="payment-info-text" style="margin: 2px 0;"><strong>Account No / IBAN:</strong> <span id="bank-acct-no-display"></span></p>
+                            <p class="payment-info-text" id="routing-container" style="display:none; margin: 2px 0;"><strong>SWIFT / Routing:</strong> <span id="bank-routing-display"></span></p>
+                        </div>
+                        <div class="totals-section">
+                            <div class="total-row">
+                                <span>Subtotal:</span>
+                                <span id="subtotal-display">$0.00</span>
+                            </div>
+                            <div class="total-row" id="discount-row" style="display: none; color: #ef4444;">
+                                <span>Discount (<span id="discount-rate-display">0</span>%):</span>
+                                <span id="discount-amount-display">-$0.00</span>
+                            </div>
+                            <div class="total-row">
+                                <span>Tax (<span id="tax-rate-display">0</span>%):</span>
+                                <span id="tax-amount-display">$0.00</span>
+                            </div>
+                            <div class="total-row" id="shipping-row" style="display: none;">
+                                <span>Shipping & Extra:</span>
+                                <span id="shipping-amount-display">$0.00</span>
+                            </div>
+                            <div class="total-row grand-total">
+                                <span id="total-label-display">Total Due:</span>
+                                <span id="total-display">$0.00</span>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    
+                    <div id="payment-link-display-container" style="display: none; margin-top: 15px; margin-bottom: -15px; text-align: right;">
+                        <a id="payment-link-display" href="#" target="_blank" style="display: inline-block; background: var(--primary-color); color: #fff; text-decoration: none; padding: 10px 24px; border-radius: 6px; font-weight: 700; font-size: 15px;">Pay Online Now</a>
+                    </div>
+                    
+                    <div class="invoice-footer-note">
+                        <p id="notes-display" style="font-size: 14px;">Thank you for your business.</p>
+                        <p id="terms-display" style="font-size: 11px; margin-top: 6px; color: #94a3b8; font-style: italic;">Payment is expected within 30 days. Late payments are subject to a 1.5% monthly fee.</p>
+                        <div style="margin-top: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <img id="signature-display" src="" alt="Signature" style="display: none; max-height: 70px; max-width: 250px; object-fit: contain;">
+                            <div id="signature-line" style="display: none; width: 250px; border-top: 1px solid var(--paper-border); margin-top: 5px; padding-top: 8px; color: #94a3b8; font-size: 12px; font-weight: 600; text-transform: uppercase;">Authorized Signature</div>
+                        </div>
+                    </div>
+                    
+                    <div class="watermark" id="invoice-watermark">
+                        Generated for free by Synergy Invoice
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Upgrade Modal -->
+    <div id="upgrade-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modal-title">Upgrade to Synergy Pro</h2>
+            <p id="modal-desc">Remove watermarks, unlock premium templates, and save clients instantly.</p>
+            <div class="price-tag" id="pro-price-display">$2 / month</div>
+            <button id="activate-pro-btn" class="btn primary">Activate Pro Now</button>
+        </div>
+    </div>
+
+
+
+
+    <!-- Floating AI Dictation Button -->
+    <div class="ai-dictate-btn" id="ai-dictate-btn" title="Click a box, then click here to dictate!">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="22"></line>
+        </svg>
+    </div>
+
+    <!-- Premium Analytics & Tracker Implementation -->
+    <script>
+        // Internal Session Tracker (Privacy-First)
+        (function() {
+            let visits = parseInt(localStorage.getItem('synergy_total_visits') || '0');
+            visits++;
+            localStorage.setItem('synergy_total_visits', visits);
+            console.log(`%c Synergy Metrics %c Visitor Count: ${visits} `, "background: #9333ea; color: #fff; border-radius: 3px 0 0 3px; padding: 2px 5px;", "background: #1e1b4b; color: #fff; border-radius: 0 3px 3px 0; padding: 2px 5px;");
+        })();
+
+        /* 
+           EXTERNAL TRACKER MIGRATION GUIDE:
+           If user wants robust professional analytics, uncomment the following:
+           
+           // GoatCounter (Privacy compliant, free hosting)
+           // (function() {
+           //    const s = document.createElement('script');
+           //    s.dataset.goatcounter = 'https://synergy-invoice.goatcounter.com/count';
+           //    s.async = true; s.src = '//gc.zgo.at/count.js';
+           //    document.head.append(s);
+           // })();
+        */
+    </script>
+
+    <script src="app.js"></script>
+</body>
+</html>

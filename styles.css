@@ -204,6 +204,18 @@ input:focus, select:focus, textarea:focus {
     background: rgba(0, 0, 0, 0.4);
 }
 
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+}
+
+@media (max-width: 600px) {
+    .pricing-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Dynamic Item Row */
 .item-row {
     display: flex;
@@ -787,12 +799,17 @@ input:focus, select:focus, textarea:focus {
         background: transparent !important;
     }
     
-    * {
+    *, *::before, *::after {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+        filter: none !important;
+        transition: none !important;
+        animation: none !important;
     }
     
-    .editor-panel, #download-btn, #sponsored-ad-container, .mobile-swipe-hint, #ai-dictate-btn, .pro-badge {
+    .editor-panel, #download-btn, #sponsored-ad-container, .mobile-swipe-hint, #ai-dictate-btn, .pro-badge, #upgrade-modal, #copy-email-btn {
         display: none !important;
     }
 
@@ -800,7 +817,7 @@ input:focus, select:focus, textarea:focus {
         width: 100% !important;
         padding: 0 !important;
         margin: 0 !important;
-        background: transparent !important;
+        background: white !important;
         overflow: visible !important;
         height: auto !important;
         display: block !important;
@@ -813,6 +830,7 @@ input:focus, select:focus, textarea:focus {
         height: auto !important;
         display: block !important;
         transform: none !important;
+        background: white !important;
     }
 
     #invoice-preview {
@@ -823,5 +841,6 @@ input:focus, select:focus, textarea:focus {
         min-width: 0 !important;
         padding: 0 !important;
         margin: 0 !important;
+        background: white !important;
     }
 }

@@ -2,452 +2,541 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Synergy Invoice Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synergy Invoice | Professional Invoicing for Modern Business</title>
     
-    <!-- OS System App Branding Icons -->
     <link rel="icon" type="image/png" href="synergy-logo.png">
-    <link rel="apple-touch-icon" href="synergy-logo.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#141726">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Animate.css for entrance animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #4338ca;
+            --accent: #10b981;
+            --bg: #ffffff;
+            --surface: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --glow: rgba(99, 102, 241, 0.1);
+        }
 
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- html2pdf.js for instant frontend PDF generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+        @keyframes floatBg {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 40px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .orb {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -1;
+            opacity: 0.2;
+            animation: floatBg 20s infinite ease-in-out;
+            pointer-events: none;
+        }
+        .orb-1 { top: -100px; right: -100px; background: #e0e7ff; }
+        .orb-2 { bottom: 0; left: -100px; background: #f0fdf4; animation-delay: -10s; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        header {
+            padding: 1.5rem 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            font-size: 1.6rem;
+            color: var(--secondary);
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+        }
+        .logo img { height: 56px; }
+
+        nav { display: flex; gap: 30px; align-items: center; }
+        nav a { text-decoration: none; color: var(--text-muted); font-weight: 600; font-size: 0.95rem; transition: 0.3s; }
+        nav a:hover { color: var(--primary); }
+
+        .btn {
+            padding: 0.8rem 1.6rem;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 10px 20px var(--glow); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 30px var(--glow); background: var(--secondary); }
+        .btn-outline { border: 2px solid var(--border); color: var(--text-main); }
+        .btn-outline:hover { background: var(--surface); border-color: var(--primary); color: var(--primary); }
+
+        /* Hero restoration */
+        section.hero {
+            padding: 6rem 10% 4rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .badge-new {
+            background: #eef2ff;
+            color: var(--primary);
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 3.2rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -2px;
+            font-family: 'Outfit', sans-serif;
+        }
+        h1 span { color: var(--primary); }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+
+        /* Mockup restoration */
+        .mockup-container {
+            max-width: 1000px;
+            margin: 5rem auto 0;
+            border-radius: 20px;
+            padding: 2.5rem;
+            background: #fff;
+            border: 1px solid var(--border);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.08);
+            position: relative;
+            transform: perspective(1000px) rotateX(5deg);
+        }
+        .mockup-container img { width: 100%; border-radius: 12px; }
+
+        /* Pricing Restoration */
+        .pricing { padding: 5rem 10%; background: white; text-align: center; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); justify-content: center; gap: 30px; margin-top: 3rem; max-width: 1200px; margin-left: auto; margin-right: auto; }
+        
+        .price-card {
+            background: white; border: 1px solid var(--border); padding: 3rem; border-radius: 32px; text-align: left; position: relative; overflow: hidden;
+        }
+        .price-card.featured { border: 2.5px solid var(--primary); transform: scale(1.05); box-shadow: 0 30px 60px rgba(99, 102, 241, 0.1); }
+        .price-card h4 { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .price-card .cost { font-size: 3rem; font-weight: 900; margin-bottom: 1.5rem; }
+        .price-card .cost span { font-size: 1rem; color: var(--text-muted); font-weight: 400; }
+        
+        .feature-list { list-style: none; margin-bottom: 2.5rem; }
+        .feature-list li { margin-bottom: 12px; display: flex; align-items: center; gap: 10px; font-weight: 600; color: #475569; font-size: 0.95rem; }
+        .feature-list li svg { color: var(--accent); flex-shrink: 0; }
+
+        footer { padding: 4rem 10%; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        
+        @media (max-width: 1100px) {
+            h1 { font-size: 3rem; }
+            .pricing-grid { grid-template-columns: 1fr; max-width: 420px; }
+            .price-card.featured { transform: scale(1); }
+            .mockup-container { transform: none; padding: 1rem; }
+        }
+    </style>
 </head>
 <body>
-    <!-- Splash Screen -->
-    <div id="splash-screen">
-        <img src="synergy-logo.png" alt="Synergy Logo Intro">
-    </div>
+    <!-- Cursor Glow -->
+    <div class="cursor-glow" id="cursor-glow"></div>
 
-    <div class="app-container">
-        <!-- Editor Panel -->
-        <div class="editor-panel" style="position: relative;">
-            
-            <!-- Application Logo (Top Right of Editor Panel) -->
-            <div style="position: absolute; top: 1.5rem; right: 1.5rem; background-color: #ffffff; padding: 6px 12px; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); z-index: 50;">
-                <img src="synergy-logo.png" alt="App Logo" style="height: 65px; display: block; object-fit: contain;">
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <header>
+        <a href="index.html" class="logo">
+            <img src="synergy-logo.png" alt="Synergy Logo">
+            SYNERGY INVOICE
+        </a>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="#features">Features</a>
+            <a href="problems.html">Problems We Solve</a>
+            <a href="#pricing">Pricing</a>
+            <a href="app.html" class="btn btn-primary">Launch App &rarr;</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="badge-new animate__animated animate__fadeInDown">🚀 Join the early-adopter community scaling with Synergy</div>
+        <h1 class="animate__animated animate__fadeInUp">Generate Invoices That <span>Get You Paid.</span></h1>
+        <p class="animate__animated animate__fadeInUp animate__delay-1s">
+            The ultra-premium generator for modern professional services. Create flawless quotes, invoices, and receipts in seconds. Join businesses worldwide already scaling with Synergy.
+        </p>
+        <div class="animate__animated animate__fadeInUp animate__delay-1s" style="display: flex; gap: 20px; justify-content: center;">
+            <a href="app.html" class="btn btn-primary btn-pulse" style="padding: 1.2rem 2.5rem; font-size: 1.1rem;">Try for Free (Lifetime)</a>
+            <a href="#pricing" class="btn btn-outline" style="padding: 1.2rem 2.5rem; font-size: 1.1rem;">Go Premium</a>
+        </div>
+        <!-- Trust stats -->
+        <div style="display: flex; gap: 20px; justify-content: center; margin-top: 2rem; flex-wrap: wrap;">
+            <div class="stat-pill" style="background: white; border: 1px solid var(--border); border-radius: 100px; padding: 8px 20px; font-size: 0.85rem; font-weight: 700; color: var(--text-main); box-shadow: 0 4px 12px rgba(0,0,0,0.05);">🔒 100% Private — No Server</div>
+            <div class="stat-pill" style="background: white; border: 1px solid var(--border); border-radius: 100px; padding: 8px 20px; font-size: 0.85rem; font-weight: 700; color: var(--text-main); box-shadow: 0 4px 12px rgba(0,0,0,0.05);">⚡ PDF in Under 60 Seconds</div>
+            <div class="stat-pill" style="background: white; border: 1px solid var(--border); border-radius: 100px; padding: 8px 20px; font-size: 0.85rem; font-weight: 700; color: var(--text-main); box-shadow: 0 4px 12px rgba(0,0,0,0.05);">🌍 Works in 200+ Countries</div>
+        </div>
+
+        <!-- Live Invoice Demo Mockup -->
+        <div class="mockup-container animate__animated animate__zoomIn animate__delay-2s" style="text-align: left;">
+            <div style="background: var(--surface); padding: 12px 20px; border-radius: 8px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                <div style="width: 12px; height: 12px; border-radius: 50%; background: #ff5f56;"></div>
+                <div style="width: 12px; height: 12px; border-radius: 50%; background: #ffbd2e;"></div>
+                <div style="width: 12px; height: 12px; border-radius: 50%; background: #27c93f;"></div>
+                <span style="margin-left: 10px; font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">synergy-invoice.app — Live Preview</span>
             </div>
-
-            <header class="editor-header" style="padding-right: 140px;">
-                <h1>Synergy Invoice <span class="pro-badge" id="pro-badge">FREE</span></h1>
-                <p>Global Invoice Generator for Business Owners</p>
-                <button id="upgrade-btn" class="btn secondary" style="margin-top: 10px; font-size: 0.8rem; padding: 0.5rem;">Upgrade to Pro</button>
-            </header>
-
-            <div class="form-section">
-                <h3>Logo Upload <span style="font-size:0.75rem; color: var(--accent);">(Free)</span></h3>
-                <div class="input-group">
-                    <label>Upload Business Logo</label>
-                    <input type="file" id="logo-upload" accept="image/png, image/jpeg" class="file-input">
+            <!-- Realistic Invoice Preview -->
+            <div style="background: white; border: 1px solid #eee; border-radius: 12px; padding: 40px; position: relative; overflow: hidden; min-height: 420px;">
+                <!-- Header row -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px;">
+                    <div>
+                        <div style="font-family: Outfit, sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--primary); margin-bottom: 4px;">Synergy Designs Ltd.</div>
+                        <div style="font-size: 0.75rem; color: #94a3b8;">synergy@designs.ng &nbsp;|&nbsp; +234 812 345 6789</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-family: Outfit, sans-serif; font-size: 2rem; font-weight: 900; color: #e2e8f0; letter-spacing: -1px;">INVOICE</div>
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">#INV-0042 &nbsp;|&nbsp; Due: Apr 15, 2026</div>
+                    </div>
                 </div>
+                <!-- Bill to -->
+                <div style="margin-bottom: 24px;">
+                    <div style="font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 6px;">Billed To</div>
+                    <div style="font-weight: 700; color: var(--text-main);">Acme Corp Nigeria</div>
+                    <div style="font-size: 0.8rem; color: #64748b;">14 Marina Street, Lagos Island</div>
+                </div>
+                <!-- Table -->
+                <div style="border-top: 2px solid #f1f5f9; padding-top: 16px;">
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; margin-bottom: 10px;">
+                        <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #94a3b8;">Description</span>
+                        <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #94a3b8; text-align: center;">Qty</span>
+                        <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #94a3b8; text-align: center;">Rate</span>
+                        <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #94a3b8; text-align: right;">Total</span>
+                    </div>
+                    <div class="inv-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; padding: 10px 0;">
+                        <span style="font-size: 0.85rem; font-weight: 600;">Brand Identity Design</span>
+                        <span style="font-size: 0.85rem; text-align: center;">1</span>
+                        <span style="font-size: 0.85rem; text-align: center;">$150,000</span>
+                        <span style="font-size: 0.85rem; font-weight: 700; text-align: right;">$150,000</span>
+                    </div>
+                    <div class="inv-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; padding: 10px 0;">
+                        <span style="font-size: 0.85rem; font-weight: 600;">Social Media Pack (3 months)</span>
+                        <span style="font-size: 0.85rem; text-align: center;">3</span>
+                        <span style="font-size: 0.85rem; text-align: center;">$40,000</span>
+                        <span style="font-size: 0.85rem; font-weight: 700; text-align: right;">$120,000</span>
+                    </div>
+                    <div class="inv-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; padding: 10px 0;">
+                        <span style="font-size: 0.85rem; font-weight: 600;">Website Landing Page</span>
+                        <span style="font-size: 0.85rem; text-align: center;">1</span>
+                        <span style="font-size: 0.85rem; text-align: center;">$200,000</span>
+                        <span style="font-size: 0.85rem; font-weight: 700; text-align: right;">$200,000</span>
+                    </div>
+                </div>
+                <!-- Total -->
+                <div style="float: right; margin-top: 20px; min-width: 220px;">
+                    <div style="display: flex; justify-content: space-between; gap: 40px; padding: 8px 0; border-top: 1px solid #f1f5f9;">
+                        <span style="font-size: 0.8rem; color: #64748b;">Subtotal</span><span style="font-size: 0.8rem; font-weight: 600;">$470,000</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; gap: 40px; padding: 8px 0;">
+                        <span style="font-size: 0.8rem; color: #64748b;">VAT (7.5%)</span><span style="font-size: 0.8rem; font-weight: 600;">$35,250</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; gap: 40px; padding: 10px 0; border-top: 2px solid var(--primary);">
+                        <span style="font-weight: 800; color: var(--primary);">Total Due</span><span style="font-weight: 900; color: var(--primary); font-size: 1.1rem;">$505,250</span>
+                    </div>
+                </div>
+                <!-- Paid stamp -->
+                <div class="paid-stamp" style="position: absolute; top: 50%; right: 50px; transform: rotate(-15deg) translateY(-50%); color: #10b981; border: 3px solid #10b981; padding: 8px 20px; border-radius: 6px; font-weight: 900; font-size: 1.3rem; letter-spacing: 2px; opacity: 0;">PAID ✓</div>
             </div>
+        </div>
+    </section>
 
-            <div class="form-section" style="position: relative;" id="pro-styling-section">
-                <h3>Pro Styling <span class="gold-diamond">💎</span> <span class="pro-badge" id="branding-lock">LOCKED</span></h3>
-                <div class="row" style="margin-top: 10px;">
-                    <div class="input-group half">
-                        <label>Paper Mode</label>
-                        <select id="invoice-theme-select" class="pro-input">
-                            <option value="light">Light Paper</option>
-                            <option value="dark">Premium Dark</option>
-                            <option value="blue">Deep Blue Mode</option>
-                            <option value="gold">Golden Mode</option>
-                        </select>
-                    </div>
-                    <div class="input-group half">
-                        <label>Accent Color</label>
-                        <input type="color" id="theme-color-input" value="#6366f1" style="padding: 2px; cursor: pointer; height: 38px;" class="pro-input">
-                    </div>
-                </div>
-                <div class="row" style="margin-top: 10px;">
-                    <div class="input-group half">
-                        <label>Font Style</label>
-                        <select id="font-select" class="pro-input">
-                            <option value="Inter">Modern (Inter)</option>
-                            <option value="Playfair Display">Elegant (Playfair)</option>
-                            <option value="Courier New">Classic (Courier)</option>
-                            <option value="Arial">Neutral (Arial)</option>
-                            <option value="Georgia">Formal (Georgia)</option>
-                            <option value="Times New Roman">Traditional (Times)</option>
-                        </select>
-                    </div>
-                    <div class="input-group half">
-                        <label>Upload Font (.ttf)</label>
-                        <input type="file" id="font-upload" accept=".ttf,.otf,.woff" class="file-input pro-input" style="padding: 0.35rem">
-                    </div>
-                </div>
-                <div class="row" style="margin-top: 15px; margin-bottom: 5px;">
-                    <div class="input-group" style="flex-direction: row; align-items: center; gap: 8px;">
-                        <input type="checkbox" id="gold-border-toggle" class="pro-input" style="width: 18px; height: 18px; cursor: pointer;">
-                        <label for="gold-border-toggle" style="cursor: pointer; color: #f59e0b; font-weight: 700; margin: 0;">Enable Premium Gold Edges <span class="gold-diamond">💎</span></label>
-                    </div>
-                </div>
+    <section class="features" id="features" style="padding: 5rem 10%; background: var(--surface);">
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;">Everything you need.</h2>
+            <p style="color: var(--text-muted);">From CRM to PDF generation — the most complete invoicing toolkit for modern professionals.</p>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px;">
+            <div style="background: white; border-radius: 24px; padding: 2.5rem; border: 1px solid var(--border); transition: 0.3s;" onmouseover="this.style.transform='translateY(-10px)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.05)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="width:60px;height:60px;border-radius:16px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:1.5rem;">✉️</div>
+                <h3 style="margin-bottom:1rem;font-weight:800;">Automated Mailing</h3>
+                <p style="color:var(--text-muted);font-size:0.95rem;">Distribute invoices instantly. Pre-filled templates ensure your clients receive bills with professional clarity.</p>
             </div>
-
-            <div class="form-section">
-                <h3>Invoice Template Definition</h3>
-                <div class="input-group">
-                    <label>Select Layout Template</label>
-                    <select id="template-select">
-                        <option value="standard">Standard (Default) - FREE</option>
-                        <option value="minimal">Minimalist - FREE</option>
-                        <option value="corporate" class="pro-option">Corporate 💎 [PRO]</option>
-                        <option value="creative" class="pro-option">Creative 💎 [PRO]</option>
-                        <option value="executive" class="pro-option">Executive 💎 [PRO]</option>
-                        <option value="bold" class="pro-option">Bold Accent 💎 [PRO]</option>
-                        <option value="custom" class="pro-option">Upload Custom Template 💎 [PRO]</option>
-                    </select>
-                </div>
-                <div class="input-group" id="custom-template-upload-group" style="display: none; margin-top: 10px;">
-                    <label>Upload Custom Background Template (.png, .jpg)</label>
-                    <input type="file" id="template-upload" accept="image/*" class="file-input pro-input" style="padding: 0.35rem">
-                    <p style="font-size: 11px; margin-top: 4px; color: var(--text-secondary);">Your uploaded image will completely wrap the invoice background.</p>
-                </div>
+            <div style="background: white; border-radius: 24px; padding: 2.5rem; border: 1px solid var(--border); transition: 0.3s;" onmouseover="this.style.transform='translateY(-10px)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.05)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="width:60px;height:60px;border-radius:16px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:1.5rem;">🧠</div>
+                <h3 style="margin-bottom:1rem;font-weight:800;">AI Voice Dictation</h3>
+                <p style="color:var(--text-muted);font-size:0.95rem;">Speed up your workflow. Simply speak to fill in your invoice items and descriptions instantly.</p>
             </div>
-
-            <div class="form-section">
-                <h3>Your Details</h3>
-                <div class="input-group">
-                    <input type="text" id="business-name-input" placeholder="Your Business Name" value="My Awesome Agency">
-                </div>
-                <div class="input-group">
-                    <input type="text" id="business-email-input" placeholder="Your Email" value="hello@myagency.com">
-                </div>
-                <div class="input-group">
-                    <input type="text" id="business-phone-input" placeholder="Phone Number (Optional)" value="">
-                </div>
+            <div style="background: white; border-radius: 24px; padding: 2.5rem; border: 1px solid var(--border); transition: 0.3s;" onmouseover="this.style.transform='translateY(-10px)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.05)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="width:60px;height:60px;border-radius:16px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:1.5rem;">💬</div>
+                <h3 style="margin-bottom:1rem;font-weight:800;">WhatsApp Integration</h3>
+                <p style="color:var(--text-muted);font-size:0.95rem;">Share professional invoices directly to your clients' phones with one tap.</p>
             </div>
-
-            <div class="form-section">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <h3 style="margin: 0;">Client Details</h3>
-                    <select id="crm-client-select" style="width: auto; padding: 2px 6px; font-size: 0.75rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: var(--text-primary);">
-                        <option value="" style="color: #000;">Load Saved Client...</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <input type="text" id="client-name-input" placeholder="Client Name" value="Acme Corp">
-                </div>
-                <div class="input-group">
-                    <input type="email" id="client-email-input" placeholder="Client Email (For Auto-Send)" value="">
-                </div>
-                <div class="input-group">
-                    <input type="text" id="client-address-input" placeholder="Client Address" value="123 Startup Blvd">
-                </div>
-                <button id="save-client-btn" class="btn secondary pro-input" style="padding: 0.4rem; font-size: 0.75rem; margin-top: 5px; background: rgba(0,0,0,0.2);">⭐ Save Client to Browser <span class="gold-diamond">💎</span></button>
+            <div style="background: white; border-radius: 24px; padding: 2.5rem; border: 1px solid var(--border); transition: 0.3s;" onmouseover="this.style.transform='translateY(-10px)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.05)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="width:60px;height:60px;border-radius:16px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:1.5rem;">🏗️</div>
+                <h3 style="margin-bottom:1rem;font-weight:800;">CRM Client Library</h3>
+                <p style="color:var(--text-muted);font-size:0.95rem;">Save your repeated clients and line items for lightning-fast recurring invoicing.</p>
             </div>
-
-            <div class="form-section">
-                <h3>Document Details</h3>
-                <div class="row">
-                    <div class="input-group half">
-                        <label>Doc Type</label>
-                        <select id="doc-type-select">
-                            <option value="INVOICE">Standard Invoice</option>
-                            <option value="QUOTE">Quote / Estimate</option>
-                            <option value="RECEIPT">Receipt</option>
-                        </select>
-                    </div>
-                    <div class="input-group half">
-                        <label>Document No.</label>
-                        <input type="text" id="invoice-no-input" value="INV-001">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="input-group half">
-                        <label>Issue Date</label>
-                        <input type="date" id="invoice-date-input" value="2026-03-26">
-                    </div>
-                    <div class="input-group half">
-                        <label>Due Date</label>
-                        <input type="date" id="due-date-input" value="2026-04-26">
-                    </div>
-                </div>
+            <div style="background: white; border-radius: 24px; padding: 2.5rem; border: 1px solid var(--border); transition: 0.3s;" onmouseover="this.style.transform='translateY(-10px)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.05)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="width:60px;height:60px;border-radius:16px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:1.5rem;">🧾</div>
+                <h3 style="margin-bottom:1rem;font-weight:800;">Thermal Receipts</h3>
+                <p style="color:var(--text-muted);font-size:0.95rem;">Perfect for offline shops. Generate 80mm or 57mm POS receipts instantly.</p>
             </div>
-
-            <div class="form-section">
-                <h3>Line Items</h3>
-                <div id="items-container">
-                    <!-- Items dynamically generated here -->
-                </div>
-                <button id="add-item-btn" class="btn secondary"> + Add Item </button>
+            <div style="background: white; border-radius: 24px; padding: 2.5rem; border: 1px solid var(--border); transition: 0.3s;" onmouseover="this.style.transform='translateY(-10px)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.05)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="width:60px;height:60px;border-radius:16px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:1.5rem;">🎨</div>
+                <h3 style="margin-bottom:1rem;font-weight:800;">Premium Branding</h3>
+                <p style="color:var(--text-muted);font-size:0.95rem;">Unlock custom fonts, dark modes, and Executive PDF themes with Synergy Pro.</p>
             </div>
+        </div>
+    </section>
 
-            <div class="form-section">
-                <h3>Global Settings & Fees</h3>
-                <div class="row">
-                    <div class="input-group half">
-                        <label>Currency</label>
-                        <select id="currency-select">
-                            <option value="$">USD ($)</option>
-                            <option value="€">EUR (€)</option>
-                            <option value="£">GBP (£)</option>
-                            <option value="₦" selected>NGN (₦)</option>
-                            <option value="₹">INR (₹)</option>
-                            <option value="¥">JPY (¥)</option>
-                            <option value="A$">AUD (A$)</option>
-                            <option value="C$">CAD (C$)</option>
-                            <option value="R">ZAR (R)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="input-group" style="flex: 1;">
-                        <label>Tax (%)</label>
-                        <input type="number" id="tax-input" value="0" min="0">
-                    </div>
-                    <div class="input-group" style="flex: 1;">
-                        <label>Discount (%)</label>
-                        <input type="number" id="discount-input" value="0" min="0">
-                    </div>
-                    <div class="input-group" style="flex: 1;">
-                        <label>Shipping Flat Fee</label>
-                        <input type="number" id="shipping-input" value="0" min="0">
+    <!-- Human Touch Section -->
+    <section style="padding: 5rem 10%; background: white;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; max-width: 1100px; margin: 0 auto;">
+            <div style="position: relative;">
+                <img src="business-owner.png" alt="Happy business owner using Synergy Invoice" style="width: 100%; border-radius: 24px; box-shadow: 0 30px 70px rgba(0,0,0,0.12); display: block;">
+                <!-- Floating badge -->
+                <div style="position: absolute; bottom: -20px; left: 30px; background: white; border-radius: 16px; padding: 14px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 12px; border: 1px solid var(--border);">
+                    <span style="font-size: 1.8rem;">⚡</span>
+                    <div>
+                        <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main);">Invoice sent!</div>
+                        <div style="font-size: 0.75rem; color: var(--accent); font-weight: 700;">Payment received in 2hrs</div>
                     </div>
                 </div>
             </div>
-
-            <div class="form-section">
-                <h3>Payment Details</h3>
-                <div class="input-group">
-                    <label>Bank Name</label>
-                    <input type="text" id="bank-name-input" placeholder="e.g. Chase Bank, Access Bank" value="">
-                </div>
-                <div class="row">
-                    <div class="input-group half">
-                        <label>Account Name</label>
-                        <input type="text" id="bank-acct-name-input" placeholder="e.g. My Agency LLC" value="">
+            <div>
+                <div style="display: inline-block; background: #eef2ff; color: var(--primary); padding: 5px 14px; border-radius: 100px; font-size: 0.8rem; font-weight: 800; margin-bottom: 1.5rem;">Real Story</div>
+                <h2 style="font-family: 'Outfit', sans-serif; font-size: 2.4rem; font-weight: 900; line-height: 1.2; margin-bottom: 1.5rem; letter-spacing: -1px;">"I went from spending <span style="color: var(--primary);">an hour</span> on each invoice to under <span style="color: var(--accent);">3 minutes.</span>"</h2>
+                <p style="color: var(--text-muted); font-size: 1.05rem; line-height: 1.8; margin-bottom: 2rem;">Before Synergy, I was using Word documents and chasing clients on WhatsApp manually. Now I generate a professional invoice, send it straight to their phone, and get paid — all without leaving my desk.</p>
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.1rem;">A</div>
+                    <div>
+                        <div style="font-weight: 800; font-size: 0.95rem;">Adaeze K.</div>
+                        <div style="color: var(--text-muted); font-size: 0.85rem;">Freelance Brand Designer, Lagos</div>
                     </div>
-                    <div class="input-group half">
-                        <label>Account No. / IBAN</label>
-                        <input type="text" id="bank-acct-no-input" placeholder="e.g. 1234567890" value="">
-                    </div>
-                </div>
-                <div class="input-group" style="margin-top: 5px;">
-                    <label>Routing / SWIFT Code</label>
-                    <input type="text" id="bank-routing-input" placeholder="e.g. CHASUS33 (Optional)" value="">
-                </div>
-                <div class="input-group" style="margin-top: 5px;">
-                    <label>Online Payment Link (Optional)</label>
-                    <input type="url" id="payment-link-input" placeholder="https://paystack.com/pay/my-agency" value="">
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h3>Notes, Terms & Signature</h3>
-                <div class="input-group">
-                    <label>Invoice Notes</label>
-                    <textarea id="notes-input" rows="2">Thank you for your business.</textarea>
-                </div>
-                <div class="input-group" style="margin-top: 10px;">
-                    <label>Terms & Conditions</label>
-                    <textarea id="terms-input" rows="2">Payment is expected within 30 days. Late payments are subject to a 1.5% monthly fee.</textarea>
-                </div>
-                <div class="input-group" style="margin-top: 10px;">
-                    <label>Upload Signature (.png, .jpg)</label>
-                    <input type="file" id="signature-upload" accept="image/*" class="file-input" style="padding: 0.35rem">
-                </div>
-            </div>
-
-            <div class="form-section">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <h3 style="margin: 0;">My Templates</h3>
-                    <select id="template-library-select" style="width: auto; padding: 2px 6px; font-size: 0.75rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: var(--text-primary);">
-                        <option value="" style="color: #000;">Load Saved Draft...</option>
-                    </select>
-                </div>
-                <button id="save-template-btn" class="btn secondary pro-input" style="padding: 0.5rem; font-size: 0.8rem; background: rgba(0,0,0,0.2);">💾 Save Current Invoice as Template <span class="gold-diamond">💎</span></button>
-            </div>
-
-            <div class="actions">
-                <button id="download-btn" class="btn primary">Generate Standard PDF</button>
-                <button id="email-btn" class="btn secondary" style="margin-top: 10px;">✉️ Send via Email App</button>
-                <a href="thermal.html" class="btn secondary" target="_blank" style="margin-top: 10px; text-decoration: none; text-align: center; display: block; border-color: #f59e0b; color: #f59e0b;">🧾 Open Thermal Receipt Generator</a>
-                
-                <!-- Agency Footer -->
-                <div style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: var(--text-secondary); font-size: 0.75rem; line-height: 1.6;">
-                    <p style="margin-bottom: 6px;">This website is one of the digital products of <strong style="color: #f8fafc;">Synergy Solutions Agency</strong>.</p>
-                    <p>For more products or enquiries:</p>
-                    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 8px; flex-wrap: wrap;">
-                        <a href="mailto:synergysolutionsagency@gmail.com" style="color: var(--primary-color); text-decoration: none; display: flex; align-items: center; gap: 4px; font-weight: 600;">
-                            Email Us
-                        </a>
-                        <span style="color: rgba(255,255,255,0.1);">|</span>
-                        <a href="https://wa.me/2349039464500" target="_blank" style="color: #10b981; text-decoration: none; display: flex; align-items: center; gap: 4px; font-weight: 600;">
-                            WhatsApp: +234 9039464500
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Sponsored Content Opt-In -->
-                <div style="margin-top: 2rem; padding: 1.25rem; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.1); background: rgba(0,0,0,0.2);">
-                    <div style="display: flex; flex-direction: row; align-items: flex-start; gap: 10px;">
-                        <input type="checkbox" id="ads-toggle" style="width: 20px; height: 20px; cursor: pointer; margin-top: 2px;">
-                        <label for="ads-toggle" style="cursor: pointer; color: var(--text-secondary); margin: 0; font-size: 0.8rem; line-height: 1.5; text-align: left;">
-                            <strong style="color: #f8fafc; font-size: 0.85rem;">Enable Sponsored Business Highlights</strong><br>
-                            Opt-in to occasionally see carefully curated business flyers and inspirational content from verified partners.
-                        </label>
-                    </div>
+                    <div style="margin-left: auto; color: #f59e0b; font-size: 1.1rem; letter-spacing: 2px;">★★★★★</div>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Preview Panel -->
-        <div class="preview-panel">
-            <div class="mobile-swipe-hint" style="display: none; text-align: center; color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.85rem; width: 100%; position: sticky; left: 0;">
-                <span style="background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 20px;">👈 Swipe left/right to view full invoice 👉</span>
+    <section class="pricing" id="pricing">
+        <div class="section-title">
+            <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;">Simple, fair pricing.</h2>
+            <p style="color: var(--text-muted);">Start for free and upgrade when you're ready for pro features.</p>
+        </div>
+        <div class="pricing-grid">
+            <div class="price-card">
+                <h4>Free Tier</h4>
+                <div class="cost">₦0 <span>/ lifetime</span></div>
+                <ul class="feature-list">
+                    <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Unlimited Invoices</li>
+                    <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> WhatsApp Sharing</li>
+                    <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Thermal Receipt Mode</li>
+                    <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> AI Voice Integration</li>
+                </ul>
+                <a href="app.html" class="btn btn-outline" style="width: 100%; justify-content: center;">Start for Free</a>
             </div>
-            <div class="preview-wrapper">
-                <div class="invoice-container" id="invoice-preview">
-                    
-                    <div class="invoice-header">
-                        <div class="brand">
-                            <img id="logo-display" src="" alt="Company Logo" style="display: none; max-height: 65px; max-width: 180px; object-fit: contain; margin-bottom: 12px;">
-                            <h2 id="business-name-display">My Awesome Agency</h2>
-                            <p id="business-email-display">hello@myagency.com</p>
-                            <p id="business-phone-display" style="margin-top: 2px;"></p>
-                        </div>
-                        <div class="invoice-meta">
-                            <h1 class="title" id="invoice-title-display">INVOICE</h1>
-                            <p><strong>Invoice No:</strong> <span id="invoice-no-display">INV-001</span></p>
-                            <p><strong>Issue Date:</strong> <span id="invoice-date-display">2026-03-26</span></p>
-                            <p><strong>Due Date:</strong> <span id="due-date-display">2026-04-26</span></p>
-                        </div>
-                    </div>
+            <div class="price-card featured">
+                <div style="display:inline-block;background:#10b981;color:white;font-size:0.7rem;font-weight:800;padding:5px 16px;border-radius:100px;letter-spacing:1px;text-transform:uppercase;margin-bottom:1.2rem;">⭐ Most Popular</div>
+                <h4>Synergy Pro</h4>
+                <div class="cost" id="local-price">₦2,500 <span>/ month</span></div>
+                <ul class="feature-list">
+                    <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> <b>Remove Watermarks</b></li>
+                    <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> CRM Client Saving</li>
+                    <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Custom Fonts & Themes</li>
+                    <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Automated Email Send</li>
+                </ul>
+                <a href="app.html?upgrade=true" class="btn btn-primary" style="width:100%;justify-content:center;">Upgrade to Pro Now</a>
+                <p style="font-size:0.75rem;color:var(--text-muted);margin-top:10px;text-align:center;">✨ Includes 5 extra PDF downloads/month</p>
+            </div>
 
-                    <div class="invoice-body">
-                        <div class="bill-to">
-                            <h3>Billed To:</h3>
-                            <p id="client-name-display" class="highlight">Acme Corp</p>
-                            <p id="client-address-display">123 Startup Blvd</p>
-                        </div>
+            <!-- CUSTOM NEEDS CARD -->
+            <div class="price-card" style="background:linear-gradient(145deg,#0f172a 0%,#1e1b4b 100%);border:1px solid rgba(99,102,241,0.25);color:white;">
+                <div style="display:inline-block;background:rgba(245,158,11,0.15);color:#f59e0b;font-size:0.7rem;font-weight:800;padding:5px 16px;border-radius:100px;letter-spacing:1px;text-transform:uppercase;margin-bottom:1.2rem;border:1px solid rgba(245,158,11,0.3);">🏢 Enterprise</div>
+                <h4 style="color:white;">Custom Needs</h4>
+                <div style="font-size:2.2rem;font-weight:900;color:#f59e0b;margin-bottom:0.4rem;">Let's Talk</div>
+                <p style="font-size:0.82rem;color:rgba(255,255,255,0.45);margin-bottom:1.8rem;line-height:1.6;">Built around your agency, team, or high-volume business. We tailor everything around you.</p>
+                <ul style="list-style:none;margin-bottom:2rem;padding:0;">
+                    <li style="margin-bottom:12px;display:flex;align-items:center;gap:10px;font-weight:600;color:rgba(255,255,255,0.85);font-size:0.92rem;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Everything in Pro</li>
+                    <li style="margin-bottom:12px;display:flex;align-items:center;gap:10px;font-weight:600;color:rgba(255,255,255,0.85);font-size:0.92rem;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Custom Branding &amp; Domain</li>
+                    <li style="margin-bottom:12px;display:flex;align-items:center;gap:10px;font-weight:600;color:rgba(255,255,255,0.85);font-size:0.92rem;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Multi-User Team Access</li>
+                    <li style="margin-bottom:12px;display:flex;align-items:center;gap:10px;font-weight:600;color:rgba(255,255,255,0.85);font-size:0.92rem;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Dedicated Setup Support</li>
+                    <li style="margin-bottom:0;display:flex;align-items:center;gap:10px;font-weight:600;color:rgba(255,255,255,0.85);font-size:0.92rem;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Priority Feature Requests</li>
+                </ul>
+                <a href="https://wa.me/2349039464500?text=Hi%2C%20I'm%20interested%20in%20a%20Custom%20Needs%20plan%20for%20Synergy%20Invoice." target="_blank" class="btn" style="width:100%;justify-content:center;background:#f59e0b;color:#0f172a;font-weight:800;border:none;">💬 Chat With Us on WhatsApp</a>
+                <p style="font-size:0.72rem;color:rgba(255,255,255,0.3);margin-top:12px;text-align:center;">No commitment. Just a conversation.</p>
+            </div>
+        </div>
+    </section>
 
-                        <table class="invoice-table">
-                            <thead>
-                                <tr>
-                                    <th class="text-left">Description</th>
-                                    <th class="text-center">Qty</th>
-                                    <th class="text-center">Rate</th>
-                                    <th class="text-right">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody id="invoice-items-display">
-                                <!-- Dynamically injected via JS -->
-                            </tbody>
-                        </table>
-                    </div>
+    <!-- FAITH & BUSINESS INSPIRATION SECTION -->
+    <section id="faith-section" style="padding: 5rem 10%; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); text-align: center; position: relative; overflow: hidden;">
+        <!-- Background cross watermark -->
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:20rem;opacity:0.03;color:white;pointer-events:none;user-select:none;">✝</div>
 
-                    <div class="invoice-footer" style="justify-content: space-between; align-items: flex-end;">
-                        <div class="payment-info" id="payment-info-display-container" style="display: none; font-size: 13px; line-height: 1.5; max-width: 55%; margin-right: 20px;">
-                            <h3 style="font-size: 14px; font-weight: 600; text-transform: uppercase; margin-bottom: 8px;" class="payment-info-title">Payment Details</h3>
-                            <p class="payment-info-text" style="margin: 2px 0;"><strong>Bank:</strong> <span id="bank-name-display"></span></p>
-                            <p class="payment-info-text" style="margin: 2px 0;"><strong>Account Name:</strong> <span id="bank-acct-name-display"></span></p>
-                            <p class="payment-info-text" style="margin: 2px 0;"><strong>Account No / IBAN:</strong> <span id="bank-acct-no-display"></span></p>
-                            <p class="payment-info-text" id="routing-container" style="display:none; margin: 2px 0;"><strong>SWIFT / Routing:</strong> <span id="bank-routing-display"></span></p>
-                        </div>
-                        <div class="totals-section">
-                            <div class="total-row">
-                                <span>Subtotal:</span>
-                                <span id="subtotal-display">$0.00</span>
-                            </div>
-                            <div class="total-row" id="discount-row" style="display: none; color: #ef4444;">
-                                <span>Discount (<span id="discount-rate-display">0</span>%):</span>
-                                <span id="discount-amount-display">-$0.00</span>
-                            </div>
-                            <div class="total-row">
-                                <span>Tax (<span id="tax-rate-display">0</span>%):</span>
-                                <span id="tax-amount-display">$0.00</span>
-                            </div>
-                            <div class="total-row" id="shipping-row" style="display: none;">
-                                <span>Shipping & Extra:</span>
-                                <span id="shipping-amount-display">$0.00</span>
-                            </div>
-                            <div class="total-row grand-total">
-                                <span id="total-label-display">Total Due:</span>
-                                <span id="total-display">$0.00</span>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    
-                    <div id="payment-link-display-container" style="display: none; margin-top: 15px; margin-bottom: -15px; text-align: right;">
-                        <a id="payment-link-display" href="#" target="_blank" style="display: inline-block; background: var(--primary-color); color: #fff; text-decoration: none; padding: 10px 24px; border-radius: 6px; font-weight: 700; font-size: 15px;">Pay Online Now</a>
-                    </div>
-                    
-                    <div class="invoice-footer-note">
-                        <p id="notes-display" style="font-size: 14px;">Thank you for your business.</p>
-                        <p id="terms-display" style="font-size: 11px; margin-top: 6px; color: #94a3b8; font-style: italic;">Payment is expected within 30 days. Late payments are subject to a 1.5% monthly fee.</p>
-                        <div style="margin-top: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                            <img id="signature-display" src="" alt="Signature" style="display: none; max-height: 70px; max-width: 250px; object-fit: contain;">
-                            <div id="signature-line" style="display: none; width: 250px; border-top: 1px solid var(--paper-border); margin-top: 5px; padding-top: 8px; color: #94a3b8; font-size: 12px; font-weight: 600; text-transform: uppercase;">Authorized Signature</div>
-                        </div>
-                    </div>
-                    
-                    <div class="watermark" id="invoice-watermark">
-                        Generated for free by Synergy Invoice
-                    </div>
+        <div style="position:relative;z-index:1;">
+            <div style="display:inline-block;background:rgba(245,158,11,0.15);color:#f59e0b;font-size:0.75rem;font-weight:800;padding:5px 16px;border-radius:100px;letter-spacing:1px;text-transform:uppercase;margin-bottom:1.5rem;border:1px solid rgba(245,158,11,0.3);">✝ Faith & Business</div>
 
+            <h2 style="font-family:'Outfit',sans-serif;font-size:2.2rem;font-weight:900;color:white;margin-bottom:1rem;letter-spacing:-1px;">Rooted in Purpose. <span style="color:#f59e0b;">Driven by Love.</span></h2>
+            <p style="color:rgba(255,255,255,0.5);max-width:560px;margin:0 auto 2.5rem;font-size:1rem;line-height:1.7;">Business at its best is service. We believe your work is a calling — not just a career. Activate daily inspiration to keep you anchored.</p>
+
+            <!-- Activate Button -->
+            <button id="activate-inspiration-btn" onclick="toggleInspiration()" style="background:#f59e0b;color:#0f172a;border:none;padding:1rem 2.5rem;border-radius:50px;font-weight:800;font-size:1rem;cursor:pointer;transition:0.3s;box-shadow:0 10px 30px rgba(245,158,11,0.3);">
+                ✨ Activate Daily Inspiration
+            </button>
+
+            <!-- Inspiration Panel (hidden by default) -->
+            <div id="inspiration-panel" style="display:none;margin-top:3rem;">
+
+                <!-- Scripture Card -->
+                <div id="scripture-card" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:3rem;max-width:700px;margin:0 auto 2rem;backdrop-filter:blur(10px);transition:opacity 0.5s ease;">
+                    <div style="font-size:2.5rem;margin-bottom:1rem;">📖</div>
+                    <p id="scripture-text" style="font-size:1.3rem;color:white;font-style:italic;line-height:1.8;margin-bottom:1rem;font-family:'Outfit',sans-serif;">"Love your neighbour as yourself."</p>
+                    <p id="scripture-ref" style="font-weight:800;color:#f59e0b;font-size:0.9rem;letter-spacing:1px;">— Mark 12:31</p>
+                    <p id="scripture-context" style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-top:0.8rem;line-height:1.6;">Your client is your neighbour. Serve them excellently — with honesty, care, and integrity.</p>
                 </div>
+
+                <!-- Flyers & Video Row -->
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:800px;margin:0 auto 2rem;">
+                    <a href="https://wa.me/2349039464500?text=I%20want%20to%20advertise%20my%20business%20here" target="_blank" style="background:rgba(255,255,255,0.05);border:1px dashed rgba(255,255,255,0.15);border-radius:16px;padding:2rem 1rem;text-decoration:none;transition:0.3s;" onmouseover="this.style.background='rgba(245,158,11,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+                        <div style="font-size:2rem;margin-bottom:0.8rem;">🖼️</div>
+                        <div style="color:white;font-weight:700;font-size:0.9rem;">Your Flyer Here</div>
+                        <div style="color:rgba(255,255,255,0.4);font-size:0.75rem;margin-top:4px;">Advertise your business</div>
+                    </a>
+                    <a href="https://www.youtube.com/results?search_query=christian+business+devotional" target="_blank" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:2rem 1rem;text-decoration:none;transition:0.3s;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+                        <div style="font-size:2rem;margin-bottom:0.8rem;">▶️</div>
+                        <div style="color:white;font-weight:700;font-size:0.9rem;">Business Devotionals</div>
+                        <div style="color:rgba(255,255,255,0.4);font-size:0.75rem;margin-top:4px;">Watch faith & work videos</div>
+                    </a>
+                    <a href="https://wa.me/2349039464500?text=I%20want%20to%20advertise%20my%20business%20here" target="_blank" style="background:rgba(255,255,255,0.05);border:1px dashed rgba(255,255,255,0.15);border-radius:16px;padding:2rem 1rem;text-decoration:none;transition:0.3s;" onmouseover="this.style.background='rgba(245,158,11,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+                        <div style="font-size:2rem;margin-bottom:0.8rem;">📣</div>
+                        <div style="color:white;font-weight:700;font-size:0.9rem;">Partner With Us</div>
+                        <div style="color:rgba(255,255,255,0.4);font-size:0.75rem;margin-top:4px;">Reach our business audience</div>
+                    </a>
+                </div>
+
+                <button onclick="toggleInspiration()" style="background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);padding:8px 24px;border-radius:50px;cursor:pointer;font-size:0.85rem;">Hide Inspiration</button>
             </div>
         </div>
-    </div>
-    <!-- Upgrade Modal -->
-    <div id="upgrade-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2 id="modal-title">Upgrade to Synergy Pro</h2>
-            <p id="modal-desc">Remove watermarks, unlock premium templates, and save clients instantly.</p>
-            <div class="price-tag" id="pro-price-display">$2 / month</div>
-            <button id="activate-pro-btn" class="btn primary">Activate Pro Now</button>
-        </div>
-    </div>
+    </section>
 
-    <!-- Sponsored Adverting Container -->
-    <div id="sponsored-ad-container" class="ad-slide-out">
-        <button id="close-ad-btn" title="Hide Ad">&times;</button>
-        <div id="ad-content-wrapper">
-            <!-- Dynamic Flyouts or Video Ads injected here -->
-        </div>
-        <div class="ad-disclaimer">SUPPORTED BY PARTNER SPONSORSHIPS</div>
-    </div>
-
-    <!-- Floating AI Dictation Button -->
-    <div class="ai-dictate-btn" id="ai-dictate-btn" title="Click a box, then click here to dictate!">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-            <line x1="12" y1="19" x2="12" y2="22"></line>
-        </svg>
-    </div>
-
-    <!-- Premium Analytics & Tracker Implementation -->
     <script>
-        // Internal Session Tracker (Privacy-First)
-        (function() {
-            let visits = parseInt(localStorage.getItem('synergy_total_visits') || '0');
-            visits++;
-            localStorage.setItem('synergy_total_visits', visits);
-            console.log(`%c Synergy Metrics %c Visitor Count: ${visits} `, "background: #9333ea; color: #fff; border-radius: 3px 0 0 3px; padding: 2px 5px;", "background: #1e1b4b; color: #fff; border-radius: 0 3px 3px 0; padding: 2px 5px;");
-        })();
+    const scriptures = [
+        { text: '"Love your neighbour as yourself."', ref: '— Mark 12:31', context: 'Your client is your neighbour. Serve them excellently — with honesty, care, and integrity.' },
+        { text: '"Love the Lord your God with all your heart and with all your soul and with all your mind and with all your strength."', ref: '— Mark 12:30', context: 'Let your business be an act of worship. Excellence in your work is honouring to God.' },
+        { text: '"Do to others as you would have them do to you."', ref: '— Luke 6:31', context: 'Set your prices fairly. Deliver what you promised. Treat every client how you want to be treated.' },
+        { text: '"Whatever you do, work at it with all your heart, as working for the Lord, not for human masters."', ref: '— Colossians 3:23', context: 'Your invoices, your follow-ups, your delivery — do it all as if God is watching. Because He is.' },
+        { text: '"Commit your work to the Lord, and your plans will be established."', ref: '— Proverbs 16:3', context: 'Bring God into your business strategy. Pray before you pitch. Trust Him with the results.' },
+        { text: '"A good name is more desirable than great riches; to be esteemed is better than silver or gold."', ref: '— Proverbs 22:1', context: 'Your reputation is your greatest business asset. Guard it with integrity in every transaction.' },
+        { text: '"Honest scales and balances belong to the Lord; all the weights in the bag are of his making."', ref: '— Proverbs 11:1', context: 'Charge fairly. Bill accurately. God cares about how you handle money in business.' },
+        { text: '"Do you see someone skilled in their work? They will serve before kings; they will not serve before officials of low rank."', ref: '— Proverbs 22:29', context: 'Excellence opens doors. Master your trade and success will follow naturally.' },
+        { text: '"The greatest among you shall be your servant."', ref: '— Matthew 23:11', context: 'The most successful business owners are those who genuinely serve others. Lead with humility.' },
+        { text: '"Give, and it will be given to you. A good measure, pressed down, shaken together and running over..."', ref: '— Luke 6:38', context: 'Be generous in your business. Offer value beyond the invoice. What you sow, you will reap.' }
+    ];
 
-        /* 
-           EXTERNAL TRACKER MIGRATION GUIDE:
-           If user wants robust professional analytics, uncomment the following:
-           
-           // GoatCounter (Privacy compliant, free hosting)
-           // (function() {
-           //    const s = document.createElement('script');
-           //    s.dataset.goatcounter = 'https://synergy-invoice.goatcounter.com/count';
-           //    s.async = true; s.src = '//gc.zgo.at/count.js';
-           //    document.head.append(s);
-           // })();
-        */
+    let scriptureIndex = 0;
+    let scriptureTimer = null;
+
+    function toggleInspiration() {
+        const panel = document.getElementById('inspiration-panel');
+        const btn = document.getElementById('activate-inspiration-btn');
+        if (panel.style.display === 'none') {
+            panel.style.display = 'block';
+            btn.style.display = 'none';
+            rotateScripture();
+            scriptureTimer = setInterval(rotateScripture, 8000);
+        } else {
+            panel.style.display = 'none';
+            btn.style.display = 'inline-block';
+            clearInterval(scriptureTimer);
+        }
+    }
+
+    function rotateScripture() {
+        const card = document.getElementById('scripture-card');
+        card.style.opacity = '0';
+        setTimeout(() => {
+            const s = scriptures[scriptureIndex % scriptures.length];
+            document.getElementById('scripture-text').textContent = s.text;
+            document.getElementById('scripture-ref').textContent = s.ref;
+            document.getElementById('scripture-context').textContent = s.context;
+            card.style.opacity = '1';
+            scriptureIndex++;
+        }, 500);
+    }
     </script>
 
-    <script src="app.js"></script>
+    <footer>
+        <div class="logo">
+            <img src="synergy-logo.png" alt="Synergy Logo">
+            SYNERGY
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">&copy; 2026 Synergy Solutions Agency. All rights reserved.</p>
+        <div style="display: flex; gap: 20px;">
+            <a href="mailto:synergysolutionsagency@gmail.com" style="color: var(--text-muted); text-decoration: none;">Email</a>
+            <a href="https://wa.me/2349039464500" style="color: var(--text-muted); text-decoration: none;">WhatsApp</a>
+        </div>
+    </footer>
+
+    <script>
+        // === CURSOR GLOW ===
+        const glow = document.getElementById('cursor-glow');
+        if (glow) {
+            document.addEventListener('mousemove', e => {
+                glow.style.left = e.clientX + 'px';
+                glow.style.top = e.clientY + 'px';
+            });
+        }
+
+        // === LOCAL PRICE DISPLAY ===
+        fetch('https://ipapi.co/json/')
+            .then(res => res.json())
+            .then(data => {
+                const el = document.getElementById('local-price');
+                if (!el) return;
+                if (data.country_code === 'NG') el.innerHTML = '&#8358;2,500 <span>/ month</span>';
+                else if (data.country_code === 'GB') el.innerHTML = '&pound;2 <span>/ month</span>';
+                else if (data.currency === 'EUR') el.innerHTML = '&euro;2 <span>/ month</span>';
+                else el.innerHTML = '$2 <span>/ month</span>';
+            });
+    </script>
 </body>
 </html>
+
