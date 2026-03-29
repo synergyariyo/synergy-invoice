@@ -263,13 +263,14 @@
             header { padding: 1rem 5%; position: sticky; }
 
             nav { display: none; flex-direction: column; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-                  background: rgba(255,255,255,0.97); backdrop-filter: blur(20px); z-index: 999;
-                  align-items: center; justify-content: center; gap: 28px; }
+                  background: rgba(255,255,255,0.75); backdrop-filter: blur(40px); 
+                  -webkit-backdrop-filter: blur(40px); z-index: 10001;
+                  align-items: center; justify-content: center; gap: 32px; }
             nav.mobile-open { display: flex; }
-            nav a { font-size: 1.2rem; font-weight: 700; color: var(--text-main); }
+            nav a { font-size: 1.4rem; font-weight: 800; color: var(--text-main); text-shadow: 0 0 20px rgba(255,255,255,0.5); width: 100%; text-align: center; text-decoration: none; }
             nav a.active { color: var(--primary); }
-            nav .btn-nav { padding: 0.9rem 2rem; font-size: 1rem; }
-            .hamburger { display: flex; }
+            nav .btn-nav { padding: 1.1rem 2.8rem; font-size: 1.1rem; border-radius: 100px; background: var(--primary); color: white; width: auto; font-weight: 800; text-decoration: none; }
+            .hamburger { display: flex; z-index: 10002; }
 
             .page-hero { padding: 4rem 5% 3rem; }
             .page-hero h1 { font-size: 1.9rem; letter-spacing: -0.5px; }
