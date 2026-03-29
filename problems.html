@@ -252,11 +252,45 @@
             gap: 20px;
         }
 
-        @media (max-width: 900px) {
-            .problems-grid { grid-template-columns: 1fr; }
-            .page-hero h1 { font-size: 2.2rem; }
-            header { padding: 1rem 5%; }
-            .problems-section { padding: 3rem 5%; }
+        /* Hamburger */
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 5px; z-index: 1000; }
+        .hamburger span { display: block; width: 25px; height: 2.5px; background: var(--text-main); border-radius: 4px; transition: 0.3s; }
+        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        @media (max-width: 768px) {
+            header { padding: 1rem 5%; position: sticky; }
+
+            nav { display: none; flex-direction: column; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                  background: rgba(255,255,255,0.97); backdrop-filter: blur(20px); z-index: 999;
+                  align-items: center; justify-content: center; gap: 28px; }
+            nav.mobile-open { display: flex; }
+            nav a { font-size: 1.2rem; font-weight: 700; color: var(--text-main); }
+            nav a.active { color: var(--primary); }
+            nav .btn-nav { padding: 0.9rem 2rem; font-size: 1rem; }
+            .hamburger { display: flex; }
+
+            .page-hero { padding: 4rem 5% 3rem; }
+            .page-hero h1 { font-size: 1.9rem; letter-spacing: -0.5px; }
+            .page-hero p { font-size: 0.95rem; }
+
+            .problems-section { padding: 2.5rem 5%; }
+            .problems-grid { grid-template-columns: 1fr; gap: 24px; }
+            .problem-card { padding: 1.8rem 1.4rem; }
+            .problem-card h3 { font-size: 1.05rem; }
+
+            .cta-section { padding: 3rem 5%; }
+            .cta-section h2 { font-size: 1.8rem; }
+            .cta-section p { font-size: 0.95rem; }
+            .btn-white { padding: 0.9rem 2rem; font-size: 0.95rem; }
+
+            footer { flex-direction: column; text-align: center; gap: 14px; padding: 2rem 5%; }
+        }
+
+        @media (max-width: 400px) {
+            .page-hero h1 { font-size: 1.6rem; }
+            .problem-card { padding: 1.4rem 1.1rem; border-radius: 16px; }
         }
     </style>
 </head>
@@ -267,13 +301,16 @@
         <img src="synergy-logo.png" alt="Synergy">
         SYNERGY INVOICE
     </a>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="index.html#features">Features</a>
-        <a href="problems.html" class="active">Problems We Solve</a>
-        <a href="index.html#pricing">Pricing</a>
-        <a href="app.html" class="btn-nav">Launch App →</a>
+    <nav id="prob-nav">
+        <a href="index.html" onclick="closeProbNav()">Home</a>
+        <a href="index.html#features" onclick="closeProbNav()">Features</a>
+        <a href="problems.html" class="active" onclick="closeProbNav()">Problems We Solve</a>
+        <a href="index.html#pricing" onclick="closeProbNav()">Pricing</a>
+        <a href="app.html" class="btn-nav" onclick="closeProbNav()">Launch App →</a>
     </nav>
+    <button class="hamburger" id="prob-hamburger" onclick="toggleProbNav()" aria-label="Menu" style="display:none;">
+        <span></span><span></span><span></span>
+    </button>
 </header>
 
 <section class="page-hero">
@@ -426,6 +463,26 @@
         <a href="https://wa.me/2349039464500" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">WhatsApp</a>
     </div>
 </footer>
-
+<script>
+    function toggleProbNav() {
+        const nav = document.getElementById('prob-nav');
+        const ham = document.getElementById('prob-hamburger');
+        nav.classList.toggle('mobile-open');
+        ham.classList.toggle('open');
+        document.body.style.overflow = nav.classList.contains('mobile-open') ? 'hidden' : '';
+    }
+    function closeProbNav() {
+        document.getElementById('prob-nav').classList.remove('mobile-open');
+        document.getElementById('prob-hamburger').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    function checkProbHam() {
+        const ham = document.getElementById('prob-hamburger');
+        if (window.innerWidth <= 768) ham.style.display = 'flex';
+        else { ham.style.display = 'none'; closeProbNav(); }
+    }
+    window.addEventListener('resize', checkProbHam);
+    checkProbHam();
+</script>
 </body>
 </html>

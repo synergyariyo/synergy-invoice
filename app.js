@@ -891,7 +891,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================================================
     const EMAILJS_PUBLIC_KEY  = '_IT6zlNiJciLWzCKV';
     const EMAILJS_SERVICE_ID  = 'service_l8f9fru';
-    const EMAILJS_TEMPLATE_ID = 'template_f7xl7sd';
+    const EMAILJS_TEMPLATE_ID = 'template_w5rqti4';
 
     // Initialize EmailJS
     if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
@@ -932,26 +932,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Check EmailJS is configured
             if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
-                alert('⚙️ Email Setup Required\n\nTo enable email sending:\n1. Go to emailjs.com and create a free account\n2. Set up a Gmail/Outlook service\n3. Create an email template\n4. Paste your Public Key, Service ID & Template ID into app.js\n\nFor now, use the "Email App" or "Copy Details" buttons below.');
+                alert('⚙️ Email Setup Required\n\nPaste your EmailJS Public Key, Service ID & Template ID into app.js to activate.');
                 return;
             }
 
-            // Extract invoice data from the live preview
-            const businessName  = document.getElementById('business-name-display')?.textContent || 'Your Business';
-            const clientName    = document.getElementById('client-name-display')?.textContent || 'Valued Client';
-            const invoiceNo     = document.getElementById('invoice-no-display')?.textContent || 'N/A';
-            const invoiceDate   = document.getElementById('invoice-date-display')?.textContent || 'N/A';
-            const dueDate       = document.getElementById('due-date-display')?.textContent || 'N/A';
-            const totalDue      = document.getElementById('total-display')?.textContent || 'N/A';
-            const bankName      = document.getElementById('bank-name-display')?.textContent || '';
-            const acctName      = document.getElementById('bank-acct-name-display')?.textContent || '';
-            const acctNo        = document.getElementById('bank-acct-no-display')?.textContent || '';
+            // ✅ Init EmailJS right before sending (lazy — guarantees library is loaded)
+            try {
+                if (typeof emailjs === 'undefined') {
+                    alert('❌ EmailJS library failed to load. Check your internet connection and try again.');
+                    return;
+                }
+                emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+            } catch (initErr) {
+                console.error('EmailJS init error:', initErr);
+            }
+
+            // Extract invoice data from the actual input fields
+            const businessName  = document.getElementById('business-name-input')?.value || 'Your Business';
+            const clientName    = document.getElementById('client-name-input')?.value || 'Valued Client';
+            const clientEmail   = document.getElementById('client-email-input')?.value || '';
+            const invoiceNo     = document.getElementById('invoice-no-input')?.value || 'N/A';
+            const invoiceDate   = document.getElementById('invoice-date-input')?.value || 'N/A';
+            const dueDate       = document.getElementById('due-date-input')?.value || 'N/A';
+            const totalDue      = document.getElementById('invoice-total')?.textContent
+                               || document.getElementById('total-amount')?.textContent
+                               || document.querySelector('.invoice-total')?.textContent || 'See invoice';
+            const bankName      = document.getElementById('bank-name-input')?.value || '';
+            const acctName      = document.getElementById('account-name-input')?.value || '';
+            const acctNo        = document.getElementById('account-number-input')?.value || '';
             const paymentLink   = document.getElementById('payment-link-input')?.value || '';
+
+            // Auto-add client email as first recipient if not already listed
+            if (clientEmail && recipients.indexOf(clientEmail) === -1) {
+                recipients.unshift(clientEmail);
+            }
 
             const message = `
 Dear ${clientName},
 
-Please find below a summary of your invoice from ${businessName}.
+Please find your invoice PDF attached to this email.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 INVOICE SUMMARY
@@ -968,19 +987,39 @@ Account Name:  ${acctName}
 Account No:    ${acctNo}
 ${paymentLink ? `Pay Online:    ${paymentLink}` : ''}
 
-Please attach the PDF invoice for your records.
-
 Thank you for your business.
 
 Warm regards,
 ${businessName}
             `.trim();
 
-            // Send to all recipients
+            // ── AUTO-GENERATE & DOWNLOAD PDF before sending ──
             sendEmailBtn.disabled = true;
-            sendEmailBtn.textContent = '📨 Sending...';
+            sendEmailBtn.textContent = '📄 Generating PDF...';
 
+            const invoiceEl = document.getElementById('invoice-preview');
+            if (invoiceEl && typeof html2pdf !== 'undefined') {
+                try {
+                    await html2pdf()
+                        .set({
+                            margin: 0,
+                            filename: `Invoice-${invoiceNo}-${clientName}.pdf`,
+                            image: { type: 'jpeg', quality: 0.95 },
+                            html2canvas: { scale: 2, useCORS: true, logging: false },
+                            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                        })
+                        .from(invoiceEl)
+                        .save(); // triggers browser download
+                } catch (pdfErr) {
+                    console.warn('PDF generation failed:', pdfErr);
+                }
+            }
+
+
+            // Send emails
+            sendEmailBtn.textContent = '📨 Sending Email...';
             let successCount = 0;
+            let lastError = '';
             for (const email of recipients) {
                 try {
                     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
@@ -991,6 +1030,7 @@ ${businessName}
                     });
                     successCount++;
                 } catch (err) {
+                    lastError = err?.text || err?.message || JSON.stringify(err);
                     console.error(`Failed to send to ${email}:`, err);
                 }
             }
@@ -999,9 +1039,9 @@ ${businessName}
             sendEmailBtn.textContent = '📤 Send Invoice Email to Recipients';
 
             if (successCount === recipients.length) {
-                alert(`✅ Invoice sent successfully to ${successCount} recipient${successCount > 1 ? 's' : ''}!`);
+                alert(`✅ Done!\n\n📄 Invoice PDF downloaded to your device\n📧 Email sent to ${successCount} recipient${successCount > 1 ? 's' : ''}\n\nTip: Open the downloaded PDF and attach it manually if your email client didn't auto-attach it.`);
             } else {
-                alert(`⚠️ Sent to ${successCount} of ${recipients.length} recipients. Check the console for errors.`);
+                alert(`⚠️ PDF downloaded but email sent to ${successCount} of ${recipients.length} recipients.\n\nError: ${lastError}`);
             }
         });
     }
