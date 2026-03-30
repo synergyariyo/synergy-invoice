@@ -209,21 +209,33 @@ async function loadUserHistory(uid) {
 }
 
 function updateAuthUI(user) {
-    const authLinksIcons = document.querySelectorAll('.auth-link-text');
     const authBtnContainers = document.querySelectorAll('.auth-btn-container');
 
     if (user) {
-        authBtnContainers.forEach(container => {
-            container.innerHTML = `
-                <div class="user-profile-nav" onclick="handleLogout()" title="Click to Logout">
-                    <img src="${user.photoURL || 'https://ui-avatars.com/api/?name=' + user.email}" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--primary);">
-                    <span style="font-size: 0.8rem; font-weight: 700;">${user.displayName || user.email.split('@')[0]}</span>
-                </div>
-            `;
+        // Fetch profile to check Pro status
+        db.collection('profiles').doc(user.uid).get().then(doc => {
+            const isPro = doc.exists && doc.data().isPro;
+            
+            authBtnContainers.forEach(container => {
+                const phot = user.photoURL || 'https://ui-avatars.com/api/?name=' + (user.displayName || user.email);
+                container.innerHTML = `
+                    <div style="position: relative; display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px;" onclick="handleLogout()" title="Click to Logout">
+                        <div style="position: relative; width: 34px; height: 34px;">
+                            <img src="${phot}" 
+                                 class="${isPro ? 'pro-glow' : ''}" 
+                                 style="width: 100%; height: 100%; border-radius: 50%; border: 2px solid ${isPro ? 'transparent' : 'var(--primary-color)'}; object-fit: cover;">
+                            ${isPro ? '<span class="pro-badge-mini">PRO</span>' : ''}
+                        </div>
+                        <span style="font-size: 0.8rem; font-weight: 800; color: ${isPro ? '#bf953f' : 'inherit'}">${user.displayName || user.email.split('@')[0]}</span>
+                    </div>
+                `;
+            });
         });
     } else {
         authBtnContainers.forEach(container => {
-            container.innerHTML = `<a href="javascript:void(0)" onclick="openAuthModal()" class="auth-link">Sign In</a>`;
+            container.innerHTML = `
+                <a href="javascript:void(0)" onclick="openAuthModal()" class="auth-link" style="color: var(--accent); text-decoration: none; font-weight: 700; font-size: 0.85rem;">Sign In</a>
+            `;
         });
     }
 }
