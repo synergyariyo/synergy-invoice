@@ -142,28 +142,68 @@ window.getUserProfile = async () => {
     }
 };
 
-// --- MONITOR AUTH STATE ---
+// --- MONITOR AUTH STATE (PERFORMANCE OPTIMIZED) ---
 auth.onAuthStateChanged((user) => {
+    // 1. Immediate UI update for basic auth status
     updateAuthUI(user);
+    
     if (user) {
-        console.log("User active:", user.email);
+        console.log("Synergy Session Active:", user.email);
         
-        // Dashboard specifically needs history
-        if (window.location.pathname.includes('dashboard.html')) {
+        // 2. Premium Paywall Enforcement & Profile Sync
+        syncPremiumStatus(user);
+
+        // 3. Page-Specific Data Loading
+        const path = window.location.pathname;
+        if (path.includes('dashboard.html')) {
             loadUserHistory(user.uid);
         }
-
-        // App specifically needs profile restoration
-        if (window.location.pathname.includes('app.html')) {
-            if (typeof window.restoreProfile === 'function') {
-                window.restoreProfile();
-            } else {
-                // If app.js hasn't loaded yet, try again in 500ms
-                setTimeout(() => { if(window.restoreProfile) window.restoreProfile(); }, 500);
-            }
+        if (path.includes('app.html') || path.includes('estimate.html') || path.includes('quote.html') || path.includes('delivery.html') || path.includes('receipt.html')) {
+            if (typeof window.restoreProfile === 'function') window.restoreProfile();
+            else setTimeout(() => { if(window.restoreProfile) window.restoreProfile(); }, 800);
         }
     }
 });
+
+async function syncPremiumStatus(user) {
+    try {
+        const doc = await db.collection('profiles').doc(user.uid).get();
+        let data = doc.exists ? doc.data() : null;
+
+        // If new user, initialize profile
+        if (!data) {
+            data = {
+                email: user.email,
+                isPro: false,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            await db.collection('profiles').doc(user.uid).set(data);
+        }
+
+        // PAYWALL LOGIC: Check if 5-day grace period is over
+        const createdDate = data.createdAt ? data.createdAt.toDate() : new Date();
+        const diffDays = Math.floor((new Date() - createdDate) / (1000 * 60 * 60 * 24));
+        const isPro = data.isPro === true;
+        const isExpired = diffDays > 5 && !isPro;
+
+        window.SYNERGY_PRO_STATUS = { isPro, isExpired, diffDays };
+        
+        // Trigger UI updates based on fresh Pro status
+        updateAuthUI(user, isPro);
+        
+        // FORCE REDIRECT: If trying to use tools while expired
+        const restrictedPages = ['app.html', 'estimate.html', 'quote.html', 'delivery.html', 'receipt.html', 'expenses.html'];
+        const isRestrictedPage = restrictedPages.some(p => window.location.pathname.includes(p));
+        
+        if (isExpired && isRestrictedPage) {
+            alert("⏰ Your 5-day free premium trial has ended. Please upgrade to Synergy Pro to continue using these professional tools!");
+            window.location.href = 'index.html#pricing';
+        }
+
+    } catch (err) {
+        console.warn("Premium sync delayed:", err);
+    }
+}
 
 async function loadUserHistory(uid) {
     const container = document.getElementById('history-container');
@@ -212,43 +252,41 @@ async function loadUserHistory(uid) {
     }
 }
 
-function updateAuthUI(user) {
+function updateAuthUI(user, isProIn = false) {
     const authBtnContainers = document.querySelectorAll('.auth-btn-container');
+    const heroCtaDiv = document.getElementById('hero-cta-container');
 
     if (user) {
-        // Fetch profile to check Pro status
-        db.collection('profiles').doc(user.uid).get().then(doc => {
-            const isPro = doc.exists && doc.data().isPro;
-            
-            authBtnContainers.forEach(container => {
-                const phot = user.photoURL || 'https://ui-avatars.com/api/?name=' + (user.displayName || user.email);
-                container.innerHTML = `
-                    <div style="position: relative; display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px;" onclick="handleLogout()" title="Click to Logout">
-                        <div style="position: relative; width: 34px; height: 34px;">
-                            <img src="${phot}" 
-                                 class="${isPro ? 'pro-glow' : ''}" 
-                                 style="width: 100%; height: 100%; border-radius: 50%; border: 2px solid ${isPro ? 'transparent' : 'var(--primary-color)'}; object-fit: cover;">
-                            ${isPro ? '<span class="pro-badge-mini">PRO</span>' : ''}
-                        </div>
-                        <span style="font-size: 0.8rem; font-weight: 800; color: ${isPro ? '#bf953f' : 'inherit'}">${user.displayName || user.email.split('@')[0]}</span>
+        // We might already know Pro status from syncPremiumStatus
+        const isPro = isProIn || (window.SYNERGY_PRO_STATUS && window.SYNERGY_PRO_STATUS.isPro);
+        
+        authBtnContainers.forEach(container => {
+            const phot = user.photoURL || 'https://ui-avatars.com/api/?name=' + (user.displayName || user.email);
+            container.innerHTML = `
+                <div style="position: relative; display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px;" onclick="handleLogout()" title="Click to Logout">
+                    <div style="position: relative; width: 34px; height: 34px;">
+                        <img src="${phot}" 
+                             class="${isPro ? 'pro-glow' : ''}" 
+                             style="width: 100%; height: 100%; border-radius: 50%; border: 2px solid ${isPro ? 'transparent' : 'var(--primary-color)'}; object-fit: cover;">
+                        ${isPro ? '<span class="pro-badge-mini" style="background:#bf953f; color:white; font-size:10px; padding:2px 4px; border-radius:4px; position:absolute; bottom:-5px; right:-5px; font-weight:900; border:1px solid white;">PRO</span>' : ''}
                     </div>
-                `;
-            });
-
-            // --- SMART RECOGNITION (LANDING PAGE) ---
-            const heroCtaDiv = document.getElementById('hero-cta-container');
-            if (heroCtaDiv) {
-                heroCtaDiv.innerHTML = `
-                    <div style="text-align:center; animation: fadeIn 1s ease;">
-                        <div style="margin-bottom:1.2rem; font-weight:800; color:var(--primary); font-size:1.1rem; letter-spacing:0px;">Welcome back, ${user.displayName?.split(' ')[0] || user.email.split('@')[0]} 👋</div>
-                        <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
-                            <a href="dashboard.html" class="btn btn-primary" style="padding: 1.1rem 2.5rem; font-size: 1rem; background:linear-gradient(135deg, var(--primary), var(--accent));">Open Your Dashboard &rarr;</a>
-                            <a href="app.html" class="btn btn-outline" style="padding: 1.1rem 2.5rem; font-size: 1rem;">Create New Invoice</a>
-                        </div>
-                    </div>
-                `;
-            }
+                    <span style="font-size: 0.8rem; font-weight: 800; color: ${isPro ? '#bf953f' : 'inherit'}">${user.displayName || user.email.split('@')[0]}</span>
+                </div>
+            `;
         });
+
+        // --- SMART RECOGNITION (LANDING PAGE) ---
+        if (heroCtaDiv) {
+            heroCtaDiv.innerHTML = `
+                <div style="text-align:center; animation: fadeIn 1s ease;">
+                    <div style="margin-bottom:1.2rem; font-weight:800; color:var(--primary); font-size:1.1rem; letter-spacing:0px;">Welcome back, ${user.displayName?.split(' ')[0] || user.email.split('@')[0]} 👋</div>
+                    <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
+                        <a href="dashboard.html" class="btn btn-primary" style="padding: 1.1rem 2.5rem; font-size: 1rem; background:linear-gradient(135deg, var(--primary), var(--accent));">Open Your Dashboard &rarr;</a>
+                        <a href="app.html" class="btn btn-outline" style="padding: 1.1rem 2.5rem; font-size: 1rem;">Create New Invoice</a>
+                    </div>
+                </div>
+            `;
+        }
     } else {
         authBtnContainers.forEach(container => {
             container.innerHTML = `
