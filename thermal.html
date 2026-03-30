@@ -6,6 +6,13 @@
     <title>Thermal Receipt Generator</title>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK (Compatibility Mode) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script defer src="auth.js"></script>
+
     <style>
         :root {
             --bg-color: #050510;
@@ -276,6 +283,17 @@
         document.getElementById('print-btn').addEventListener('click', () => {
             const oldTitle = document.title;
             document.title = "Receipt_" + document.getElementById('r-no').value;
+            
+            // ✅ Cloud Backup
+            if (typeof saveDocumentToCloud === 'function') {
+                saveDocumentToCloud('thermal', {
+                   clientName: document.getElementById('c-name').value || 'Customer',
+                   receiptNo: document.getElementById('r-no').value,
+                   grandTotal: document.getElementById('out-total').textContent,
+                   businessName: document.getElementById('b-name').value
+                });
+            }
+
             window.print();
             document.title = oldTitle;
         });

@@ -970,7 +970,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const message = `
 Dear ${clientName},
 
-Please find your invoice PDF attached to this email.
+Please find your invoice summary below. You can also view and pay your invoice securely using the link provided.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 INVOICE SUMMARY
@@ -985,13 +985,21 @@ PAYMENT DETAILS
 Bank:          ${bankName}
 Account Name:  ${acctName}
 Account No:    ${acctNo}
-${paymentLink ? `Pay Online:    ${paymentLink}` : ''}
+${paymentLink ? `Pay Online/Card: ${paymentLink}` : ''}
 
 Thank you for your business.
 
 Warm regards,
 ${businessName}
             `.trim();
+
+            // ✅ CLOUD BACKUP (PHASE 2)
+            if (typeof saveDocumentToCloud === 'function') {
+                saveDocumentToCloud('invoice', {
+                    clientName, clientEmail, invoiceNo, invoiceDate, dueDate, totalDue,
+                    bankName, acctName, acctNo, paymentLink, businessName
+                });
+            }
 
             // ── AUTO-GENERATE & DOWNLOAD PDF before sending ──
             if (!isPro) {
@@ -1035,5 +1043,64 @@ ${businessName}
             }
         });
     }
+
+    }
+
+    // --- CLOUD PROFILE SYNC ---
+    window.restoreProfile = async () => {
+        if (typeof getUserProfile !== 'function') return;
+        const profile = await getUserProfile();
+        if (profile) {
+            console.log("Restoring profile from cloud...", profile);
+            if (profile.businessName) { bNameIn.value = profile.businessName; bNameIn.dispatchEvent(new Event('input')); }
+            if (profile.businessEmail) { bEmailIn.value = profile.businessEmail; bEmailIn.dispatchEvent(new Event('input')); }
+            if (profile.businessPhone) { bPhoneIn.value = profile.businessPhone; bPhoneIn.dispatchEvent(new Event('input')); }
+            if (profile.bankName) { bankNameIn.value = profile.bankName; bankNameIn.dispatchEvent(new Event('input')); }
+            if (profile.bankAcctName) { bankAcctNameIn.value = profile.bankAcctName; bankAcctNameIn.dispatchEvent(new Event('input')); }
+            if (profile.bankAcctNo) { bankAcctNoIn.value = profile.bankAcctNo; bankAcctNoIn.dispatchEvent(new Event('input')); }
+            if (profile.bankRouting) { bankRoutingIn.value = profile.bankRouting; bankRoutingIn.dispatchEvent(new Event('input')); }
+            if (profile.currency) { currencySelect.value = profile.currency; currencySelect.dispatchEvent(new Event('change')); }
+            if (profile.notes) { notesIn.value = profile.notes; notesIn.dispatchEvent(new Event('input')); }
+            // Terms
+            const termsIn = document.getElementById('terms-input');
+            if (profile.terms && termsIn) { termsIn.value = profile.terms; }
+        }
+    };
+
+    const syncProfileDebounced = debounce(() => {
+        if (typeof saveUserProfile !== 'function') return;
+        const profile = {
+            businessName: bNameIn.value,
+            businessEmail: bEmailIn.value,
+            businessPhone: bPhoneIn.value,
+            bankName: bankNameIn.value,
+            bankAcctName: bankAcctNameIn.value,
+            bankAcctNo: bankAcctNoIn.value,
+            bankRouting: bankRoutingIn.value,
+            currency: currencySelect.value,
+            notes: notesIn.value,
+            terms: document.getElementById('terms-input')?.value || ""
+        };
+        saveUserProfile(profile);
+    }, 2000);
+
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    [bNameIn, bEmailIn, bPhoneIn, bankNameIn, bankAcctNameIn, bankAcctNoIn, bankRoutingIn, currencySelect, notesIn].forEach(el => {
+        if (el) {
+            el.addEventListener('input', syncProfileDebounced);
+            el.addEventListener('change', syncProfileDebounced);
+        }
+    });
 
 });

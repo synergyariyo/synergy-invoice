@@ -298,7 +298,7 @@ input:focus, select:focus, textarea:focus {
 
 /* Invoice Design */
 .invoice-container {
-    padding: 20px;
+    padding: 40px 60px;
     min-height: 1131px; /* Mathematically exactly A4 vertical scaling at 800px */
     position: relative;
     background-color: var(--paper-bg);
