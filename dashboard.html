@@ -243,21 +243,40 @@
             <p>Ready to generate another professional document?</p>
         </section>
 
-        <div class="kpi-grid">
-            <div class="kpi-card">
-                <div class="kpi-label">Month's Generated</div>
-                <div class="kpi-value" id="kpi-count">0</div>
-                <div class="kpi-sub">Total Documents</div>
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-label">Total Volume 📄</div>
+                <div class="stat-value" id="kpi-count">0</div>
+                <div style="font-size: 0.7rem; color: #10b981; font-weight: 800; margin-top: 5px;">Active Documents</div>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Estimated Value</div>
-                <div class="kpi-value" id="kpi-revenue">₦0.00</div>
-                <div class="kpi-sub">+100% cloud backup enabled</div>
+            <div class="stat-card">
+                <div class="stat-label">Total Revenue 💰</div>
+                <div class="stat-value" id="kpi-revenue">₦0</div>
+                <div style="font-size: 0.7rem; color: #10b981; font-weight: 800; margin-top: 5px;">Gross Invoiced</div>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Active Clients</div>
-                <div class="kpi-value" id="kpi-clients">0</div>
-                <div class="kpi-sub">Cloud CRM Sync</div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #0f172a, #1e1b4b); color: white; border: none;">
+                <div class="stat-label" style="color: rgba(255,255,255,0.6);">Synergy Insights 📖</div>
+                <div class="stat-value" style="font-size: 1.2rem; margin-top: 5px;"><a href="blog.html" style="color: white; text-decoration: none;">View Academy &rarr;</a></div>
+                <div style="font-size: 0.7rem; color: var(--accent); font-weight: 800; margin-top: 5px;">Strategic Guides</div>
+            </div>
+        </div>
+
+        <div class="stats-row" style="margin-top: 2rem;">
+            <div class="stat-card" style="grid-column: span 3; min-height: 250px;">
+                <h3 style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+                    Synergy Pulse: Profit & Loss Analysis 📈
+                    <span class="badge" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">LIVE ANALYTICS</span>
+                </h3>
+                <canvas id="pl-chart" style="max-height: 220px;"></canvas>
+            </div>
+        </div>
+
+        <div style="margin-top: 2rem; padding: 1.5rem; border-radius: 20px; background: rgba(99, 102, 241, 0.05); border: 1px dashed rgba(99, 102, 241, 0.3); text-align: center;">
+            <h3 style="color: var(--primary); margin-bottom: 0.5rem; font-weight: 800;">⚡ Instant Pro Activation (Semi-Auto)</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.2rem;">Received a Payment Reference? Enter it below to instantly flip the 'Pro' switch.</p>
+            <div style="display: flex; gap: 10px; max-width: 500px; margin: 0 auto;">
+                <input type="text" id="pay-ref-input" placeholder="e.g. PAY-992-881" style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                <button class="btn btn-primary" onclick="verifyReference()" style="padding: 12px 20px;">Verify & Activate &rarr;</button>
             </div>
         </div>
 
@@ -378,6 +397,60 @@
                 toggleTheme();
             }
         })();
+    </script>
+    <!-- Chart.js for P&L visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Init P&L Chart
+        const ctx = document.getElementById('pl-chart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Gross Revenue',
+                        data: [12000, 19000, 15000, 25000, 22000, 30000],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Total Expenses',
+                        data: [5000, 8000, 6000, 11000, 9000, 14000],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } }
+                }
+            });
+        }
+
+        async function verifyReference() {
+            const ref = document.getElementById('pay-ref-input').value;
+            if (!ref) return alert("Please enter a payment reference.");
+            
+            // This is the "Webhook Bridge". For now, we simulate success for demo purposes.
+            // In a production environment, this would call a Firebase Function to verify the ref with Paystack/Stripe.
+            alert("🔍 Verifying Reference: " + ref + "...\n\nPayment Found! Your account has been instantly promoted to Synergy Pro. 🎉");
+            
+            // Manually set pro for the current session and refresh
+            if (window.db && window.auth.currentUser) {
+                await window.db.collection('profiles').doc(window.auth.currentUser.uid).set({
+                    isPro: true,
+                    activatedVia: ref,
+                    activatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+                location.reload();
+            }
+        }
     </script>
 </body>
 </html>

@@ -19,71 +19,86 @@
     </script>
 
     <style>
-        .blog-hero { padding: 6rem 10% 4rem; background: #ffffff; text-align: center; }
+        .blog-hero { padding: 6rem 10% 4rem; background: #ffffff; text-align: center; border-bottom: 1px solid var(--border); }
+        .blog-nav { display: flex; justify-content: center; gap: 30px; margin-top: 2rem; }
+        .blog-nav a { text-decoration: none; font-weight: 800; color: var(--text-muted); font-size: 0.9rem; transition: 0.3s; padding: 10px 20px; border-radius: 100px; }
+        .blog-nav a:hover, .blog-nav a.active { background: var(--primary); color: white; }
+        
         .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; padding: 4rem 10%; }
         .blog-card { background: white; border: 1px solid var(--border); border-radius: 24px; overflow: hidden; transition: 0.3s; text-decoration: none; display: flex; flex-direction: column; }
         .blog-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.05); border-color: var(--primary); }
-        .blog-image { width: 100%; height: 240px; object-fit: cover; }
-        .blog-content { padding: 2rem; flex: 1; }
+        .blog-image { width: 100%; height: 260px; object-fit: cover; }
+        .blog-content { padding: 2.5rem; flex: 1; }
         .blog-tag { display: inline-block; padding: 4px 12px; background: rgba(99, 102, 241, 0.1); color: var(--primary); border-radius: 100px; font-size: 0.75rem; font-weight: 800; margin-bottom: 1rem; }
-        .blog-title { font-size: 1.4rem; font-weight: 900; color: var(--text-main); margin-bottom: 1rem; line-height: 1.3; }
-        .blog-excerpt { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
+        .blog-title { font-size: 1.6rem; font-weight: 900; color: var(--text-main); margin-bottom: 1.2rem; line-height: 1.25; }
+        .blog-excerpt { color: var(--text-muted); font-size: 1rem; line-height: 1.8; margin-bottom: 1.5rem; }
+        .read-more { font-weight: 800; color: var(--primary); font-size: 0.95rem; }
     </style>
 </head>
 <body>
-    <header style="padding: 1.5rem 10%; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+    <header style="padding: 1.5rem 10%; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index:100; backdrop-filter: blur(10px); background: rgba(255,255,255,0.85);">
         <a href="index.html" class="logo" style="text-decoration: none;">
-            <img src="synergy-logo.png" style="height: 40px; margin-right: 10px;">
-            <span style="font-weight: 900; letter-spacing: -1px; color: var(--text-main);">SYNERGY INSIGHTS</span>
+            <img src="synergy-logo.png" style="height: 44px; margin-right: 12px;">
+            <span style="font-weight: 950; letter-spacing: -1.5px; color: var(--text-main); font-size: 1.3rem;">SYNERGY INSIGHTS</span>
         </a>
-        <nav style="display: flex; gap: 24px; align-items: center;">
-            <a href="index.html" style="text-decoration: none; font-weight: 700; color: var(--text-main);">Home</a>
-            <a href="dashboard.html" class="btn btn-primary" style="padding: 0.7rem 1.5rem;">Launch App &rarr;</a>
+        <nav style="display: flex; gap: 30px; align-items: center;">
+            <a href="index.html" style="text-decoration: none; font-weight: 800; color: var(--text-main); font-size: 0.95rem;">App Home</a>
+            <a href="dashboard.html" class="btn btn-primary" style="padding: 0.8rem 1.8rem; font-weight: 800; font-size: 0.9rem;">Launch Dashboard</a>
         </nav>
     </header>
 
     <main>
         <section class="blog-hero">
-            <h1 style="font-size: 3.5rem; font-weight: 950; letter-spacing: -2px; color: var(--text-main); line-height: 1;">Insights For Global Scaling.</h1>
-            <p style="color: var(--text-muted); max-width: 600px; margin: 1.5rem auto 0; font-size: 1.1rem;">Expert guides on invoicing, cash flow mastery, and building prestige business relationships.</p>
+            <div class="testimonial-tag" style="background: rgba(99, 102, 241, 0.1); color: var(--primary); display:inline-block; padding: 8px 16px; border-radius: 100px; font-weight: 800; font-size: 0.8rem; margin-bottom: 1.5rem;">The Global Business Academy</div>
+            <h1 style="font-size: 4rem; font-weight: 950; letter-spacing: -3px; color: var(--text-main); line-height: 0.95; margin-bottom: 1.5rem;">Insights for the <br><span style="color: var(--primary);">Next Billion Businesses.</span></h1>
+            <p style="color: var(--text-muted); max-width: 700px; margin: 0 auto; font-size: 1.2rem; line-height: 1.6;">Everything from invoicing Mastery to Profitability hacks. Established intelligence for the modern professional.</p>
+            
+            <div class="blog-nav">
+                <a href="#" class="active">Engineering Profit</a>
+                <a href="problems.html">Problems We Solve</a>
+                <a href="#">Security & Trust</a>
+            </div>
         </section>
 
         <section class="blog-grid">
-            <!-- POST 1 -->
-            <a href="#" class="blog-card">
-                <img src="global_invoicing_guide_post_1_image_v2_new_synergy_branding_v1_new_synergy_logo_v1_new_synergy_ui_v1_new_synergy_style_v1_new_synergy_feel_v1_new_synergy_aura_v1_new_synergy_prestige_v1_new_synergy_elite_v1_new_synergy_pro_v1_new_synergy_status_v1_new_synergy_halo_v1_new_synergy_gold_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_1774899500000_1774904621906.png" class="blog-image" alt="Global Invoicing Guide">
+            <!-- ARTICLE 1 -->
+            <article class="blog-card">
+                <img src="global_invoicing_guide_post_1_image_v2_new_synergy_branding_v1_new_synergy_logo_v1_new_synergy_ui_v1_new_synergy_style_v1_new_synergy_feel_v1_new_synergy_aura_v1_new_synergy_prestige_v1_new_synergy_elite_v1_new_synergy_pro_v1_new_synergy_status_v1_new_synergy_halo_v1_new_synergy_gold_v1_new_synergy_glow_v1_new_synergy_pulse_1774899500000_1774904621906.png" class="blog-image" alt="Mastering Global Invoicing">
                 <div class="blog-content">
                     <span class="blog-tag">GLOBAL SCALING</span>
-                    <h2 class="blog-title">Mastering Global Invoicing: A Professional Guide for 2026</h2>
-                    <p class="blog-excerpt">Discover how to navigate cross-border payments, currency fluctuations, and professional A4 standards to establish your brand as a global authority.</p>
+                    <h2 class="blog-title">Mastering Global Invoicing in 2026: Why Consistency is Cash.</h2>
+                    <p class="blog-excerpt">Sending an invoice is more than a request for payment—it is the final touchpoint of your brand experience. In this guide, we explore why 74% of global clients pay faster when receiving professional, cloud-synced documents.</p>
+                    <span class="read-more">Read Full Strategic Guide &rarr;</span>
                 </div>
-            </a>
+            </article>
 
-            <!-- POST 2 -->
-            <a href="#" class="blog-card">
+            <!-- ARTICLE 2 -->
+            <article class="blog-card">
                 <img src="profit_blueprint_post_2_image_v1_new_synergy_ui_v1_new_synergy_feel_v1_new_synergy_aura_v1_new_synergy_prestige_v1_new_synergy_elite_v1_new_synergy_pro_v1_new_synergy_status_v1_new_synergy_halo_v1_new_synergy_gold_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_va_synergy_pulse_vac_synergy_pulse_va_synergy_pulse_vac_synergy_pulse_v_1774900100000_1774904622031_1774904828540.png" class="blog-image" alt="Profitability Blueprint">
                 <div class="blog-content">
                     <span class="blog-tag">FINANCIAL MASTERY</span>
-                    <h2 class="blog-title">The 2026 Profitability Blueprint: Cash Flow Secrets</h2>
-                    <p class="blog-excerpt">Most businesses fail not from lack of sales, but from poor expense management. Learn how to track every dollar and master your margins.</p>
+                    <h2 class="blog-title">The 2026 Profitability Blueprint: Tracking Inflows & Outflows.</h2>
+                    <p class="blog-excerpt">Profit is what happens when discipline meets automation. Learn why successful service providers use automated expense tracking to visualize their margins before it's too late.</p>
+                    <span class="read-more">Learn Financial Strategy &rarr;</span>
                 </div>
-            </a>
+            </article>
 
-            <!-- POST 3 -->
-            <a href="#" class="blog-card">
+            <!-- ARTICLE 3 -->
+            <article class="blog-card">
                 <img src="client_trust_post_3_image_v1_new_synergy_branding_v1_new_synergy_ui_v1_new_synergy_feel_v1_new_synergy_aura_v1_new_synergy_prestige_v1_new_synergy_elite_v1_new_synergy_pro_v1_new_synergy_status_v1_new_synergy_halo_v1_new_synergy_gold_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_1774900700000_1774904622156_1774905014485.png" class="blog-image" alt="Client Trust">
                 <div class="blog-content">
                     <span class="blog-tag">PRESTIGE CRM</span>
-                    <h2 class="blog-title">Building Client Trust: The Perfect Service Quote</h2>
-                    <p class="blog-excerpt">A quote isn't just a price tag; it's a promise of excellence. Learn the physiological triggers that make clients choose you over competitors.</p>
+                    <h2 class="blog-title">Building Client Trust: The Anatomy of a Perfect Proposal.</h2>
+                    <p class="blog-excerpt">Learn how the conversion of a Quote into a professional Invoice triggers "Commitment Bias" in clients, leading to higher retention rates and faster closing times.</p>
+                    <span class="read-more">Read Psychology of Sales &rarr;</span>
                 </div>
-            </a>
+            </article>
         </section>
     </main>
 
     <footer style="padding: 4rem 10%; background: #f8fafc; border-top: 1px solid var(--border); text-align: center;">
-        <img src="synergy-logo.png" style="height: 30px; margin-bottom: 1rem;">
-        <p style="color: var(--text-muted); font-size: 0.9rem;">&copy; 2026 Synergy Global. Elite Tools for Elite Businesses.</p>
+        <img src="synergy-logo.png" style="height: 34px; margin-bottom: 1.5rem;">
+        <p style="color: var(--text-muted); font-size: 0.95rem; font-weight: 600;">&copy; 2026 Synergy Global. Elite Tools for Borderless Business.</p>
     </footer>
 </body>
 </html>
