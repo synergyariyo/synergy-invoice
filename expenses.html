@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synergy | Expense Tracker</title>
+    
+    <link rel="icon" type="image/png" href="synergy-logo.png">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Google Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VVGWVMQT2Q"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-VVGWVMQT2Q');
+    </script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script defer src="auth.js"></script>
+    
+    <style>
+        .expense-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            margin-bottom: 2rem;
+        }
+        .expense-list {
+            margin-top: 2rem;
+        }
+        .expense-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr 120px 100px;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+        }
+        .expense-item:last-child { border-bottom: none; }
+        .expense-date { font-size: 0.85rem; color: var(--text-muted); }
+        .expense-category { font-weight: 700; color: var(--primary); font-size: 0.9rem; }
+        .expense-amount { text-align: right; font-weight: 800; color: #ef4444; }
+        .delete-expense { cursor: pointer; color: #94a3b8; text-align: center; }
+        .delete-expense:hover { color: #ef4444; }
+    </style>
+</head>
+<body style="background: #f8fafc;">
+    <header style="padding: 1.5rem 10%; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+        <a href="dashboard.html" class="logo" style="text-decoration: none;">
+            <img src="synergy-logo.png" style="height: 40px; margin-right: 10px;">
+            <span style="font-weight: 900; letter-spacing: -1px; color: var(--text-main);">SYNERGY FINANCE</span>
+        </a>
+        <div id="auth-btn-container-app" class="auth-btn-container"></div>
+    </header>
+
+    <main style="padding: 3rem 10%; max-width: 1000px; margin: 0 auto;">
+        <div style="margin-bottom: 3rem;">
+            <h1 style="font-size: 2.5rem; font-weight: 950; color: var(--text-main); line-height: 1.1;">Expense Tracker</h1>
+            <p style="color: var(--text-muted); margin-top: 0.5rem;">Monitor every spend and maximize your global profit margins.</p>
+        </div>
+
+        <div class="expense-card">
+            <h3 style="margin-bottom: 1.5rem;">Log New Expense</h3>
+            <form id="expense-form" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                <div class="input-group">
+                    <label>Description</label>
+                    <input type="text" id="exp-desc" placeholder="e.g. Adobe Subscription" required>
+                </div>
+                <div class="input-group">
+                    <label>Category</label>
+                    <select id="exp-cat">
+                        <option value="Software">Software & Subs</option>
+                        <option value="Marketing">Marketing / Ads</option>
+                        <option value="Logistics">Shipping & Logistics</option>
+                        <option value="Equipment">Hardware / Equipment</option>
+                        <option value="Other">Other Expenses</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Amount</label>
+                    <input type="number" id="exp-amt" placeholder="0.00" required>
+                </div>
+                <button type="submit" class="btn primary" style="grid-column: span 3; margin-top: 5px;">Record Expense 💸</button>
+            </form>
+        </div>
+
+        <div class="expense-card">
+            <h3>Recent Outflows</h3>
+            <div id="expense-container" class="expense-list">
+                <p style="text-align:center; padding: 2rem; color: var(--text-muted);">Syncing with your cloud profile...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Expense Logic
+        const form = document.getElementById('expense-form');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const desc = document.getElementById('exp-desc').value;
+            const cat = document.getElementById('exp-cat').value;
+            const amt = document.getElementById('exp-amt').value;
+            
+            // Save to Firebase
+            if (window.saveDocumentToCloud) {
+                await window.saveDocumentToCloud('expense', { desc, cat, amt });
+                form.reset();
+                location.reload(); // Quick refresh to update list
+            }
+        });
+    </script>
+</body>
+</html>

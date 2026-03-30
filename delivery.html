@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Synergy | Professional Delivery Note</title>
+    
+    <link rel="icon" type="image/png" href="synergy-logo.png">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Google Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VVGWVMQT2Q"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-VVGWVMQT2Q');
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script defer src="auth.js"></script>
+    <style>
+        .stage-header {
+            background: linear-gradient(90deg, #10b981, #059669);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+        }
+    </style>
+</head>
+<body data-doc-type="DELIVERY">
+    <div id="splash-screen">
+        <img src="synergy-logo.png" alt="Synergy Logo Intro">
+    </div>
+
+    <div class="app-container">
+        <div class="editor-panel" style="position: relative;">
+            <a href="index.html" style="position: absolute; top: 1.5rem; right: 1.5rem; background-color: #ffffff; padding: 6px 12px; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); z-index: 50; display: block;">
+                <img src="synergy-logo.png" alt="App Logo" style="height: 65px; display: block; object-fit: contain;">
+            </a>
+
+            <header class="editor-header" style="padding-right: 140px;">
+                <h1>Synergy Delivery Note <span class="pro-badge" id="pro-badge">FREE</span></h1>
+                <a href="dashboard.html" style="display: inline-block; background: white; color: black; padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; text-decoration: none; font-weight: 700; margin-top: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">Dashboard</a>
+                <p>Global Proof of Delivery & Service Acknowledgment</p>
+                <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
+                    <button id="upgrade-btn" class="btn secondary" style="font-size: 0.8rem; padding: 0.5rem; border-color: #10b981; color: #10b981;">Upgrade to Pro</button>
+                    <div id="auth-btn-container-app" class="auth-btn-container"></div>
+                </div>
+            </header>
+
+            <div class="stage-container">
+                <div class="stage-header">Delivery Configuration</div>
+                <div class="form-section">
+                    <h3>Document Identity</h3>
+                    <div class="row">
+                        <div class="input-group half">
+                            <label>Delivery Note No.</label>
+                            <input type="text" id="invoice-no-input" value="DLV-001">
+                        </div>
+                        <div class="input-group half">
+                            <label>Shipment Date</label>
+                            <input type="date" id="invoice-date-input" value="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p style="text-align:center; color: var(--text-muted); font-size: 0.8rem; margin-top: 2rem;">Loading Synergy Core Engine...</p>
+        </div>
+
+        <div class="preview-panel">
+             <div class="preview-wrapper">
+                <div class="invoice-container" id="invoice-preview">
+                    <!-- Preview logic -->
+                </div>
+             </div>
+        </div>
+    </div>
+
+    <!-- Reusing auth.js and app.js core -->
+    <script src="app.js"></script>
+    <script>
+        document.getElementById('invoice-title-display').innerText = "DELIVERY NOTE";
+        document.getElementById('total-label-display').innerText = "Items Total Value:";
+        document.getElementById('notes-display').innerText = "Received in good condition.";
+        // Hide Financial Details for Delivery Note if needed
+        document.getElementById('payment-info-display-container').style.display = 'none';
+    </script>
+</body>
+</html>

@@ -334,7 +334,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // Items logic
     const itemsContainer = document.getElementById('items-container');
     const invoiceItemsDisplay = document.getElementById('invoice-items-display');
-    const subtotalDisplay = document.getElementById('subtotal-display');
+            // --- DYNAMIC DOCUMENT RECONFIGURATION (GLOBAL STANDARDS) ---
+            const bodyDocType = document.body.getAttribute('data-doc-type');
+            if (bodyDocType) {
+                const titleMap = {
+                    'ESTIMATE': 'JOB ESTIMATE',
+                    'QUOTE': 'SERVICE QUOTE',
+                    'DELIVERY': 'DELIVERY NOTE',
+                    'RECEIPT': 'PAYMENT RECEIPT'
+                };
+                const labelMap = {
+                    'ESTIMATE': 'Estimated Total:',
+                    'QUOTE': 'Quoted Amount:',
+                    'DELIVERY': 'Total Declared Value:',
+                    'RECEIPT': 'Total Received:'
+                };
+                
+                if (document.getElementById('invoice-title-display')) {
+                    document.getElementById('invoice-title-display').innerText = titleMap[bodyDocType] || 'INVOICE';
+                }
+                if (document.getElementById('total-label-display')) {
+                    document.getElementById('total-label-display').innerText = labelMap[bodyDocType] || 'Total Due:';
+                }
+            }
+
+            const subDom = document.getElementById('subtotal-display');
     const taxAmountDisplay = document.getElementById('tax-amount-display');
     const totalDisplay = document.getElementById('total-display');
 

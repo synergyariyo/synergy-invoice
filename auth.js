@@ -93,6 +93,10 @@ window.handleLogout = () => {
     });
 };
 
+// --- SET GLOBAL PERSISTENCE (Standard for Premium SaaS) ---
+firebase.auth().setPersistence(firebase.auth.Persistence.LOCAL)
+  .catch((e) => console.warn("Persistence failed:", e));
+
 // --- CLOUD STORAGE UTILITIES (FIRESTORE) ---
 window.saveDocumentToCloud = async (type, data) => {
     const user = auth.currentUser;
@@ -230,6 +234,20 @@ function updateAuthUI(user) {
                     </div>
                 `;
             });
+
+            // --- SMART RECOGNITION (LANDING PAGE) ---
+            const heroCtaDiv = document.getElementById('hero-cta-container');
+            if (heroCtaDiv) {
+                heroCtaDiv.innerHTML = `
+                    <div style="text-align:center; animation: fadeIn 1s ease;">
+                        <div style="margin-bottom:1.2rem; font-weight:800; color:var(--primary); font-size:1.1rem; letter-spacing:0px;">Welcome back, ${user.displayName?.split(' ')[0] || user.email.split('@')[0]} 👋</div>
+                        <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
+                            <a href="dashboard.html" class="btn btn-primary" style="padding: 1.1rem 2.5rem; font-size: 1rem; background:linear-gradient(135deg, var(--primary), var(--accent));">Open Your Dashboard &rarr;</a>
+                            <a href="app.html" class="btn btn-outline" style="padding: 1.1rem 2.5rem; font-size: 1rem;">Create New Invoice</a>
+                        </div>
+                    </div>
+                `;
+            }
         });
     } else {
         authBtnContainers.forEach(container => {
