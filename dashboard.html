@@ -160,6 +160,8 @@
             position: absolute; top: 1.5rem; right: 1.5rem;
             background: rgba(16, 185, 129, 0.15); color: var(--accent);
             padding: 4px 12px; border-radius: 100px; font-weight: 800; font-size: 0.7rem;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
 
         /* History List */
@@ -189,8 +191,24 @@
         @media (max-width: 768px) {
             .tools-grid { grid-template-columns: 1fr; }
             .tool-card { padding: 1.5rem; gap: 15px; }
-            .tool-icon { width: 60px; height: 60px; font-size: 1.5rem; }
-            .header { padding: 1rem 5%; }
+            .tool-icon { width: 60px; height: 60px; font-size: 1.5rem; flex-shrink: 0; }
+            .logo { font-size: 1rem; gap: 8px; }
+            .logo img { height: 30px; }
+            #toggle-mode-btn { padding: 6px 12px; font-size: 0.7rem; }
+            .theme-toggle { gap: 5px; }
+        }
+
+        @media (max-width: 500px) {
+            .welcome-section h1 { font-size: 1.6rem; }
+            .tool-card { flex-direction: column; align-items: flex-start; text-align: left; padding: 1.5rem; }
+            .badge { position: relative; top: 0; right: 0; margin-top: 10px; display: inline-block; }
+            .tool-info h3 { font-size: 1.2rem; }
+            .tool-info p { font-size: 0.85rem; }
+            .kpi-grid { grid-template-columns: 1fr; }
+            .kpi-card { padding: 1.2rem; }
+            .kpi-value { font-size: 1.6rem; }
+            header { padding: 0.8rem 1rem; }
+            .logo span { display: none; } /* Hide 'PANEL' text on very small screens if needed */
         }
     </style>
 </head>
@@ -199,7 +217,7 @@
     <header>
         <a href="dashboard.html" class="logo">
             <img src="synergy-logo.png" alt="Synergy Logo">
-            SYNERGY PANEL
+            SYNERGY <span>PANEL</span>
         </a>
         <div class="theme-toggle">
             <button id="toggle-mode-btn" onclick="toggleTheme()">☀️ Light Mode</button>

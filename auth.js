@@ -143,8 +143,20 @@ auth.onAuthStateChanged((user) => {
     updateAuthUI(user);
     if (user) {
         console.log("User active:", user.email);
+        
+        // Dashboard specifically needs history
         if (window.location.pathname.includes('dashboard.html')) {
             loadUserHistory(user.uid);
+        }
+
+        // App specifically needs profile restoration
+        if (window.location.pathname.includes('app.html')) {
+            if (typeof window.restoreProfile === 'function') {
+                window.restoreProfile();
+            } else {
+                // If app.js hasn't loaded yet, try again in 500ms
+                setTimeout(() => { if(window.restoreProfile) window.restoreProfile(); }, 500);
+            }
         }
     }
 });

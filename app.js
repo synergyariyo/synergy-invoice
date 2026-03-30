@@ -1044,8 +1044,6 @@ ${businessName}
         });
     }
 
-    }
-
     // --- CLOUD PROFILE SYNC ---
     window.restoreProfile = async () => {
         if (typeof getUserProfile !== 'function') return;

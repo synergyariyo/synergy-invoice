@@ -1,0 +1,11 @@
+{
+  "name": "quick-invoice-app",
+  "version": "1.0.0",
+  "description": "Premium Synergy Invoice Generator Hub",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx -y serve ."
+  },
+  "author": "Synergy Team",
+  "license": "ISC"
+}
