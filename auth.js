@@ -55,10 +55,16 @@ window.signInWithGoogle = () => {
         window.location.href = 'dashboard.html'; 
     }).catch((error) => {
         let msg = error.message;
+        console.error("Critical Auth Error:", error.code, msg);
+        
         if (error.code === 'auth/operation-not-supported-in-this-environment') {
             msg = "Login failed because you are not using a web server. Open your app via http://localhost or a live URL.";
         } else if (error.code === 'auth/network-request-failed') {
             msg = "Network Error: Check your internet or ensure your Firebase Project IDs are correct in auth.js.";
+        } else if (error.code === 'auth/invalid-action-code') {
+            msg = "The request action is invalid. This often happens if the link is expired or already used. Please try logging in again.";
+        } else if (error.code === 'auth/unauthorized-domain') {
+            msg = "Access Denied: This domain is not authorized in your Firebase Console. Please add your current URL to 'Authorized Domains' in Firebase.";
         }
         alert("Sign In Error: " + msg);
     });
