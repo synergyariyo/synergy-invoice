@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Synergy Suite | Professional Global Invoice & Business Generator</title>
+<title>Synergy Insights | Mastering Global Business Invoicing</title>
+    <link rel="canonical" href="https://synergyinvoice.thesynergydigitalagency.com.ng/blog.html" />
+    <link rel="icon" type="image/png" href="synergy-logo.png">
+    <link rel="apple-touch-icon" href="synergy-logo.png">
     <meta name="description" content="Generate professional invoices, quotes, estimates, and receipts in seconds. The #1 free global business tool for service providers. Elite, fast, and cloud-synced.">
     <meta name="keywords" content="free invoice generator, quote maker, professional estimate tool, global business receipt, synergy suite, smart invoicing">
     
@@ -426,7 +424,7 @@
     <section class="hero">
         <div class="badge-new animate__animated animate__fadeInDown">🚀 Join the early-adopter community scaling with Synergy</div>
         <h1 class="animate__animated animate__fadeInUp">Generate Invoices That <span>Get You Paid.</span></h1>
-        <p class="animate__animated animate__fadeInUp animate__delay-1s">
+        <p class="animate__animated animate__fadeInUp animate__delay-1s" style="text-align: center; max-width: 700px; margin: 0 auto;">
             The ultra-premium generator for modern professional services. Create flawless quotes, invoices, and receipts in seconds. Join businesses worldwide already scaling with Synergy.
         </p>
         <div id="hero-cta-container" class="animate__animated animate__fadeInUp animate__delay-1s" style="display: flex; gap: 20px; justify-content: center;">
@@ -607,8 +605,10 @@
                     <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Custom Fonts & Themes</li>
                     <li style="color: #10b981; font-weight: 800;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> 50 Emails / Month</li>
                 </ul>
-                <a href="https://wa.me/2349039464500?text=Hi%2C%20I'm%20interested%20in%20upgrading%20to%20Synergy%20Pro%20(Monthly)!" target="_blank" class="btn btn-primary" style="width:100%;justify-content:center;background:linear-gradient(135deg, #10b981, #059669);border:none;">Upgrade to Pro via WhatsApp 💸</a>
-                <p style="font-size:0.75rem;color:var(--text-muted);margin-top:10px;text-align:center;">✨ Includes 2,000 PDF downloads/month</p>
+                <div id="pro-btn-container">
+                    <a href="https://paystack.com/pay/synergy-pro-monthly" id="paystack-btn" class="btn btn-primary" style="width:100%;justify-content:center;background:linear-gradient(135deg, #10b981, #059669);border:none;">Upgrade to Pro Instantly 🚀</a>
+                </div>
+                <p style="font-size:0.72rem;color:var(--text-muted);margin-top:10px;text-align:center;">✨ Automated Activation. Pro unlocks instantly after payment.</p>
 
                 <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
                     <div style="display:inline-block;background:#6366f1;color:white;font-size:0.7rem;font-weight:800;padding:5px 16px;border-radius:100px;margin-bottom:0.8rem;">🚀 Best Value</div>
@@ -838,6 +838,32 @@
         </div>
     </footer>
 
+    <style>
+        /* MOBILE BOX SHAPE FIX (FOR 2026 PREMIUM FEEL) */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2rem; }
+            .hero p { padding: 0 10%; margin-bottom: 2rem !important; }
+            #hero-cta-container { flex-direction: column; width: 80%; margin: 0 auto; }
+            #hero-cta-container .btn { width: 100%; text-align: center; }
+            
+            .features-grid, .pricing-grid { 
+                grid-template-columns: 1fr !important; 
+                gap: 20px; 
+            }
+            .feature-card, .price-card {
+                border-radius: 20px !important;
+                border: 1px solid var(--border) !important;
+                background: white !important;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important;
+                padding: 2rem !important;
+                margin: 0 !important;
+                text-align: center !important;
+            }
+            .stat-pill { width: 100%; justify-content: center; border-radius: 12px; }
+            .mockup-container { width: 95%; padding: 10px; }
+            .how-to-section > div { grid-template-columns: 1fr !important; }
+        }
+    </style>
     <script>
         // === CURSOR GLOW ===
         const glow = document.getElementById('cursor-glow');

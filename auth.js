@@ -44,27 +44,36 @@ window.togglePasswordVisibility = (inputId) => {
     }
 };
 
-// --- GOOGLE SIGN IN ---
+// --- GOOGLE SIGN IN (POPUP PROTECTED) ---
+let isAuthWorking = false;
 window.signInWithGoogle = () => {
+    if (isAuthWorking) return; 
     if (!CHECK_PROTOCOL()) return;
     
+    isAuthWorking = true;
+    const btn = document.querySelector('.google-auth-btn');
+    if (btn) btn.style.opacity = '0.5';
+
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider).then((result) => {
+        isAuthWorking = false;
         console.log("Logged in with Google:", result.user.displayName);
         closeAuthModal();
         window.location.href = 'dashboard.html'; 
     }).catch((error) => {
-        let msg = error.message;
-        console.error("Critical Auth Error:", error.code, msg);
+        isAuthWorking = false;
+        if (btn) btn.style.opacity = '1';
         
-        if (error.code === 'auth/operation-not-supported-in-this-environment') {
-            msg = "Login failed because you are not using a web server. Open your app via http://localhost or a live URL.";
+        let msg = error.message;
+        console.error("Auth Error:", error.code, msg);
+        
+        if (error.code === 'auth/cancelled-popup-request') {
+            return; // Ignore, just a double click
+        } else if (error.code === 'auth/popup-closed-by-user') {
+            msg = "Sign-in cancelled. Please keep the Google window open.";
         } else if (error.code === 'auth/network-request-failed') {
-            msg = "Network Error: Check your internet or ensure your Firebase Project IDs are correct in auth.js.";
-        } else if (error.code === 'auth/invalid-action-code') {
-            msg = "The request action is invalid. This often happens if the link is expired or already used. Please try logging in again.";
-        } else if (error.code === 'auth/unauthorized-domain') {
-            msg = "Access Denied: This domain is not authorized in your Firebase Console. Please add your current URL to 'Authorized Domains' in Firebase.";
+            msg = "Network Error: Your internet seems unstable. Synergy is retrying...";
+            setTimeout(window.signInWithGoogle, 3000); // Auto-retry in 3s
         }
         alert("Sign In Error: " + msg);
     });
