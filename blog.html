@@ -39,27 +39,27 @@
         .blog-nav a { text-decoration: none; font-weight: 800; color: var(--text-muted); font-size: 0.9rem; transition: 0.3s; padding: 10px 24px; border-radius: 100px; border: 1px solid var(--border); }
         .blog-nav a:hover, .blog-nav a.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2); }
         
-        .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 40px; padding: 4rem 10%; }
+        .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 40px; padding: 4rem 10%; max-width: 1400px; margin: 0 auto; }
         .blog-card { background: white; border: 1px solid var(--border); border-radius: 28px; overflow: hidden; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-decoration: none; display: flex; flex-direction: column; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .blog-card:hover { transform: translateY(-12px); box-shadow: 0 30px 60px rgba(0,0,0,0.08); border-color: var(--primary); }
-        .blog-image { width: 100%; height: 260px; object-fit: cover; transition: 0.5s; }
+        .blog-image { width: 100%; height: 280px; object-fit: cover; transition: 0.5s; border-bottom: 1px solid var(--border); }
         .blog-card:hover .blog-image { transform: scale(1.05); }
-        .blog-content { padding: 2.5rem; flex: 1; text-align: left; }
-        .blog-tag { display: inline-block; padding: 5px 14px; background: rgba(99, 102, 241, 0.08); color: var(--primary); border-radius: 100px; font-size: 0.75rem; font-weight: 800; margin-bottom: 1.2rem; letter-spacing: 0.5px; }
-        .blog-title { font-size: 1.6rem; font-weight: 900; color: var(--text-main); margin-bottom: 1.2rem; line-height: 1.3; font-family: 'Outfit', sans-serif; }
-        .blog-excerpt { color: var(--text-muted); font-size: 1rem; line-height: 1.8; margin-bottom: 1.5rem; opacity: 0.8; }
-        .read-more { font-weight: 800; color: var(--primary); font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+        .blog-content { padding: 3rem; flex: 1; text-align: left; }
+        .blog-tag { display: inline-block; padding: 6px 16px; background: rgba(99, 102, 241, 0.08); color: var(--primary); border-radius: 100px; font-size: 0.8rem; font-weight: 800; margin-bottom: 1.5rem; letter-spacing: 0.5px; }
+        .blog-title { font-size: 1.8rem; font-weight: 950; color: var(--text-main); margin-bottom: 1.5rem; line-height: 1.3; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; }
+        .blog-excerpt { color: var(--text-muted); font-size: 1.1rem; line-height: 1.9; margin-bottom: 2rem; opacity: 0.8; }
+        .read-more { font-weight: 800; color: var(--primary); font-size: 1rem; display: flex; align-items: center; gap: 8px; }
 
         @media (max-width: 768px) {
-            .blog-hero h1 { font-size: 2.4rem !important; letter-spacing: -1.5px !important; }
-            .blog-hero p { font-size: 1.05rem !important; padding: 0 5%; }
-            .blog-nav { gap: 12px; }
+            .blog-hero h1 { font-size: 2.6rem !important; letter-spacing: -2px !important; }
+            .blog-hero p { font-size: 1.1rem !important; padding: 0 5%; }
+            .blog-nav { gap: 12px; padding: 0 10%; }
             .blog-nav a { width: 100%; text-align: center; }
-            .blog-grid { grid-template-columns: 1fr !important; gap: 24px; padding: 2rem 6%; }
-            .blog-card { border-radius: 24px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important; background: white !important; }
-            .blog-image { height: 210px; }
-            .blog-content { padding: 2rem !important; text-align: center !important; }
-            .read-more { justify-content: center; }
+            .blog-grid { grid-template-columns: 1fr !important; gap: 30px; padding: 2rem 5%; }
+            .blog-card { border-radius: 24px !important; }
+            .blog-image { height: 230px; }
+            .blog-content { padding: 2rem !important; text-align: left !important; }
+            .read-more { justify-content: flex-start; }
         }
     </style>
 </head>
@@ -91,18 +91,18 @@
         <section class="blog-grid">
             <!-- ARTICLE 1 -->
             <article class="blog-card">
-                <img src="global_invoicing_guide_post_1_image_v2_new_synergy_branding_v1_new_synergy_logo_v1_new_synergy_ui_v1_new_synergy_style_v1_new_synergy_feel_v1_new_synergy_aura_v1_new_synergy_prestige_v1_new_synergy_elite_v1_new_synergy_pro_v1_new_synergy_status_v1_new_synergy_halo_v1_new_synergy_gold_v1_new_synergy_glow_v1_new_synergy_pulse_1774899500000_1774904621906.png" class="blog-image" alt="Mastering Global Invoicing">
+                <img src="blog-post-1.png" class="blog-image" alt="Mastering Global Invoicing">
                 <div class="blog-content">
                     <span class="blog-tag">GLOBAL SCALING</span>
                     <h2 class="blog-title">Mastering Global Invoicing in 2026: Why Consistency is Cash.</h2>
                     <p class="blog-excerpt">Sending an invoice is more than a request for payment—it is the final touchpoint of your brand experience. In this guide, we explore why 74% of global clients pay faster when receiving professional, cloud-synced documents.</p>
-                    <span class="read-more">Read Full Strategic Guide &rarr;</span>
+                    <span class="read-more">Read Strategic Guide &rarr;</span>
                 </div>
             </article>
 
             <!-- ARTICLE 2 -->
             <article class="blog-card">
-                <img src="profit_blueprint_post_2_image_v1_new_synergy_ui_v1_new_synergy_feel_v1_new_synergy_aura_v1_new_synergy_prestige_v1_new_synergy_elite_v1_new_synergy_pro_v1_new_synergy_status_v1_new_synergy_halo_v1_new_synergy_gold_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_va_synergy_pulse_vac_synergy_pulse_va_synergy_pulse_vac_synergy_pulse_v_1774900100000_1774904622031_1774904828540.png" class="blog-image" alt="Profitability Blueprint">
+                <img src="blog-post-2.png" class="blog-image" alt="Profitability Blueprint">
                 <div class="blog-content">
                     <span class="blog-tag">FINANCIAL MASTERY</span>
                     <h2 class="blog-title">The 2026 Profitability Blueprint: Tracking Inflows & Outflows.</h2>
@@ -113,7 +113,7 @@
 
             <!-- ARTICLE 3 -->
             <article class="blog-card">
-                <img src="client_trust_post_3_image_v1_new_synergy_branding_v1_new_synergy_ui_v1_new_synergy_feel_v1_new_synergy_aura_v1_new_synergy_prestige_v1_new_synergy_elite_v1_new_synergy_pro_v1_new_synergy_status_v1_new_synergy_halo_v1_new_synergy_gold_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_v1_new_synergy_aura_v1_new_synergy_glow_v1_new_synergy_pulse_1774900700000_1774904622156_1774905014485.png" class="blog-image" alt="Client Trust">
+                <img src="blog-post-3.png" class="blog-image" alt="Client Trust">
                 <div class="blog-content">
                     <span class="blog-tag">PRESTIGE CRM</span>
                     <h2 class="blog-title">Building Client Trust: The Anatomy of a Perfect Proposal.</h2>

@@ -423,8 +423,8 @@
 
     <section class="hero">
         <div class="badge-new animate__animated animate__fadeInDown">🚀 Join the early-adopter community scaling with Synergy</div>
-        <h1 class="animate__animated animate__fadeInUp">Generate Invoices That <span>Get You Paid.</span></h1>
-        <p class="animate__animated animate__fadeInUp animate__delay-1s" style="text-align: center; max-width: 700px; margin: 0 auto;">
+        <h1 class="animate__animated animate__fadeInUp">Generate <span id="hero-word-rotator">INVOICES</span> That <span>Get You Paid.</span></h1>
+        <p class="animate__animated animate__fadeInUp animate__delay-1s" style="text-align: center; max-width: 800px; margin: 0 auto; line-height: 1.8;">
             The ultra-premium generator for modern professional services. Create flawless quotes, invoices, and receipts in seconds. Join businesses worldwide already scaling with Synergy.
         </p>
         <div id="hero-cta-container" class="animate__animated animate__fadeInUp animate__delay-1s" style="display: flex; gap: 20px; justify-content: center;">
@@ -839,6 +839,27 @@
     </footer>
 
     <style>
+        /* HERO ROTATOR ANIMATION */
+        #hero-word-rotator {
+            display: inline-block;
+            min-width: 200px;
+            color: var(--primary);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: heroZoomIn 0.6s forwards;
+        }
+
+        .zoom-out { animation: heroZoomOut 0.6s forwards !important; }
+        .zoom-in { animation: heroZoomIn 0.6s forwards !important; }
+
+        @keyframes heroZoomIn {
+            0% { transform: scale(0); opacity: 0; filter: blur(10px); }
+            100% { transform: scale(1); opacity: 1; filter: blur(0); }
+        }
+        @keyframes heroZoomOut {
+            0% { transform: scale(1); opacity: 1; filter: blur(0); }
+            100% { transform: scale(3); opacity: 0; filter: blur(20px); }
+        }
+
         /* MOBILE BOX SHAPE FIX (FOR 2026 PREMIUM FEEL) */
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.2rem; }
@@ -865,6 +886,28 @@
         }
     </style>
     <script>
+        // === HERO TEXT ROTATOR ===
+        const words = ["INVOICES", "RECEIPTS", "ESTIMATES", "QUOTES"];
+        const rotator = document.getElementById('hero-word-rotator');
+        let wordIndex = 0;
+
+        if (rotator) {
+            setInterval(() => {
+                // Zoom Out
+                rotator.classList.remove('zoom-in');
+                rotator.classList.add('zoom-out');
+
+                setTimeout(() => {
+                    wordIndex = (wordIndex + 1) % words.length;
+                    rotator.innerText = words[wordIndex];
+                    
+                    // Zoom In
+                    rotator.classList.remove('zoom-out');
+                    rotator.classList.add('zoom-in');
+                }, 600); // Sync with CSS transition
+            }, 5000); // Every 5 seconds
+        }
+
         // === CURSOR GLOW ===
         const glow = document.getElementById('cursor-glow');
         if (glow) {
