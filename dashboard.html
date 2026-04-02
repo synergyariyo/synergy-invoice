@@ -61,30 +61,36 @@
         }
 
         /* Dashboard Header */
-        header {
-            padding: 1rem 5%;
+        .navbar { 
+            padding: 1rem 6%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: var(--surface);
             border-bottom: 1px solid var(--border);
             backdrop-filter: blur(25px);
-            position: sticky; top: 0; z-index: 100;
-            box-shadow: var(--shadow);
+            position: sticky; top: 0; z-index: 1000;
+            transition: 0.3s;
         }
+        .nav-container { width: 100%; display: flex; justify-content: space-between; align-items: center; }
         .logo {
             display: flex; align-items: center; gap: 12px;
-            font-weight: 800; font-size: 1.2rem; text-decoration: none; color: var(--text-main);
+            font-weight: 800; font-size: 1.25rem; text-decoration: none; color: var(--text-main);
             font-family: 'Outfit', sans-serif;
         }
-        .logo img { height: 35px; }
+        .logo img { height: 40px; }
 
-        .theme-toggle {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
+        .nav-links { display: flex; gap: 24px; align-items: center; }
+        .nav-links a { text-decoration: none; color: var(--text-main); font-weight: 700; font-size: 0.85rem; transition: 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+
+        /* ── ELITE GLOBAL FOOTER ── */
+        .footer { padding: 6rem 8% 4rem; background: var(--bg); border-top: 1px solid var(--border); margin-top: 8rem; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px; max-width: 1200px; margin: 0 auto; }
+        .footer-links h3 { font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 1.1rem; margin-bottom: 2rem; color: var(--text-main); }
+        .footer-links a { display: block; text-decoration: none; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.2rem; transition: 0.2s; }
+        .footer-links a:hover { color: var(--primary); transform: translateX(5px); }
+
         #toggle-mode-btn {
             background: var(--primary);
             color: white;
@@ -93,7 +99,7 @@
             border-radius: 50px;
             cursor: pointer;
             font-weight: 700;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -226,9 +232,9 @@
 <body>
 
     <header>
-        <a href="dashboard.html" class="logo">
+        <a href="index.html" class="logo">
             <img src="synergy-logo.png" alt="Synergy Logo">
-            SYNERGY <span>PANEL</span>
+            SYNERGY INVOICE <span>PANEL</span>
         </a>
         <div class="theme-toggle">
             <button id="toggle-mode-btn" onclick="toggleTheme()">☀️ Light Mode</button>
@@ -273,91 +279,79 @@
             </div>
         </div>
 
-        <div style="margin-top: 2rem; padding: 1.5rem; border-radius: 20px; background: rgba(99, 102, 241, 0.05); border: 1px dashed rgba(99, 102, 241, 0.3); text-align: center;">
-            <h3 style="color: var(--primary); margin-bottom: 0.5rem; font-weight: 800;">⚡ Instant Pro Activation (Semi-Auto)</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.2rem;">Received a Payment Reference? Enter it below to instantly flip the 'Pro' switch.</p>
-            <div style="display: flex; gap: 10px; max-width: 500px; margin: 0 auto;">
-                <input type="text" id="pay-ref-input" placeholder="e.g. PAY-992-881" style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
-                <button class="btn btn-primary" onclick="verifyReference()" style="padding: 12px 20px;">Verify & Activate &rarr;</button>
+        <!-- STATS & KPI ROW -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <span class="stat-label">Total Volume (30D)</span>
+                <span class="stat-value" id="stats-total-amount">$...</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Active Documents</span>
+                <span class="stat-value" id="stats-doc-count">0</span>
+            </div>
+            <div class="stat-card">
+                 <span class="stat-label">Sync Status</span>
+                 <span class="stat-value" style="color: var(--accent); font-size: 1.1rem; display: flex; align-items:center; gap: 8px;">
+                    <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent); display: inline-block;"></span> Cloud Active
+                 </span>
             </div>
         </div>
 
-        <h2>Select Professional Tool</h2>
+        <h2>Standard Document Suite 💎</h2>
         <div class="tools-grid">
-            <a href="app.html" class="tool-card animate__animated animate__fadeInUp">
+            <a href="index.html" class="tool-card animate__animated animate__fadeInUp">
                 <div class="tool-icon">📄</div>
                 <div class="tool-info">
-                    <h3>Standard Invoice</h3>
-                    <p>Professional A4 business invoices for global services.</p>
+                    <h3>Professional Invoice</h3>
+                    <p>A4 standard corporate invoices for global professional services.</p>
                 </div>
-                <span class="badge">A4 FORMAT</span>
             </a>
             
-            <a href="receipt.html" class="tool-card animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+            <a href="receipt.html" class="tool-card animate__animated animate__fadeInUp" style="animation-delay: 0.1s;" onclick="return checkPremiumTool(event)">
                 <div class="tool-icon">🧾</div>
                 <div class="tool-info">
                     <h3>Thermal Receipt</h3>
-                    <p>High-speed receipts for retail and POS transactions.</p>
+                    <p>Standard and POS receipts for instant retail transactions.</p>
                 </div>
-                <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">57MM/80MM</span>
             </a>
 
             <a href="quote.html" class="tool-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
-                <div class="tool-icon">⚖️</div>
+                <div class="tool-icon">💎</div>
                 <div class="tool-info">
                     <h3>Service Quote</h3>
-                    <p>Send professional price proposals to acquire new clients.</p>
+                    <p>Elite quotes for high-ticket service agreements.</p>
                 </div>
-                <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: var(--primary);">PROPOSAL</span>
             </a>
 
             <a href="estimate.html" class="tool-card animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
-                <div class="tool-icon">📐</div>
+                <div class="tool-icon">📋</div>
                 <div class="tool-info">
                     <h3>Job Estimate</h3>
-                    <p>Provide detailed cost breakdowns for upcoming projects.</p>
+                    <p>Send professional project estimates effortlessly.</p>
                 </div>
-                <span class="badge" style="background: rgba(6, 182, 212, 0.15); color: var(--accent);">COSTING</span>
             </a>
 
-            <a href="delivery.html" class="tool-card animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
-                <div class="tool-icon">📦</div>
-                <div class="tool-info">
-                    <h3>Delivery Note</h3>
-                    <p>Professional proof of delivery for goods and services.</p>
-                </div>
-                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">LOGISTICS</span>
-            </a>
-        </div>
-
-        <h2 style="margin-top: 3rem;">Financial Management & Insights 💎</h2>
-        <div class="tools-grid">
-            <a href="expenses.html" class="tool-card animate__animated animate__fadeInUp">
-                <div class="tool-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">💸</div>
+            <a href="expenses.html" class="tool-card animate__animated animate__fadeInUp" style="animation-delay: 0.4s;" onclick="return checkPremiumTool(event)">
+                <div class="tool-icon">💸</div>
                 <div class="tool-info">
                     <h3>Expense Tracker</h3>
-                    <p>Log your business costs and manage your true profitability.</p>
+                    <p>Monitor profit margins and business outflows.</p>
                 </div>
-                <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">FINANCE</span>
             </a>
 
-            <a href="analytics.html" class="tool-card animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
-                <div class="tool-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">📈</div>
+            <a href="statement.html" class="tool-card animate__animated animate__fadeInUp" style="animation-delay: 0.5s;" onclick="return checkPremiumTool(event)">
+                <div class="tool-icon">📊</div>
                 <div class="tool-info">
-                    <h3>Profit & Loss</h3>
-                    <p>Real-time visual charts of your revenue vs expenses.</p>
+                    <h3>Client Statement</h3>
+                    <p>Full financial ledger history for VIP clients.</p>
                 </div>
-                <span class="badge" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">ANALYTICS</span>
             </a>
         </div>
 
-        <h2>Cloud Activity History</h2>
-        <div class="history-card" id="history-container">
-            <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
-                <p>No recent activity. All your generated documents will appear here automatically.</p>
-            </div>
+        <h2 style="margin-top: 3rem;">Cloud Activity History</h2>
+        <div id="history-container">
+            <p style="color: var(--text-muted); padding: 2rem; background: var(--surface); border-radius: 12px; border: 1px dashed var(--border); text-align: center;">Scanning secure ledger for your recent activity...</p>
         </div>
-
     </div>
 
     <script>

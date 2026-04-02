@@ -45,6 +45,22 @@ window.togglePasswordVisibility = (inputId) => {
 };
 
 // --- GOOGLE SIGN IN (POPUP PROTECTED) ---
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .then(() => {
+        console.log("Synergy Session Persistence: ACTIVE");
+    })
+    .catch((error) => {
+        console.error("Persistence Error:", error);
+    });
+
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .then(() => {
+        console.log("Synergy Session Persistence: ACTIVE");
+    })
+    .catch((error) => {
+        console.error("Persistence Error:", error);
+    });
+
 let isAuthWorking = false;
 window.signInWithGoogle = () => {
     if (isAuthWorking) return; 
@@ -112,7 +128,6 @@ window.handleLogout = () => {
 firebase.auth().setPersistence(firebase.auth.Persistence.LOCAL)
   .catch((e) => console.warn("Persistence failed:", e));
 
-// --- CLOUD STORAGE UTILITIES (FIRESTORE) ---
 window.saveDocumentToCloud = async (type, data) => {
     const user = auth.currentUser;
     if (!user) return; 
@@ -164,6 +179,14 @@ auth.onAuthStateChanged((user) => {
     
     if (user) {
         console.log("Synergy Session Active:", user.email);
+
+        // SYNERGY SMART CTA: Update index.html button if user is already logged in
+        const homeCta = document.querySelector('.hero .btn-primary');
+        if (homeCta && (homeCta.innerText.includes('Started') || homeCta.innerText.includes('Launch'))) {
+            homeCta.innerHTML = "Launch Dashboard &rarr;";
+            homeCta.onclick = () => window.location.href = 'dashboard.html';
+            homeCta.style.display = 'inline-flex';
+        }
         
         // 2. Premium Paywall Enforcement & Profile Sync
         syncPremiumStatus(user);
@@ -219,6 +242,17 @@ async function syncPremiumStatus(user) {
         console.warn("Premium sync delayed:", err);
     }
 }
+
+// PREMIUM TOOL GATE
+window.checkPremiumTool = (e) => {
+    if (!window.SYNERGY_PRO_STATUS?.isPro) {
+        e.preventDefault();
+        alert("💎 This is a Synergy Pro feature! We are taking you to the pricing page so you can unlock it via WhatsApp.");
+        window.location.href = 'index.html#pricing';
+        return false;
+    }
+    return true;
+};
 
 async function loadUserHistory(uid) {
     const container = document.getElementById('history-container');

@@ -449,7 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td class="text-left" style="color: #334155; font-weight: 700;">${item.desc || '-'}</td>
+                <td class="text-left" style="color: ${themeColorInput.value}; font-weight: 700;">${item.desc || '-'}</td>
                 <td class="text-center" style="color: #475569;">${item.qty}</td>
                 <td class="text-center" style="color: #475569;">${formatCurr(item.rate)}</td>
                 <td class="text-right" style="color: #334155; font-weight: 600;">${formatCurr(amount)}</td>
@@ -543,17 +543,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // Let the CSS @media print handle the flawless vector rendering
         setTimeout(() => {
             window.print();
-            document.title = oldTitle;
+            
+            // RESET BUTTON STATE IMMEDIATELY AFTER PRINT DIALOG OPENS
             btn.textContent = "Generate PDF";
             btn.disabled = false;
+            document.title = oldTitle;
             
             // Post-Download Action Trigger
             setTimeout(() => {
-                if (confirm("PDF Downloaded! Would you like to send this to the Client via Email now?")) {
-                    document.getElementById('email-btn').click();
+                if (confirm("PDF Session Complete! Would you like to send this to the Client via WhatsApp/Email now?")) {
+                    // Logic to trigger share
                 }
-            }, 1000);
-        }, 800);
+            }, 500);
+        }, 300);
     });
 
     function getInvoiceEmailContent() {
