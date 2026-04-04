@@ -426,7 +426,7 @@
                 <a href="blog.html">Insight</a>
                 <a href="index.html#pricing">Price</a>
                 <a href="#" onclick="openAuthModal()">Sign In</a>
-                <a href="dashboard.html" class="btn-nav btn-nav-primary">Launch App &rarr;</a>
+                <a href="app.html" class="btn-nav btn-nav-primary">Launch App &rarr;</a>
             </nav>
             <div class="mobile-toggle" onclick="toggleMobileNav()">☰</div>
         </div>
@@ -914,32 +914,6 @@
         @keyframes heroZoomOut {
             0% { transform: scale(1); opacity: 1; filter: blur(0); }
             100% { transform: scale(1.1); opacity: 0; filter: blur(15px); }
-        }
-
-        /* MOBILE BOX SHAPE FIX (FOR 2026 PREMIUM FEEL) */
-        @media (max-width: 768px) {
-            h1 { font-size: 2.4rem !important; }
-            h2 { font-size: 1.8rem !important; }
-            .hero p { padding: 0 5%; margin-bottom: 2.5rem !important; }
-            #hero-cta-container { flex-direction: column; width: 90%; margin: 0 auto; gap: 15px; }
-            #hero-cta-container .btn { width: 100%; text-align: center; }
-            
-            .features-grid, .pricing-grid { 
-                grid-template-columns: 1fr !important; 
-                gap: 24px; 
-                padding: 0 5%;
-            }
-            .feature-card, .price-card {
-                border-radius: 24px !important;
-                border: 1px solid var(--border) !important;
-                background: white !important;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.04) !important;
-                padding: 2.5rem 1.5rem !important;
-                margin: 0 !important;
-                text-align: center !important;
-            }
-            .stat-pill { width: 100%; justify-content: center; border-radius: 12px; }
-            .mockup-container { width: 95%; padding: 10px; border-radius: 20px; }
         }
     </style>
     <script>

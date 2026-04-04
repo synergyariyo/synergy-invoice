@@ -529,33 +529,30 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.textContent = "Processing...";
         btn.disabled = true;
 
-        // Force a full UI sync to ensure PDF has latest data
-        forceSyncPreview();
+        try {
+            // Force a full UI sync to ensure PDF has latest data
+            forceSyncPreview();
 
-        const clientSafeName = cNameIn.value.trim() ? '_' + cNameIn.value.trim().replace(/[^a-zA-Z0-9]/g, '_') : '';
-        const desiredFilename = `${invNoIn.value || 'Invoice'}${clientSafeName}`;
-        
-        const oldTitle = document.title;
-        document.title = desiredFilename; // Helps natively suggest the filename!
-
-        alert("To ensure your clients can perfectly copy text and Bank Accounts directly from the PDF, this app now uses your device's native PDF engine!\n\nWhen the screen appears, simply select 'Save as PDF' (or Print).");
-        
-        // Let the CSS @media print handle the flawless vector rendering
-        setTimeout(() => {
-            window.print();
+            const clientSafeName = cNameIn?.value?.trim() ? '_' + cNameIn.value.trim().replace(/[^a-zA-Z0-9]/g, '_') : '';
+            const desiredFilename = `${invNoIn?.value || 'Invoice'}${clientSafeName}`;
             
-            // RESET BUTTON STATE IMMEDIATELY AFTER PRINT DIALOG OPENS
+            const oldTitle = document.title;
+            document.title = desiredFilename;
+
+            window.print(); // Absolutely force it on laptops
+
+            // Reset state immediately after
             btn.textContent = "Generate PDF";
             btn.disabled = false;
             document.title = oldTitle;
             
-            // Post-Download Action Trigger
-            setTimeout(() => {
-                if (confirm("PDF Session Complete! Would you like to send this to the Client via WhatsApp/Email now?")) {
-                    // Logic to trigger share
-                }
-            }, 500);
-        }, 300);
+        } catch(e) {
+            console.error("Critical Sync Error:", e);
+            // Hard fallback: just print what we have!
+            window.print(); 
+            btn.textContent = "Generate PDF";
+            btn.disabled = false;
+        }
     });
 
     function getInvoiceEmailContent() {

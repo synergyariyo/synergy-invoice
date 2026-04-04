@@ -61,6 +61,21 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         console.error("Persistence Error:", error);
     });
 
+// --- GOOGLE SIGN IN (REDIRECT PROTECTED) ---
+// Handle redirect result on page load
+firebase.auth().getRedirectResult().then(function(result) {
+    if (result.user) {
+        console.log("Logged in gracefully from redirect:", result.user.displayName);
+        if (typeof closeAuthModal === 'function') closeAuthModal();
+        window.location.href = 'dashboard.html'; 
+    }
+}).catch(function(error) {
+    console.error("Redirect Auth Error:", error.code, error.message);
+    if(error.code !== 'auth/redirect-cancelled-by-user') {
+        alert("Sign In Error: " + error.message);
+    }
+});
+
 let isAuthWorking = false;
 window.signInWithGoogle = () => {
     if (isAuthWorking) return; 
@@ -69,30 +84,10 @@ window.signInWithGoogle = () => {
     isAuthWorking = true;
     const btn = document.querySelector('.google-auth-btn');
     if (btn) btn.style.opacity = '0.5';
+    btn.innerHTML = 'Redirecting to Google... <span class="spinner"></span>';
 
     const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).then((result) => {
-        isAuthWorking = false;
-        console.log("Logged in with Google:", result.user.displayName);
-        closeAuthModal();
-        window.location.href = 'dashboard.html'; 
-    }).catch((error) => {
-        isAuthWorking = false;
-        if (btn) btn.style.opacity = '1';
-        
-        let msg = error.message;
-        console.error("Auth Error:", error.code, msg);
-        
-        if (error.code === 'auth/cancelled-popup-request') {
-            return; // Ignore, just a double click
-        } else if (error.code === 'auth/popup-closed-by-user') {
-            msg = "Sign-in cancelled. Please keep the Google window open.";
-        } else if (error.code === 'auth/network-request-failed') {
-            msg = "Network Error: Your internet seems unstable. Synergy is retrying...";
-            setTimeout(window.signInWithGoogle, 3000); // Auto-retry in 3s
-        }
-        alert("Sign In Error: " + msg);
-    });
+    auth.signInWithRedirect(provider);
 };
 
 // --- EMAIL SIGN IN/REG ---
