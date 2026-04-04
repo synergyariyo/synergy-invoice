@@ -55,6 +55,14 @@
         .btn-nav-primary { background: var(--primary); color: white; }
         .btn-nav-outline { border: 1px solid var(--border); color: var(--text-main); }
 
+        .social-icon { 
+            padding: 10px; border: 1px solid var(--border); border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center;
+            text-decoration: none; color: var(--text-muted); width: 42px; height: 42px;
+            transition: 0.2s;
+        }
+        .social-icon:hover { border-color: var(--primary); color: var(--primary); background: rgba(99, 102, 241, 0.05); transform: translateY(-3px); }
+
         @media (max-width: 768px) {
             .nav-links { display: none; }
             .mobile-toggle { display: block; }
@@ -131,27 +139,27 @@
             <p class="animate__animated animate__fadeInUp" style="animation-delay: 0.1s; max-width: 800px; margin: 2rem auto 0; color: var(--text-muted); font-size: 1.2rem; line-height: 1.6;">Expert strategy, financial mastery, and brand scaling secrets for the Synergy Global Pro community.</p>
             
             <div class="blog-nav">
-                <a href="#" class="active">Engineering Profit</a>
+                <a href="blog.html" class="active">Engineering Profit</a>
                 <a href="problems.html">Problems We Solve</a>
-                <a href="#">Security & Trust</a>
+                <a href="article-3.html">Security & Trust</a>
             </div>
         </section>
 
         <section class="blog-grid">
             <!-- ARTICLE 1 -->
             <a href="article-1.html" class="blog-card">
-                <img src="blog-post-1.png" class="blog-image" alt="Mastering Global Invoicing">
+                <img src="blog_post_1_sme_growth_1775151351257.png" class="blog-image" alt="Mastering SME Growth">
                 <div class="blog-content">
-                    <span class="blog-tag">GLOBAL SCALING</span>
-                    <h2 class="blog-title">Mastering Global Invoicing in 2026: Why Consistency is Cash.</h2>
-                    <p class="blog-excerpt">Sending an invoice is more than a request for payment—it is the final touchpoint of your brand experience. In this guide, we explore why 74% of global clients pay faster when receiving professional, cloud-synced documents.</p>
-                    <span class="read-more">Read Strategic Guide &rarr;</span>
+                    <span class="blog-tag">ENGINEERING PROFIT</span>
+                    <h2 class="blog-title">Mastering SME Cash Flow: The Invisible Handbrake.</h2>
+                    <p class="blog-excerpt">Discover why 80% of small businesses fail due to simple invoicing delays. We analyze the "Velocity of Capital" and how instant document generation can save your margins.</p>
+                    <span class="read-more">Read Full Insight &rarr;</span>
                 </div>
             </a>
 
             <!-- ARTICLE 2 -->
             <a href="article-2.html" class="blog-card">
-                <img src="blog-post-2.png" class="blog-image" alt="Profitability Blueprint">
+                <img src="blog_post_2_accounting_tech_1775151377787.png" class="blog-image" alt="Profitability Blueprint">
                 <div class="blog-content">
                     <span class="blog-tag">FINANCIAL MASTERY</span>
                     <h2 class="blog-title">The 2026 Profitability Blueprint: Tracking Inflows & Outflows.</h2>
@@ -162,7 +170,7 @@
 
             <!-- ARTICLE 3 -->
             <a href="article-3.html" class="blog-card">
-                <img src="blog-post-3.png" class="blog-image" alt="Client Trust">
+                <img src="blog_post_3_security_trust_1775151406237.png" class="blog-image" alt="Client Trust">
                 <div class="blog-content">
                     <span class="blog-tag">PRESTIGE CRM</span>
                     <h2 class="blog-title">Building Client Trust: The Anatomy of a Perfect Proposal.</h2>
@@ -178,13 +186,23 @@
         <div class="footer-grid">
             <div class="footer-info">
                  <div class="logo" style="margin-bottom: 1.5rem;">
-                    <img src="synergy-logo.png" style="height: 40px;">
-                    <span style="font-family: 'Outfit', sans-serif; font-weight: 950; font-size: 1.5rem;">SYNERGY</span>
+                    <img src="synergy-logo.png" alt="Synergy Logo">
+                    <span style="font-family: 'Outfit', sans-serif; font-weight: 950; font-size: 1.5rem;">SYNERGY INVOICE</span>
                 </div>
                 <p style="color: var(--text-muted); opacity: 1; font-size: 0.95rem;">The world's most prestigious document engine for modern businesses. Synergy empowers entrepreneurs to scale with elite financial control and prestigious branding.</p>
-                <div class="social-links" style="margin-top: 2rem; display: flex; gap: 15px;">
-                    <a href="https://facebook.com/synergysolutionsagency" target="_blank" style="color: var(--primary); font-size: 0.9rem; font-weight: 800; text-decoration: none; border: 1px solid var(--border); padding: 5px 12px; border-radius: 8px;">Facebook</a>
-                    <a href="https://tiktok.com/@synergysolutionsagency" target="_blank" style="color: var(--primary); font-size: 0.9rem; font-weight: 800; text-decoration: none; border: 1px solid var(--border); padding: 5px 12px; border-radius: 8px;">TikTok</a>
+                <div class="social-links" style="margin-top: 2rem; display: flex; gap: 15px; flex-wrap: wrap;">
+                    <a href="https://facebook.com/synergysolutionsagency" target="_blank" class="social-icon" title="Facebook">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                    </a>
+                    <a href="https://linkedin.com/company/synergysolutionsagency" target="_blank" class="social-icon" title="LinkedIn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                    </a>
+                    <a href="https://instagram.com/synergysolutionsagency" target="_blank" class="social-icon" title="Instagram">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    </a>
+                    <a href="https://tiktok.com/@synergysolutionsagency" target="_blank" class="social-icon" title="TikTok">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"></path></svg>
+                    </a>
                 </div>
             </div>
             <div class="footer-links">
@@ -203,10 +221,11 @@
                 <a href="#">Terms of Service</a>
             </div>
             <div class="footer-links">
-                <h3>Contact Elite</h3>
-                <p style="font-size: 0.9rem; color: var(--text-main); font-weight: 700;">support@synergyinvoice.app</p>
-                <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">Global SaaS Headquarters</p>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1.5rem;">A Subsidiary of Synergy Digital Agency</p>
+                <h3>Quick Navigation</h3>
+                <a href="index.html">Home</a>
+                <a href="index.html#features">Key Features</a>
+                <a href="mailto:synergysolutionsagency@gmail.com">Contact Support</a>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2rem;">A Subsidiary of Synergy Digital Agency</p>
             </div>
         </div>
         <div style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border); text-align: center;">

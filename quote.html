@@ -42,6 +42,7 @@
             align-items: center;
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
         }
+        .stage-container { border: 1px solid var(--border-color); border-radius: 20px; padding: 1.5rem; background: rgba(255,255,255,0.02); margin-bottom: 30px; }
     </style>
 </head>
 <body data-doc-type="QUOTE">
@@ -65,41 +66,170 @@
                 </div>
             </header>
 
+            <!-- STAGE 1: COMPANY -->
             <div class="stage-container">
-                <div class="stage-header">Quote Configuration</div>
+                <div class="stage-header">Stage 1: Proposal Branding</div>
                 <div class="form-section">
-                    <h3>Document Identity</h3>
+                    <h3>Template & Branding</h3>
+                    <div class="input-group">
+                        <label>Select Quote Theme</label>
+                        <select id="template-select">
+                            <option value="minimal">Minimalist (Free)</option>
+                            <option value="standard" selected>Professional (Free)</option>
+                            <option value="corporate" class="pro-option">Corporate 💎 [PRO]</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3>Logo & Business Details</h3>
+                    <div class="input-group">
+                        <label>Your Logo</label>
+                        <input type="file" id="logo-upload" accept="image/*" class="file-input">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="business-name-input" placeholder="Your Business Name" value="My Awesome Agency">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="business-email-input" placeholder="Your Contact Email" value="hello@myagency.com">
+                    </div>
+                </div>
+            </div>
+
+            <!-- STAGE 2: CLIENT -->
+            <div class="stage-container">
+                <div class="stage-header" style="background: linear-gradient(90deg, #3b82f6, #2563eb);">Stage 2: Recipient Details</div>
+                <div class="form-section">
+                    <div class="input-group">
+                        <input type="text" id="client-name-input" placeholder="Client Name" value="Acme Corp">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="client-address-input" placeholder="Client Address" value="123 Startup Blvd">
+                    </div>
+                </div>
+            </div>
+
+            <!-- STAGE 3: PROPOSAL DETAILS -->
+            <div class="stage-container">
+                <div class="stage-header" style="background: linear-gradient(90deg, #10b981, #059669);">Stage 3: Services & PRICING</div>
+                <div class="form-section">
+                    <h3>Proposal Identity</h3>
                     <div class="row">
                         <div class="input-group half">
                             <label>Quote No.</label>
                             <input type="text" id="invoice-no-input" value="QT-001">
                         </div>
                         <div class="input-group half">
-                            <label>Proposal Expires On</label>
+                            <label>Valid Until</label>
                             <input type="date" id="due-date-input" value="">
                         </div>
                     </div>
                 </div>
+                <div class="form-section">
+                    <h3>Proposed Services / Items</h3>
+                    <div id="items-container"></div>
+                    <button id="add-item-btn" class="btn secondary"> + Add Service </button>
+                </div>
+                <div class="form-section">
+                    <h3>Pricing Settings</h3>
+                    <div class="row">
+                        <div class="input-group half">
+                            <label>Currency</label>
+                            <select id="currency-select">
+                                <option value="₦" selected>NGN (₦)</option>
+                                <option value="$">USD ($)</option>
+                            </select>
+                        </div>
+                        <div class="input-group half">
+                            <label>Tax (%)</label>
+                            <input type="number" id="tax-input" value="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3>Notes & Terms</h3>
+                    <div class="input-group">
+                        <label>Proposal Message</label>
+                        <textarea id="notes-input" rows="2">This proposal is valid for 30 days.</textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>Proposal Terms</label>
+                        <textarea id="terms-input" rows="2">Full project terms apply upon quote acceptance.</textarea>
+                    </div>
+                </div>
             </div>
 
-            <p style="text-align:center; color: var(--text-muted); font-size: 0.8rem; margin-top: 2rem;">Loading Synergy Core Engine...</p>
+            <div class="actions">
+                <button id="download-btn" class="btn primary">Download Professional Quote</button>
+                <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; text-align: center; font-size: 0.8rem; color: var(--text-muted);">
+                    A Synergy Digital Agency Product
+                </div>
+            </div>
         </div>
 
+        <!-- Preview Panel -->
         <div class="preview-panel">
-             <div class="preview-wrapper">
+            <div class="preview-wrapper">
                 <div class="invoice-container" id="invoice-preview">
-                    <!-- Preview logic -->
+                    <div class="invoice-header">
+                        <div class="brand">
+                            <img id="logo-display" src="" alt="Company Logo" style="display: none; max-height: 65px; margin-bottom: 12px;">
+                            <h2 id="business-name-display">My Awesome Agency</h2>
+                            <p id="business-email-display">hello@myagency.com</p>
+                        </div>
+                        <div class="invoice-meta">
+                            <h1 class="title" id="invoice-title-display">SERVICE QUOTE</h1>
+                            <p><strong>Quote No:</strong> <span id="invoice-no-display">QT-001</span></p>
+                            <p><strong>Valid Until:</strong> <span id="due-date-display">N/A</span></p>
+                        </div>
+                    </div>
+                    <div class="invoice-body">
+                        <div class="bill-to">
+                            <h3>Proposed To:</h3>
+                            <p id="client-name-display" class="highlight">Acme Corp</p>
+                            <p id="client-address-display">123 Startup Blvd</p>
+                        </div>
+                        <table class="invoice-table">
+                            <thead>
+                                <tr>
+                                    <th class="text-left">Description</th>
+                                    <th class="text-center">Qty/Hours</th>
+                                    <th class="text-center">Rate</th>
+                                    <th class="text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoice-items-display"></tbody>
+                        </table>
+                    </div>
+                    <div class="invoice-footer">
+                        <div></div>
+                        <div class="totals-section">
+                            <div class="total-row grand-total">
+                                <span id="total-label-display">Quoted Total:</span>
+                                <span id="total-display">₦0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="invoice-footer-note">
+                        <p id="notes-display">This proposal is valid for 30 days.</p>
+                        <p id="terms-display" style="font-size: 11px; margin-top: 6px; color: #94a3b8;">Full project terms apply upon quote acceptance.</p>
+                    </div>
+                    <div class="watermark" id="invoice-watermark">Generated by Synergy Quote</div>
                 </div>
-             </div>
+            </div>
         </div>
     </div>
 
-    <!-- Reusing auth.js and app.js core -->
+    <div id="auth-modal" class="auth-modal" onclick="if(event.target === this) closeAuthModal()">
+        <div class="auth-card">
+            <h2>Sign In / Register</h2>
+            <form onsubmit="handleEmailAuth(event)">
+                <input type="email" id="auth-email" placeholder="Email" required>
+                <input type="password" id="auth-pass" placeholder="Password" required>
+                <button type="submit" class="btn primary">Continue</button>
+            </form>
+        </div>
+    </div>
+
     <script src="app.js"></script>
-    <script>
-        document.getElementById('invoice-title-display').innerText = "SERVICE QUOTE";
-        document.getElementById('total-label-display').innerText = "Quoted Amount:";
-        document.getElementById('notes-display').innerText = "Proposal valid for 30 days.";
-    </script>
 </body>
 </html>

@@ -246,8 +246,8 @@ async function syncPremiumStatus(user) {
 // PREMIUM TOOL GATE
 window.checkPremiumTool = (e) => {
     if (!window.SYNERGY_PRO_STATUS?.isPro) {
-        e.preventDefault();
-        alert("💎 This is a Synergy Pro feature! We are taking you to the pricing page so you can unlock it via WhatsApp.");
+        if(e) e.preventDefault();
+        alert("💎 Synergy Global Pro Feature Detected!\n\nWe are taking you to the pricing panel where you can lock in your upgrade via our Executive WhatsApp Concierge.");
         window.location.href = 'index.html#pricing';
         return false;
     }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Synergy | Professional Job Estimate</title>
+    <title>Synergy | Job Estimate Engine</title>
     
     <link rel="icon" type="image/png" href="synergy-logo.png">
     <link rel="stylesheet" href="styles.css">
@@ -28,7 +28,7 @@
     <script defer src="auth.js"></script>
     <style>
         .stage-header {
-            background: linear-gradient(90deg, #06b6d4, #0891b2);
+            background: linear-gradient(90deg, #10b981, #059669);
             color: white;
             padding: 12px 20px;
             border-radius: 12px;
@@ -40,14 +40,12 @@
             letter-spacing: 1.5px;
             display: flex;
             align-items: center;
-            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.2);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
         }
+        .stage-container { border: 1px solid var(--border-color); border-radius: 20px; padding: 1.5rem; background: rgba(255,255,255,0.02); margin-bottom: 30px; }
     </style>
 </head>
-<body data-doc-type="ESTIMATE">
-    <!-- Quick-load override for global reach -->
-    <script>window.SYNERGY_DOC_TITLE = "ESTIMATE";</script>
-
+<body data-doc-type="QUOTE"> <!-- Handled as a quote/non-legal invoice -->
     <div id="splash-screen">
         <img src="synergy-logo.png" alt="Synergy Logo Intro">
     </div>
@@ -61,57 +59,177 @@
             <header class="editor-header" style="padding-right: 140px;">
                 <h1>Synergy Estimate <span class="pro-badge" id="pro-badge">FREE</span></h1>
                 <a href="dashboard.html" style="display: inline-block; background: white; color: black; padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; text-decoration: none; font-weight: 700; margin-top: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">Dashboard</a>
-                <p>Global Job Costing & Project Estimator</p>
+                <p>Global Project Estimator & Budgeting Engine</p>
                 <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
-                    <button id="upgrade-btn" class="btn secondary" style="font-size: 0.8rem; padding: 0.5rem; border-color: #06b6d4; color: #06b6d4;">Upgrade to Pro</button>
+                    <button id="upgrade-btn" class="btn secondary" style="font-size: 0.8rem; padding: 0.5rem; border-color: #10b981; color: #10b981;">Upgrade to Pro</button>
                     <div id="auth-btn-container-app" class="auth-btn-container"></div>
                 </div>
             </header>
 
-            <!-- SHARED STAGES (Identical to app.html for consistency) -->
-            <div id="stages-hook">
-                <!-- I will include the core form structure here but specialized for ESTIMATE -->
+            <!-- STAGE 1: COMPANY -->
+            <div class="stage-container">
+                <div class="stage-header">Stage 1: Estimate Branding</div>
+                <div class="form-section">
+                    <h3>Template & Branding</h3>
+                    <div class="input-group">
+                        <label>Select Estimate Theme</label>
+                        <select id="template-select">
+                            <option value="minimal">Minimalist (Free)</option>
+                            <option value="standard" selected>Professional (Free)</option>
+                            <option value="corporate" class="pro-option">Corporate 💎 [PRO]</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3>Logo & Business Details</h3>
+                    <div class="input-group">
+                        <label>Your Logo</label>
+                        <input type="file" id="logo-upload" accept="image/*" class="file-input">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="business-name-input" placeholder="Your Business Name" value="My Awesome Agency">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="business-email-input" placeholder="Your Contact Email" value="hello@myagency.com">
+                    </div>
+                </div>
             </div>
 
+            <!-- STAGE 2: CLIENT -->
             <div class="stage-container">
-                <div class="stage-header">Estimate Configuration</div>
+                <div class="stage-header" style="background: linear-gradient(90deg, #3b82f6, #2563eb);">Stage 2: Beneficiary Details</div>
                 <div class="form-section">
-                    <h3>Document Identity</h3>
+                    <div class="input-group">
+                        <input type="text" id="client-name-input" placeholder="Project Owner" value="Acme Corp">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="client-address-input" placeholder="Project Site / Office" value="123 Startup Blvd">
+                    </div>
+                </div>
+            </div>
+
+            <!-- STAGE 3: ESTIMATE DETAILS -->
+            <div class="stage-container">
+                <div class="stage-header" style="background: linear-gradient(90deg, #10b981, #059669);">Stage 3: Project Budgeting</div>
+                <div class="form-section">
+                    <h3>Estimate Identity</h3>
                     <div class="row">
                         <div class="input-group half">
                             <label>Estimate No.</label>
                             <input type="text" id="invoice-no-input" value="EST-001">
                         </div>
                         <div class="input-group half">
-                            <label>Valid Until</label>
+                            <label>Expiration Date</label>
                             <input type="date" id="due-date-input" value="">
                         </div>
                     </div>
                 </div>
-                <!-- Line Items and Other Sections will be handled by app.js -->
+                <div class="form-section">
+                    <h3>Budget Items / Resources</h3>
+                    <div id="items-container"></div>
+                    <button id="add-item-btn" class="btn secondary"> + Add Item </button>
+                </div>
+                <div class="form-section">
+                    <h3>Pricing Settings</h3>
+                    <div class="row">
+                        <div class="input-group half">
+                            <label>Currency</label>
+                            <select id="currency-select">
+                                <option value="₦" selected>NGN (₦)</option>
+                                <option value="$">USD ($)</option>
+                            </select>
+                        </div>
+                        <div class="input-group half">
+                            <label>Tax (%)</label>
+                            <input type="number" id="tax-input" value="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3>Notes & Terms</h3>
+                    <div class="input-group">
+                        <label>Estimate Note</label>
+                        <textarea id="notes-input" rows="2">Estimate based on current standard project metrics.</textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>Estimate Disclaimer</label>
+                        <textarea id="terms-input" rows="2">Final project cost may vary by +/- 10% based on site conditions or resource fluctuations.</textarea>
+                    </div>
+                </div>
             </div>
 
-            <!-- Note: In a real implementation, I'd move the massive HTML form to a shared JS component, 
-                 but for 'Standalone Replicas', I'll keep them as full HTML files. -->
-            
-            <p style="text-align:center; color: var(--text-muted); font-size: 0.8rem; margin-top: 2rem;">Loading Synergy Core Engine...</p>
+            <div class="actions">
+                <button id="download-btn" class="btn primary">Download Professional Estimate</button>
+                <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; text-align: center; font-size: 0.8rem; color: var(--text-muted);">
+                    A Synergy Digital Agency Product
+                </div>
+            </div>
         </div>
 
+        <!-- Preview Panel -->
         <div class="preview-panel">
-             <div class="preview-wrapper">
+            <div class="preview-wrapper">
                 <div class="invoice-container" id="invoice-preview">
-                    <!-- Preview logic handled by app.js -->
+                    <div class="invoice-header">
+                        <div class="brand">
+                            <img id="logo-display" src="" alt="Company Logo" style="display: none; max-height: 65px; margin-bottom: 12px;">
+                            <h2 id="business-name-display">My Awesome Agency</h2>
+                            <p id="business-email-display">hello@myagency.com</p>
+                        </div>
+                        <div class="invoice-meta">
+                            <h1 class="title" id="invoice-title-display">JOB ESTIMATE</h1>
+                            <p><strong>Estimate No:</strong> <span id="invoice-no-display">EST-001</span></p>
+                            <p><strong>Expires On:</strong> <span id="due-date-display">N/A</span></p>
+                        </div>
+                    </div>
+                    <div class="invoice-body">
+                        <div class="bill-to">
+                            <h3>Estimated For:</h3>
+                            <p id="client-name-display" class="highlight">Acme Corp</p>
+                            <p id="client-address-display">123 Startup Blvd</p>
+                        </div>
+                        <table class="invoice-table">
+                            <thead>
+                                <tr>
+                                    <th class="text-left">Description</th>
+                                    <th class="text-center">Qty/Hours</th>
+                                    <th class="text-center">Rate</th>
+                                    <th class="text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoice-items-display"></tbody>
+                        </table>
+                    </div>
+                    <div class="invoice-footer">
+                        <div></div>
+                        <div class="totals-section">
+                            <div class="total-row grand-total">
+                                <span id="total-label-display">Estimated Total:</span>
+                                <span id="total-display">₦0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="invoice-footer-note">
+                        <p id="notes-display">Estimate based on current standard project metrics.</p>
+                        <p id="terms-display" style="font-size: 11px; margin-top: 6px; color: #94a3b8;">Final project cost may vary by +/- 10% based on site conditions or resource fluctuations.</p>
+                    </div>
+                    <div class="watermark" id="invoice-watermark">Generated by Synergy Estimate</div>
                 </div>
-             </div>
+            </div>
         </div>
     </div>
 
-    <!-- Reusing auth.js and app.js core -->
+    <div id="auth-modal" class="auth-modal" onclick="if(event.target === this) closeAuthModal()">
+        <div class="auth-card">
+            <h2>Sign In / Register</h2>
+            <form onsubmit="handleEmailAuth(event)">
+                <input type="email" id="auth-email" placeholder="Email" required>
+                <input type="password" id="auth-pass" placeholder="Password" required>
+                <button type="submit" class="btn primary">Continue</button>
+            </form>
+        </div>
+    </div>
+
     <script src="app.js"></script>
-    <script>
-        // Override for Standalone Mode
-        document.getElementById('invoice-title-display').innerText = "JOB ESTIMATE";
-        document.getElementById('total-label-display').innerText = "Estimated Total:";
-    </script>
 </body>
 </html>
