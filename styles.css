@@ -872,3 +872,19 @@ input:focus, select:focus, textarea:focus {
     0% { filter: brightness(1) scale(1); }
     100% { filter: brightness(1.2) scale(1.05); }
 }
+
+/* === iOS NATIVE COMPLIANCE & ANTI-ZOOM === */
+@media screen and (max-width: 768px) {
+    input, textarea, select { 
+        font-size: 16px !important; /* Prevents auto-zoom on iOS Safari */
+        -webkit-appearance: none; /* Removes native iOS default shadow/border */
+        border-radius: 8px;
+    }
+    
+    /* Fix hover stickiness on iOS */
+    .btn:active, .tool-card:active {
+        transform: scale(0.98);
+        opacity: 0.8;
+    }
+}
+
